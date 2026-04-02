@@ -5,44 +5,15 @@
 (function () {
   'use strict';
 
-  // === LOADER ===
-  var counter = document.getElementById('loaderCounter');
-  var fill = document.getElementById('loaderFill');
-  var loader = document.getElementById('loader');
-  var count = 0;
-
-  function animateLoader() {
-    if (count <= 100) {
-      counter.textContent = count;
-      fill.style.width = count + '%';
-      count += Math.ceil(Math.random() * 4);
-      if (count > 100) count = 100;
-      requestAnimationFrame(function () {
-        setTimeout(animateLoader, 15);
-      });
-    } else {
-      counter.textContent = '100';
-      fill.style.width = '100%';
-      setTimeout(function () {
-        loader.classList.add('done');
-        initAll();
-      }, 400);
-    }
-  }
-
+  // === INIT ON LOAD (no loader) ===
   window.addEventListener('load', function () {
-    setTimeout(animateLoader, 200);
+    initAll();
   });
 
-  // Fallback
-  setTimeout(function () {
-    if (!loader.classList.contains('done')) {
-      counter.textContent = '100';
-      fill.style.width = '100%';
-      loader.classList.add('done');
-      initAll();
-    }
-  }, 4000);
+  // Fallback in case load already fired
+  if (document.readyState === 'complete') {
+    initAll();
+  }
 
   function initAll() {
     initCursor();

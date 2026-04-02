@@ -12,12 +12,6 @@ app.get('/', (c) => {
       <div class="cursor" id="cursor"></div>
       <div class="cursor-follower" id="cursorFollower"></div>
 
-      {/* Loader */}
-      <div id="loader">
-        <div class="loader-counter" id="loaderCounter">0</div>
-        <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
-      </div>
-
       {/* Navigation */}
       <nav id="nav">
         <a href="#" class="nav-brand" data-hover>이음</a>
