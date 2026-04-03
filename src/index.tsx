@@ -26,12 +26,12 @@ app.get('/', (c) => {
         <div class="menu-overlay"></div>
         <div class="menu-content">
           <div class="menu-links">
-            <a href="#section-about" class="menu-link" data-hover><span data-text="소개">소개</span></a>
-            <a href="#section-philosophy" class="menu-link" data-hover><span data-text="철학">철학</span></a>
-            <a href="#section-services" class="menu-link" data-hover><span data-text="진료">진료</span></a>
-            <a href="#section-director" class="menu-link" data-hover><span data-text="의료진">의료진</span></a>
-            <a href="#section-equipment" class="menu-link" data-hover><span data-text="시설">시설</span></a>
-            <a href="#section-contact" class="menu-link" data-hover><span data-text="예약">예약</span></a>
+            <a href="#section-about" class="menu-link" data-hover data-index="01"><span data-text="소개">소개</span></a>
+            <a href="#section-philosophy" class="menu-link" data-hover data-index="02"><span data-text="철학">철학</span></a>
+            <a href="#section-services" class="menu-link" data-hover data-index="03"><span data-text="진료">진료</span></a>
+            <a href="#section-director" class="menu-link" data-hover data-index="04"><span data-text="의료진">의료진</span></a>
+            <a href="#section-equipment" class="menu-link" data-hover data-index="05"><span data-text="시설">시설</span></a>
+            <a href="#section-contact" class="menu-link" data-hover data-index="06"><span data-text="예약">예약</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
@@ -53,6 +53,7 @@ app.get('/', (c) => {
       {/* === SECTION 1: HERO === */}
       <section class="section hero" id="section-hero">
         <div class="hero-bg">
+          <div class="hero-img" style="background-image:url('/static/img/photo_1.jpg')"></div>
           <div class="grain"></div>
         </div>
         <div class="hero-content">
@@ -84,6 +85,25 @@ app.get('/', (c) => {
           <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
           <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
           <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
+        </div>
+      </div>
+
+      {/* === CLINIC GALLERY STRIP === */}
+      <div class="gallery-strip">
+        <div class="gallery-track">
+          <div class="gallery-item"><img src="/static/img/photo_7.jpg" alt="이음치과 접수" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_8.jpg" alt="이음치과 대기실" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_6.jpg" alt="이음치과 진료실" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_4.jpg" alt="이음치과 내부" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_9.jpg" alt="이음치과 편의공간" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_1.jpg" alt="이음치과 로비" loading="lazy" /></div>
+          {/* duplicate for seamless loop */}
+          <div class="gallery-item"><img src="/static/img/photo_7.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_8.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_6.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_4.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_9.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item"><img src="/static/img/photo_1.jpg" alt="" loading="lazy" /></div>
         </div>
       </div>
 
@@ -228,7 +248,7 @@ app.get('/', (c) => {
           <div class="director-layout">
             <div class="director-visual">
               <div class="director-frame">
-                <div class="frame-deco"></div>
+                <img src="/static/img/photo_5.jpg" alt="최효영 원장" class="director-photo" />
                 <div class="frame-content">
                   <span class="frame-label">DIRECTOR</span>
                   <div class="frame-name">최효영</div>
@@ -279,6 +299,11 @@ app.get('/', (c) => {
           </div>
         </div>
       </section>
+
+      {/* === PHILOSOPHY IMAGE BREAK === */}
+      <div class="image-break">
+        <img src="/static/img/photo_2.jpg" alt="이음치과의 약속" loading="lazy" />
+      </div>
 
       {/* === SECTION 6: EQUIPMENT (Minimal Grid) === */}
       <section class="section equipment-minimal" id="section-equipment">
