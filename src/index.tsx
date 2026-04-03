@@ -300,10 +300,60 @@ app.get('/', (c) => {
         </div>
       </section>
 
-      {/* === PHILOSOPHY IMAGE BREAK === */}
-      <div class="image-break">
-        <img src="/static/img/photo_6.jpg" alt="이음치과 진료실" loading="lazy" />
-      </div>
+      {/* === SECTION: 이음치과의 약속 (Promise) === */}
+      <section class="section promise-section" id="section-promise">
+        <div class="promise-bg">
+          <div class="grain"></div>
+        </div>
+        <div class="container-wide">
+          <div class="promise-header">
+            <span class="section-label">OUR PROMISE</span>
+            <h2 class="promise-main-title">이음치과의<br/><em>약속</em></h2>
+          </div>
+          <div class="promise-grid">
+            <div class="promise-item" data-reveal data-num="01">
+              <div class="promise-icon">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="20" cy="20" r="15"/><path d="M14 20l4 4 8-8"/></svg>
+              </div>
+              <div class="promise-content">
+                <h3>투명한 진단</h3>
+                <p class="promise-quote">"눈으로 확인해야 진짜 믿음입니다."</p>
+                <p class="promise-desc">말로만 설명하지 않습니다. 디지털 장비로 상태를 직접 보여드리고, 납득하실 때 치료를 시작합니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="02">
+              <div class="promise-icon">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 8c-6 0-12 5-12 12s12 14 12 14 12-8 12-14-6-12-12-12z"/></svg>
+              </div>
+              <div class="promise-content">
+                <h3>바른 진료</h3>
+                <p class="promise-quote">"뽑기보다 살리기를 먼저 고민합니다."</p>
+                <p class="promise-desc">임플란트보다 좋은 건 내 치아입니다. 발치는 더 이상 방법이 없을 때 권하는 '마지막 선택'이어야 합니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="03">
+              <div class="promise-icon">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 28c0-6 8-6 8-12a4 4 0 10-8 0"/><path d="M28 28c0-6-8-6-8-12a4 4 0 118 0"/></svg>
+              </div>
+              <div class="promise-content">
+                <h3>공감 진료</h3>
+                <p class="promise-quote">"불안함을 덜고 마음까지 편안하게."</p>
+                <p class="promise-desc">치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 긴장이 풀리고 편안해지도록 돕겠습니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="04">
+              <div class="promise-icon">
+                <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="20" cy="20" r="12"/><path d="M20 14v12M14 20h12"/></svg>
+              </div>
+              <div class="promise-content">
+                <h3>열린 진료</h3>
+                <p class="promise-quote">"당신의 일상이 끊기지 않도록."</p>
+                <p class="promise-desc">아플 때 참지 마세요. 퇴근 후에도, 주말에도 이음치과의 불은 환자분 곁에 켜져 있습니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* === SECTION 6: EQUIPMENT (Minimal Grid) === */}
       <section class="section equipment-minimal" id="section-equipment">

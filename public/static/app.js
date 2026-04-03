@@ -339,7 +339,7 @@
   function init3DCards() {
     if (window.innerWidth < 1025) return;
 
-    document.querySelectorAll('.h-card:not(.h-card-intro), .philosophy-card, .equip-item').forEach(function (card) {
+    document.querySelectorAll('.h-card:not(.h-card-intro), .philosophy-card, .equip-item, .promise-item').forEach(function (card) {
       card.addEventListener('mousemove', function (e) {
         var rect = card.getBoundingClientRect();
         var x = (e.clientX - rect.left) / rect.width;
