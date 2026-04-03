@@ -302,7 +302,7 @@ app.get('/', (c) => {
 
       {/* === PHILOSOPHY IMAGE BREAK === */}
       <div class="image-break">
-        <img src="/static/img/photo_2.jpg" alt="이음치과의 약속" loading="lazy" />
+        <img src="/static/img/photo_6.jpg" alt="이음치과 진료실" loading="lazy" />
       </div>
 
       {/* === SECTION 6: EQUIPMENT (Minimal Grid) === */}
