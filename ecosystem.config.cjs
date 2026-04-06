@@ -3,10 +3,11 @@ module.exports = {
     {
       name: 'eum-dental',
       script: 'npx',
-      args: 'wrangler pages dev dist --ip 0.0.0.0 --port 3000',
+      args: 'wrangler pages dev dist --d1=eum-dental-db --r2=eum-dental-images --local --ip 0.0.0.0 --port 3000',
       env: {
         NODE_ENV: 'development',
-        PORT: 3000
+        PORT: 3000,
+        ADMIN_PASSWORD: 'eum2025!'
       },
       watch: false,
       instances: 1,
