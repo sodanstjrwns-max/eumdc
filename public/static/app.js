@@ -358,7 +358,7 @@
           shine.className = 'card-shine';
           card.appendChild(shine);
         }
-        shine.style.background = 'radial-gradient(circle at ' + (x * 100) + '% ' + (y * 100) + '%, rgba(201,168,76,0.08), transparent 60%)';
+        shine.style.background = 'radial-gradient(circle at ' + (x * 100) + '% ' + (y * 100) + '%, rgba(110,159,212,0.06), transparent 60%)';
       });
 
       card.addEventListener('mouseleave', function () {

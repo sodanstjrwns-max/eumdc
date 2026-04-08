@@ -64,7 +64,7 @@ export function mainPage() {
           <div class="hero-bottom">
             <div class="hero-scroll-hint">
               <div class="scroll-circle">
-                <svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/><circle cx="30" cy="30" r="29" fill="none" stroke="rgba(196,165,90,0.8)" stroke-width="0.5" stroke-dasharray="182.21" stroke-dashoffset="182.21" class="scroll-progress"/></svg>
+                <svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/><circle cx="30" cy="30" r="29" fill="none" stroke="rgba(110,159,212,0.8)" stroke-width="0.5" stroke-dasharray="182.21" stroke-dashoffset="182.21" class="scroll-progress"/></svg>
               </div>
               <span>SCROLL</span>
             </div>

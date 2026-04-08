@@ -13,8 +13,10 @@
   --white: #f8f9fc;
   --white-dim: rgba(248,249,252,0.7);
   --white-muted: rgba(248,249,252,0.35);
-  --gold: #b8965a;
-  --gold-dim: rgba(184,150,90,0.12);
+  --gold: #6e9fd4;
+  --gold-dim: rgba(110,159,212,0.14);
+  --cta: #b8965a;
+  --cta-dim: rgba(184,150,90,0.12);
   --red: #e74c3c;
   --green: #2ecc71;
   --radius: 12px;
@@ -36,7 +38,7 @@ a { text-decoration:none; color:inherit; }
   width:100%; max-width:380px; text-align:center;
 }
 .login-brand {
-  font-size:2.5rem; font-weight:800; color:var(--gold);
+  font-size:2.5rem; font-weight:800; color:var(--cta);
   letter-spacing:-0.02em; margin-bottom:0.5rem;
 }
 .login-card h2 { font-size:1rem; font-weight:400; color:var(--white-dim); margin-bottom:2rem; }
@@ -47,7 +49,7 @@ a { text-decoration:none; color:inherit; }
 }
 .login-card input:focus { border-color:var(--gold); }
 .login-card button[type="submit"] {
-  width:100%; padding:0.9rem; margin-top:1rem; background:var(--gold);
+  width:100%; padding:0.9rem; margin-top:1rem; background:var(--cta);
   color:var(--bg); border:none; border-radius:8px; font-size:0.95rem;
   font-weight:600; cursor:pointer; transition:opacity 0.2s;
 }
@@ -61,7 +63,7 @@ a { text-decoration:none; color:inherit; }
   border-bottom:1px solid var(--border); position:sticky; top:0; z-index:100;
 }
 .admin-brand {
-  font-size:1.1rem; font-weight:700; color:var(--gold);
+  font-size:1.1rem; font-weight:700; color:var(--cta);
   white-space:nowrap;
 }
 .admin-nav { display:flex; gap:0.25rem; flex:1; }
@@ -87,7 +89,7 @@ a { text-decoration:none; color:inherit; }
 
 /* === BUTTONS === */
 .btn-primary {
-  padding:0.6rem 1.2rem; background:var(--gold); color:var(--bg);
+  padding:0.6rem 1.2rem; background:var(--cta); color:var(--bg);
   border:none; border-radius:8px; font-size:0.85rem; font-weight:600;
   cursor:pointer; transition:opacity 0.2s;
 }
