@@ -69,10 +69,11 @@ faq.get('/api/faq', async (c) => {
   })
 })
 
-// === PUBLIC: Increment FAQ view ===
+// === PUBLIC: Increment FAQ view (중복 방지) ===
 faq.post('/api/faq/:id/view', async (c) => {
   const id = c.req.param('id')
-  await c.env.DB.prepare('UPDATE faqs SET views = views + 1 WHERE id = ?').bind(id).run()
+  const { incrementView } = await import('./views')
+  await incrementView(c, 'faq', id, 'faqs')
   return c.json({ ok: true })
 })
 

@@ -17,6 +17,7 @@ import { faqPage } from './pages/faq'
 import { signupPage } from './pages/signup'
 import { loginPage } from './pages/login'
 import faqRoutes from './routes/faq'
+import reservationRoutes from './routes/reservations'
 
 const app = new Hono<HonoEnv>()
 
@@ -44,12 +45,15 @@ app.use('/api/admin/faq', requireAdmin())
 app.use('/api/admin/users', requireAdmin())
 app.use('/api/admin/users/*', requireAdmin())
 app.use('/api/admin/stats', requireAdmin())
+app.use('/api/admin/reservations', requireAdmin())
+app.use('/api/admin/reservations/*', requireAdmin())
 
 // === API routes ===
 app.route('', casesRoutes)
 app.route('', blogsRoutes)
 app.route('', noticesRoutes)
 app.route('', faqRoutes)
+app.route('', reservationRoutes)
 
 // === Public Pages ===
 app.get('/', (c) => c.render(mainPage()))

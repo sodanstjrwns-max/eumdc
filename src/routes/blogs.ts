@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
+import { incrementView } from './views'
 
 const blogs = new Hono<HonoEnv>()
 
@@ -23,7 +24,7 @@ blogs.get('/api/blogs', async (c) => {
 // Get single blog + images + increment views
 blogs.get('/api/blogs/:id', async (c) => {
   const id = c.req.param('id')
-  await c.env.DB.prepare('UPDATE blogs SET views = views + 1 WHERE id = ?').bind(id).run()
+  await incrementView(c, 'blog', id, 'blogs')
 
   const blog = await c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first()
   if (!blog) return c.notFound()

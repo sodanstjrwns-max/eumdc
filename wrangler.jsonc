@@ -18,6 +18,7 @@
     }
   ],
   "vars": {
-    "ADMIN_PASSWORD": "eum2025!"
+    "ADMIN_PASSWORD": "eum2025!",
+    "AUTH_SECRET": "eum-dental-hmac-secret-2026-very-long-random-key"
   }
 }

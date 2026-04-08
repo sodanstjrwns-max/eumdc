@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import type { HonoEnv } from '../types'
+import { createHmacToken, verifyHmacToken } from './auth'
 
 const users = new Hono<HonoEnv>()
 
@@ -23,7 +24,8 @@ users.post('/api/user/register', async (c) => {
   const body = await c.req.json()
   const { name, phone, password, email, birth_date, gender,
     agree_privacy, agree_terms, agree_marketing,
-    agree_marketing_sms, agree_marketing_email, agree_third_party } = body
+    agree_marketing_sms, agree_marketing_email, agree_third_party,
+    referral_source } = body
 
   // Validate required fields
   if (!name || !phone || !password) {
@@ -53,21 +55,26 @@ users.post('/api/user/register', async (c) => {
   }
 
   const pwHash = await hashPassword(password)
+  const hasMarketing = agree_marketing ? 1 : 0
 
   const result = await c.env.DB.prepare(
     `INSERT INTO users (name, phone, password_hash, email, birth_date, gender,
       agree_privacy, agree_terms, agree_marketing,
-      agree_marketing_sms, agree_marketing_email, agree_third_party)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      agree_marketing_sms, agree_marketing_email, agree_third_party,
+      marketing_agreed_at, referral_source)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   ).bind(
     name, phoneClean, pwHash, email || null, birth_date || null, gender || '',
-    agree_privacy ? 1 : 0, agree_terms ? 1 : 0, agree_marketing ? 1 : 0,
-    agree_marketing_sms ? 1 : 0, agree_marketing_email ? 1 : 0, agree_third_party ? 1 : 0
+    agree_privacy ? 1 : 0, agree_terms ? 1 : 0, hasMarketing,
+    agree_marketing_sms ? 1 : 0, agree_marketing_email ? 1 : 0, agree_third_party ? 1 : 0,
+    hasMarketing ? new Date().toISOString() : null,
+    referral_source || ''
   ).run()
 
-  // Auto-login after registration
+  // Auto-login after registration (HMAC signed token)
   const userId = result.meta.last_row_id
-  const token = btoa(`eum-user:${userId}:${Date.now()}`)
+  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const token = await createHmacToken(`eum-user:${userId}:${Date.now()}`, secret)
   setCookie(c, 'eum_user', token, {
     path: '/',
     httpOnly: true,
@@ -105,7 +112,8 @@ users.post('/api/user/login', async (c) => {
     'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?'
   ).bind(user.id).run()
 
-  const token = btoa(`eum-user:${user.id}:${Date.now()}`)
+  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const token = await createHmacToken(`eum-user:${user.id}:${Date.now()}`, secret)
   setCookie(c, 'eum_user', token, {
     path: '/',
     httpOnly: true,
@@ -127,10 +135,14 @@ users.post('/api/user/logout', async (c) => {
 users.get('/api/user/check', async (c) => {
   const session = getCookie(c, 'eum_user')
   if (!session) return c.json({ authenticated: false })
+  
+  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const payload = await verifyHmacToken(session, secret)
+  if (!payload) return c.json({ authenticated: false })
+  
   try {
-    const decoded = atob(session)
-    if (decoded.startsWith('eum-user:')) {
-      const parts = decoded.split(':')
+    if (payload.startsWith('eum-user:')) {
+      const parts = payload.split(':')
       const userId = parseInt(parts[1])
       const user = await c.env.DB.prepare(
         'SELECT id, name, phone FROM users WHERE id = ? AND is_active = 1'
@@ -150,9 +162,10 @@ users.get('/api/admin/users', async (c) => {
   const offset = (page - 1) * limit
 
   const { results } = await c.env.DB.prepare(
-    `SELECT id, name, phone, email, gender, birth_date,
+    `SELECT id, name, phone, email, gender, birth_date, role,
             agree_marketing, agree_marketing_sms, agree_marketing_email,
-            agree_third_party, is_active, last_login_at, created_at
+            agree_third_party, marketing_agreed_at, referral_source,
+            is_active, last_login_at, created_at
      FROM users ORDER BY created_at DESC LIMIT ? OFFSET ?`
   ).bind(limit, offset).all()
 
@@ -170,8 +183,11 @@ users.get('/api/admin/stats', async (c) => {
   const totalCases = await c.env.DB.prepare('SELECT COUNT(*) as c FROM cases').first() as any
   const totalBlogs = await c.env.DB.prepare('SELECT COUNT(*) as c FROM blogs').first() as any
   const totalNotices = await c.env.DB.prepare('SELECT COUNT(*) as c FROM notices').first() as any
+  const totalFaqs = await c.env.DB.prepare('SELECT COUNT(*) as c FROM faqs').first() as any
+  const totalReservations = await c.env.DB.prepare("SELECT COUNT(*) as c FROM reservations WHERE status = 'pending'").first() as any
   const totalViews = await c.env.DB.prepare('SELECT SUM(views) as c FROM cases').first() as any
   const blogViews = await c.env.DB.prepare('SELECT SUM(views) as c FROM blogs').first() as any
+  const faqViews = await c.env.DB.prepare('SELECT SUM(views) as c FROM faqs').first() as any
 
   // Recent registrations (last 7 days)
   const recentUsers = await c.env.DB.prepare(
@@ -185,8 +201,11 @@ users.get('/api/admin/stats', async (c) => {
     cases: totalCases?.c || 0,
     blogs: totalBlogs?.c || 0,
     notices: totalNotices?.c || 0,
+    faqs: totalFaqs?.c || 0,
+    reservations_pending: totalReservations?.c || 0,
     case_views: totalViews?.c || 0,
-    blog_views: blogViews?.c || 0
+    blog_views: blogViews?.c || 0,
+    faq_views: faqViews?.c || 0
   })
 })
 
