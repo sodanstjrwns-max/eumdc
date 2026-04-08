@@ -25,8 +25,9 @@ export function mainPage() {
             <a href="/cases" class="menu-link" data-hover data-index="04"><span data-text="비포애프터">비포애프터</span></a>
             <a href="/blogs" class="menu-link" data-hover data-index="05"><span data-text="블로그">블로그</span></a>
             <a href="/notices" class="menu-link" data-hover data-index="06"><span data-text="공지사항">공지사항</span></a>
-            <a href="/#section-director" class="menu-link" data-hover data-index="07"><span data-text="의료진">의료진</span></a>
-            <a href="/#section-contact" class="menu-link" data-hover data-index="08"><span data-text="예약">예약</span></a>
+            <a href="/faq" class="menu-link" data-hover data-index="07"><span data-text="자주 묻는 질문">자주 묻는 질문</span></a>
+            <a href="/#section-director" class="menu-link" data-hover data-index="08"><span data-text="의료진">의료진</span></a>
+            <a href="/#section-contact" class="menu-link" data-hover data-index="09"><span data-text="예약">예약</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">

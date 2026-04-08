@@ -12,6 +12,8 @@ import { casesPage, caseDetailPage } from './pages/cases'
 import { blogsPage, blogDetailPage } from './pages/blogs'
 import { noticesPage, noticeDetailPage } from './pages/notices'
 import { adminPage } from './pages/admin'
+import { faqPage } from './pages/faq'
+import faqRoutes from './routes/faq'
 
 const app = new Hono<HonoEnv>()
 
@@ -32,11 +34,14 @@ app.use('/api/admin/blogs/*', requireAdmin())
 app.use('/api/admin/blogs', requireAdmin())
 app.use('/api/admin/notices/*', requireAdmin())
 app.use('/api/admin/notices', requireAdmin())
+app.use('/api/admin/faq/*', requireAdmin())
+app.use('/api/admin/faq', requireAdmin())
 
 // === API routes ===
 app.route('', casesRoutes)
 app.route('', blogsRoutes)
 app.route('', noticesRoutes)
+app.route('', faqRoutes)
 
 // === Public Pages ===
 app.get('/', (c) => c.render(mainPage()))
@@ -46,6 +51,7 @@ app.get('/blogs', (c) => c.render(blogsPage()))
 app.get('/blogs/:id', (c) => c.render(blogDetailPage(c.req.param('id'))))
 app.get('/notices', (c) => c.render(noticesPage()))
 app.get('/notices/:id', (c) => c.render(noticeDetailPage(c.req.param('id'))))
+app.get('/faq', (c) => c.render(faqPage()))
 
 // === Admin Page (bypasses main renderer - has its own HTML) ===
 app.get('/admin', (c) => c.html(adminPage()))

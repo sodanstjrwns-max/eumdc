@@ -119,6 +119,14 @@ a { text-decoration:none; color:inherit; }
 .admin-tag { font-size:0.7rem; padding:0.15rem 0.5rem; background:var(--gold-dim); color:var(--gold); border-radius:4px; margin-right:0.5rem; }
 .admin-meta { font-size:0.75rem; color:var(--white-muted); }
 .admin-pin { margin-right:0.3rem; }
+.admin-section-header { padding:0.75rem 0 0.25rem; margin-top:0.75rem; }
+.admin-section-header h3 { font-size:0.95rem; font-weight:600; color:var(--gold); border-bottom:1px solid var(--border); padding-bottom:0.5rem; }
+.form-group input[type="number"] {
+  width:100%; padding:0.7rem 0.9rem; background:var(--surface-2);
+  border:1px solid var(--border); border-radius:8px; color:var(--white);
+  font-size:0.9rem; font-family:inherit; outline:none; transition:border-color 0.2s;
+}
+.form-group input[type="number"]:focus { border-color:var(--gold); }
 .admin-row-actions { display:flex; gap:0.4rem; flex-shrink:0; }
 .btn-edit {
   padding:0.4rem 0.8rem; background:var(--surface-2); border:1px solid var(--border);

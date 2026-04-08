@@ -24,9 +24,10 @@ export function subPageLayout(title: string, children: any) {
             <a href="/cases" class="menu-link" data-hover data-index="01"><span data-text="비포애프터">비포애프터</span></a>
             <a href="/blogs" class="menu-link" data-hover data-index="02"><span data-text="블로그">블로그</span></a>
             <a href="/notices" class="menu-link" data-hover data-index="03"><span data-text="공지사항">공지사항</span></a>
-            <a href="/#section-services" class="menu-link" data-hover data-index="04"><span data-text="진료안내">진료안내</span></a>
-            <a href="/#section-director" class="menu-link" data-hover data-index="05"><span data-text="의료진">의료진</span></a>
-            <a href="/#section-contact" class="menu-link" data-hover data-index="06"><span data-text="예약">예약</span></a>
+            <a href="/faq" class="menu-link" data-hover data-index="04"><span data-text="자주 묻는 질문">자주 묻는 질문</span></a>
+            <a href="/#section-services" class="menu-link" data-hover data-index="05"><span data-text="진료안내">진료안내</span></a>
+            <a href="/#section-director" class="menu-link" data-hover data-index="06"><span data-text="의료진">의료진</span></a>
+            <a href="/#section-contact" class="menu-link" data-hover data-index="07"><span data-text="예약">예약</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">

@@ -1,6 +1,6 @@
 /* ============================================
    이음치과 — Admin Dashboard Scripts
-   Login, Cases CRUD, Blog CRUD, Notices CRUD
+   Login, Cases CRUD, Blog CRUD, Notices CRUD, FAQ CRUD
    ============================================ */
 (function () {
   'use strict';
@@ -16,6 +16,7 @@
     initCasesAdmin();
     initBlogsAdmin();
     initNoticesAdmin();
+    initFaqAdmin();
   }
 
   // === AUTH ===
@@ -40,6 +41,7 @@
     loadCases();
     loadBlogs();
     loadNotices();
+    loadFaq();
   }
 
   function initLogin() {
@@ -463,6 +465,121 @@
     document.getElementById('noticeContent').value = n.content || '';
     document.getElementById('noticePinned').checked = !!n.is_pinned;
     document.getElementById('noticeModal').style.display = '';
+  }
+
+  // =============================
+  // FAQ ADMIN
+  // =============================
+  var faqCategories = [];
+
+  function initFaqAdmin() {
+    document.getElementById('newFaqBtn').addEventListener('click', function () {
+      document.getElementById('faqModalTitle').textContent = '새 FAQ 등록';
+      document.getElementById('faqForm').reset();
+      document.getElementById('faqId').value = '';
+      document.getElementById('faqSortOrder').value = '0';
+      document.getElementById('faqModal').style.display = '';
+    });
+
+    document.getElementById('faqForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var id = document.getElementById('faqId').value;
+      var payload = {
+        category_id: parseInt(document.getElementById('faqCategory').value),
+        question: document.getElementById('faqQuestion').value,
+        answer: document.getElementById('faqAnswer').value,
+        sort_order: parseInt(document.getElementById('faqSortOrder').value) || 0
+      };
+
+      var url = id ? '/api/admin/faq/' + id : '/api/admin/faq';
+      var method = id ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).then(function () {
+        document.getElementById('faqModal').style.display = 'none';
+        loadFaq();
+      });
+    });
+  }
+
+  function loadFaq() {
+    fetch('/api/admin/faq').then(function (r) { return r.json(); }).then(function (data) {
+      faqCategories = data.categories || [];
+      populateFaqCategorySelect();
+
+      var list = document.getElementById('faqList');
+      if (!data.faqs || data.faqs.length === 0) {
+        list.innerHTML = '<div class="admin-empty">등록된 FAQ가 없습니다</div>';
+        return;
+      }
+
+      var grouped = {};
+      data.faqs.forEach(function (f) {
+        var cat = f.category_name || '미분류';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(f);
+      });
+
+      list.innerHTML = '';
+      Object.keys(grouped).forEach(function (catName) {
+        var catHeader = document.createElement('div');
+        catHeader.className = 'admin-section-header';
+        catHeader.innerHTML = '<h3>' + catName + ' <span class="admin-meta">(' + grouped[catName].length + ')</span></h3>';
+        list.appendChild(catHeader);
+
+        grouped[catName].forEach(function (f) {
+          var row = document.createElement('div');
+          row.className = 'admin-row';
+          row.innerHTML =
+            '<div class="admin-row-info" style="flex:1">' +
+              '<h4>Q. ' + (f.question || '') + '</h4>' +
+              '<span class="admin-meta">조회 ' + (f.views || 0) + ' \u00b7 순서 ' + f.sort_order + '</span>' +
+            '</div>' +
+            '<div class="admin-row-actions">' +
+              '<button class="btn-edit" data-edit-faq="' + f.id + '">수정</button>' +
+              '<button class="btn-delete" data-del-faq="' + f.id + '">삭제</button>' +
+            '</div>';
+          list.appendChild(row);
+        });
+      });
+
+      list.querySelectorAll('[data-edit-faq]').forEach(function (btn) {
+        btn.addEventListener('click', function () { editFaq(btn.dataset.editFaq, data.faqs); });
+      });
+
+      list.querySelectorAll('[data-del-faq]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          if (!confirm('이 FAQ를 삭제하시겠습니까?')) return;
+          fetch('/api/admin/faq/' + btn.dataset.delFaq, { method: 'DELETE' }).then(function () { loadFaq(); });
+        });
+      });
+    });
+  }
+
+  function populateFaqCategorySelect() {
+    var sel = document.getElementById('faqCategory');
+    sel.innerHTML = '';
+    faqCategories.forEach(function (cat) {
+      var opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function editFaq(id, allFaqs) {
+    var f = allFaqs.find(function (x) { return x.id == id; });
+    if (!f) return;
+    document.getElementById('faqModalTitle').textContent = 'FAQ 수정';
+    document.getElementById('faqId').value = f.id;
+    document.getElementById('faqCategory').value = f.category_id;
+    document.getElementById('faqQuestion').value = f.question || '';
+    document.getElementById('faqAnswer').value = f.answer || '';
+    document.getElementById('faqSortOrder').value = f.sort_order || 0;
+    document.getElementById('faqModal').style.display = '';
   }
 
 })();

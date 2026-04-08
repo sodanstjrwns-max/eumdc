@@ -34,6 +34,7 @@ export function adminPage() {
                 <button class="admin-tab active" data-tab="cases">비포애프터</button>
                 <button class="admin-tab" data-tab="blogs">블로그</button>
                 <button class="admin-tab" data-tab="notices">공지사항</button>
+                <button class="admin-tab" data-tab="faq">FAQ</button>
               </nav>
               <button id="logoutBtn" class="admin-logout">로그아웃</button>
             </header>
@@ -150,6 +151,48 @@ export function adminPage() {
                     </div>
                     <div class="form-actions">
                       <button type="button" class="btn-secondary" data-close="blogModal">취소</button>
+                      <button type="submit" class="btn-primary">저장</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            {/* ===== FAQ TAB ===== */}
+            <div class="admin-panel" id="panel-faq">
+              <div class="panel-header">
+                <h2>FAQ 관리</h2>
+                <button class="btn-primary" id="newFaqBtn">+ 새 FAQ</button>
+              </div>
+              <div class="admin-list" id="faqList"></div>
+
+              {/* FAQ Form Modal */}
+              <div class="modal-overlay" id="faqModal" style="display:none">
+                <div class="modal-card">
+                  <div class="modal-header">
+                    <h3 id="faqModalTitle">새 FAQ 등록</h3>
+                    <button class="modal-close" data-close="faqModal">&times;</button>
+                  </div>
+                  <form id="faqForm" class="admin-form">
+                    <input type="hidden" id="faqId" />
+                    <div class="form-group">
+                      <label>카테고리</label>
+                      <select id="faqCategory"></select>
+                    </div>
+                    <div class="form-group">
+                      <label>질문</label>
+                      <input type="text" id="faqQuestion" placeholder="자주 묻는 질문을 입력하세요" required />
+                    </div>
+                    <div class="form-group">
+                      <label>답변</label>
+                      <textarea id="faqAnswer" rows={5} placeholder="답변을 입력하세요" required></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>정렬 순서</label>
+                      <input type="number" id="faqSortOrder" value="0" min="0" />
+                    </div>
+                    <div class="form-actions">
+                      <button type="button" class="btn-secondary" data-close="faqModal">취소</button>
                       <button type="submit" class="btn-primary">저장</button>
                     </div>
                   </form>
