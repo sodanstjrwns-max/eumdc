@@ -10,9 +10,19 @@ export function subPageLayout(title: string, children: any) {
       <nav id="nav" class="scrolled">
         <a href="/" class="nav-brand" data-hover>이음</a>
         <div class="nav-center">{title}</div>
-        <button class="nav-menu-btn" id="menuBtn" data-hover>
-          <span>MENU</span>
-        </button>
+        <div class="nav-right">
+          {/* User auth state indicator */}
+          <div class="nav-user" id="navUser" style="display:none">
+            <span class="nav-user-name" id="navUserName"></span>
+            <button class="nav-user-logout" id="navLogoutBtn" data-hover>로그아웃</button>
+          </div>
+          <div class="nav-auth" id="navAuth" style="display:none">
+            <a href="/login" class="nav-login-btn" data-hover>로그인</a>
+          </div>
+          <button class="nav-menu-btn" id="menuBtn" data-hover>
+            <span>MENU</span>
+          </button>
+        </div>
       </nav>
 
       {/* Full Screen Menu */}

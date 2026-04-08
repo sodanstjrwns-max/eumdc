@@ -11,6 +11,25 @@ export function casesPage() {
         </div>
       </section>
 
+      {/* Login Gate Banner - shown to non-logged-in users */}
+      <div class="login-gate-banner" id="loginGateBanner" style="display:none">
+        <div class="container-wide">
+          <div class="gate-content">
+            <div class="gate-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="gate-text">
+              <h3>회원 전용 콘텐츠입니다</h3>
+              <p>비포애프터 사진은 환자 보호를 위해 로그인 후 열람하실 수 있습니다.</p>
+            </div>
+            <div class="gate-actions">
+              <a href="/login" class="gate-btn-login">로그인</a>
+              <a href="/signup" class="gate-btn-signup">회원가입</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Filter */}
       <section class="page-filter">
         <div class="container-wide">

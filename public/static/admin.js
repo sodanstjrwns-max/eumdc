@@ -1,6 +1,6 @@
 /* ============================================
    이음치과 — Admin Dashboard Scripts
-   Login, Cases CRUD, Blog CRUD, Notices CRUD, FAQ CRUD
+   Dashboard Stats, Cases, Blog (SEO), Notices, FAQ, Users CRUD
    ============================================ */
 (function () {
   'use strict';
@@ -17,6 +17,7 @@
     initBlogsAdmin();
     initNoticesAdmin();
     initFaqAdmin();
+    initUsersAdmin();
   }
 
   // === AUTH ===
@@ -38,10 +39,12 @@
   function showDashboard() {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('dashboard').style.display = '';
+    loadStats();
     loadCases();
     loadBlogs();
     loadNotices();
     loadFaq();
+    loadUsers();
   }
 
   function initLogin() {
@@ -125,10 +128,23 @@
   }
 
   // =============================
+  // DASHBOARD STATS
+  // =============================
+  function loadStats() {
+    fetch('/api/admin/stats').then(function (r) { return r.json(); }).then(function (s) {
+      document.getElementById('statUsers').textContent = s.users || 0;
+      document.getElementById('statRecent').textContent = s.users_recent_7d || 0;
+      document.getElementById('statMarketing').textContent = s.users_marketing || 0;
+      document.getElementById('statCases').textContent = s.cases || 0;
+      document.getElementById('statBlogs').textContent = s.blogs || 0;
+      document.getElementById('statViews').textContent = ((s.case_views || 0) + (s.blog_views || 0)).toLocaleString();
+    }).catch(function () {});
+  }
+
+  // =============================
   // CASES ADMIN
   // =============================
   function initCasesAdmin() {
-    // New case button
     document.getElementById('newCaseBtn').addEventListener('click', function () {
       document.getElementById('caseModalTitle').textContent = '새 케이스 등록';
       document.getElementById('caseForm').reset();
@@ -174,6 +190,7 @@
       }).then(function () {
         document.getElementById('caseModal').style.display = 'none';
         loadCases();
+        loadStats();
       });
     });
   }
@@ -195,6 +212,7 @@
       list.innerHTML = '';
       data.cases.forEach(function (c) {
         var thumb = c.pano_before || c.intra_before || '';
+        var imgCount = [c.pano_before, c.pano_after, c.intra_before, c.intra_after].filter(Boolean).length;
         var row = document.createElement('div');
         row.className = 'admin-row';
         row.innerHTML =
@@ -202,7 +220,7 @@
           '<div class="admin-row-info">' +
             '<h4>' + (c.title || '(제목 없음)') + '</h4>' +
             '<span class="admin-tag">' + categoryLabel(c.category) + '</span>' +
-            '<span class="admin-meta">조회 ' + (c.views || 0) + ' · ' + formatDate(c.created_at) + '</span>' +
+            '<span class="admin-meta">사진 ' + imgCount + '장 · 조회 ' + (c.views || 0) + ' · ' + formatDate(c.created_at) + '</span>' +
           '</div>' +
           '<div class="admin-row-actions">' +
             '<button class="btn-edit" data-edit-case="' + c.id + '">수정</button>' +
@@ -211,16 +229,14 @@
         list.appendChild(row);
       });
 
-      // Edit buttons
       list.querySelectorAll('[data-edit-case]').forEach(function (btn) {
         btn.addEventListener('click', function () { editCase(btn.dataset.editCase, data.cases); });
       });
 
-      // Delete buttons
       list.querySelectorAll('[data-del-case]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           if (!confirm('이 케이스를 삭제하시겠습니까?')) return;
-          fetch('/api/admin/cases/' + btn.dataset.delCase, { method: 'DELETE' }).then(function () { loadCases(); });
+          fetch('/api/admin/cases/' + btn.dataset.delCase, { method: 'DELETE' }).then(function () { loadCases(); loadStats(); });
         });
       });
     });
@@ -250,7 +266,7 @@
   }
 
   // =============================
-  // BLOGS ADMIN
+  // BLOGS ADMIN (SEO Enhanced)
   // =============================
   var blogImages = [];
 
@@ -261,8 +277,60 @@
       document.getElementById('blogId').value = '';
       blogImages = [];
       renderBlogPreviews();
+      updateCharCounts();
+      document.getElementById('seoFields').style.display = 'none';
       document.getElementById('blogModal').style.display = '';
     });
+
+    // SEO toggle
+    var seoToggle = document.getElementById('seoToggle');
+    if (seoToggle) {
+      seoToggle.addEventListener('click', function () {
+        var fields = document.getElementById('seoFields');
+        var isHidden = fields.style.display === 'none';
+        fields.style.display = isHidden ? '' : 'none';
+        seoToggle.textContent = isHidden ? 'SEO 설정 ▲' : 'SEO 설정 ▼';
+      });
+    }
+
+    // Char counts
+    var titleInput = document.getElementById('blogTitle');
+    var metaDescInput = document.getElementById('blogMetaDesc');
+    if (titleInput) titleInput.addEventListener('input', updateCharCounts);
+    if (metaDescInput) metaDescInput.addEventListener('input', updateCharCounts);
+
+    // Editor toolbar
+    var toolbar = document.getElementById('editorToolbar');
+    if (toolbar) {
+      toolbar.addEventListener('click', function (e) {
+        var btn = e.target.closest('.toolbar-btn');
+        if (!btn) return;
+        var cmd = btn.dataset.cmd;
+        var textarea = document.getElementById('blogContent');
+        var start = textarea.selectionStart;
+        var end = textarea.selectionEnd;
+        var text = textarea.value;
+        var selected = text.substring(start, end);
+
+        var insert = '';
+        switch (cmd) {
+          case 'h2': insert = '\n## ' + (selected || '소제목을 입력하세요') + '\n'; break;
+          case 'h3': insert = '\n### ' + (selected || '하위 제목') + '\n'; break;
+          case 'bold': insert = '**' + (selected || '굵은 텍스트') + '**'; break;
+          case 'ul': insert = '\n- ' + (selected || '목록 항목') + '\n'; break;
+          case 'img':
+            // Trigger file upload
+            var fileInput = document.getElementById('blogFiles');
+            if (fileInput) fileInput.click();
+            return;
+          case 'hr': insert = '\n---\n'; break;
+        }
+
+        textarea.value = text.substring(0, start) + insert + text.substring(end);
+        textarea.focus();
+        textarea.selectionStart = textarea.selectionEnd = start + insert.length;
+      });
+    }
 
     // Dropzone
     var dz = document.getElementById('blogDropzone');
@@ -282,11 +350,20 @@
     document.getElementById('blogForm').addEventListener('submit', function (e) {
       e.preventDefault();
       var id = document.getElementById('blogId').value;
+
+      // Convert markdown to HTML for content_html
+      var rawContent = document.getElementById('blogContent').value;
+      var contentHtml = markdownToHtml(rawContent);
+
       var payload = {
         title: document.getElementById('blogTitle').value,
-        content: document.getElementById('blogContent').value,
+        content: rawContent,
+        content_html: contentHtml,
         thumbnail: blogImages.length > 0 ? blogImages[0] : null,
-        images: blogImages
+        images: blogImages,
+        meta_title: document.getElementById('blogMetaTitle').value || null,
+        meta_description: document.getElementById('blogMetaDesc').value || null,
+        slug: document.getElementById('blogSlug').value || null
       };
 
       var url = id ? '/api/admin/blogs/' + id : '/api/admin/blogs';
@@ -299,8 +376,58 @@
       }).then(function () {
         document.getElementById('blogModal').style.display = 'none';
         loadBlogs();
+        loadStats();
       });
     });
+  }
+
+  function updateCharCounts() {
+    var titleInput = document.getElementById('blogTitle');
+    var metaDescInput = document.getElementById('blogMetaDesc');
+    var titleCount = document.getElementById('titleCount');
+    var metaDescCount = document.getElementById('metaDescCount');
+
+    if (titleInput && titleCount) {
+      var len = titleInput.value.length;
+      titleCount.textContent = len + '/60자';
+      titleCount.style.color = len > 60 ? '#e74c3c' : '';
+    }
+    if (metaDescInput && metaDescCount) {
+      var len2 = metaDescInput.value.length;
+      metaDescCount.textContent = len2 + '/150자';
+      metaDescCount.style.color = len2 > 150 ? '#e74c3c' : '';
+    }
+  }
+
+  // Simple markdown -> HTML converter
+  function markdownToHtml(md) {
+    if (!md) return '';
+    var html = md
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^---$/gm, '<hr/>')
+      .replace(/^- (.+)$/gm, '<li>$1</li>');
+
+    // Wrap consecutive <li> in <ul>
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, function (match) {
+      return '<ul>' + match + '</ul>';
+    });
+
+    // Wrap remaining lines in <p> tags
+    var lines = html.split('\n');
+    var result = [];
+    lines.forEach(function (line) {
+      var trimmed = line.trim();
+      if (!trimmed) return;
+      if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<hr') || trimmed.startsWith('<li')) {
+        result.push(trimmed);
+      } else {
+        result.push('<p>' + trimmed + '</p>');
+      }
+    });
+
+    return result.join('\n');
   }
 
   function handleBlogFiles(files) {
@@ -325,7 +452,7 @@
       item.className = 'blog-preview-item';
       item.innerHTML = '<img src="' + url + '" />' +
         '<button type="button" class="remove-img" data-remove-blog="' + i + '">&times;</button>' +
-        (i === 0 ? '<span class="thumb-badge">썸네일</span>' : '');
+        (i === 0 ? '<span class="thumb-badge">썸네일</span>' : '<span class="img-order-badge">' + (i + 1) + '</span>');
       grid.appendChild(item);
     });
     grid.querySelectorAll('[data-remove-blog]').forEach(function (btn) {
@@ -351,7 +478,8 @@
           '<div class="admin-row-thumb">' + (b.thumbnail ? '<img src="' + b.thumbnail + '"/>' : '') + '</div>' +
           '<div class="admin-row-info">' +
             '<h4>' + (b.title || '(제목 없음)') + '</h4>' +
-            '<span class="admin-meta">조회 ' + (b.views || 0) + ' · ' + formatDate(b.created_at) + '</span>' +
+            '<span class="admin-meta">조회 ' + (b.views || 0) + ' · ' + formatDate(b.created_at) +
+            (b.slug ? ' · /' + b.slug : '') + '</span>' +
           '</div>' +
           '<div class="admin-row-actions">' +
             '<button class="btn-edit" data-edit-blog="' + b.id + '">수정</button>' +
@@ -367,7 +495,7 @@
       list.querySelectorAll('[data-del-blog]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           if (!confirm('이 글을 삭제하시겠습니까?')) return;
-          fetch('/api/admin/blogs/' + btn.dataset.delBlog, { method: 'DELETE' }).then(function () { loadBlogs(); });
+          fetch('/api/admin/blogs/' + btn.dataset.delBlog, { method: 'DELETE' }).then(function () { loadBlogs(); loadStats(); });
         });
       });
     });
@@ -379,8 +507,12 @@
       document.getElementById('blogId').value = b.id;
       document.getElementById('blogTitle').value = b.title || '';
       document.getElementById('blogContent').value = b.content || '';
+      document.getElementById('blogMetaTitle').value = b.meta_title || '';
+      document.getElementById('blogMetaDesc').value = b.meta_description || '';
+      document.getElementById('blogSlug').value = b.slug || '';
       blogImages = (b.images || []).map(function (img) { return img.image_url; });
       renderBlogPreviews();
+      updateCharCounts();
       document.getElementById('blogModal').style.display = '';
     });
   }
@@ -415,6 +547,7 @@
       }).then(function () {
         document.getElementById('noticeModal').style.display = 'none';
         loadNotices();
+        loadStats();
       });
     });
   }
@@ -450,7 +583,7 @@
       list.querySelectorAll('[data-del-notice]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           if (!confirm('이 공지를 삭제하시겠습니까?')) return;
-          fetch('/api/admin/notices/' + btn.dataset.delNotice, { method: 'DELETE' }).then(function () { loadNotices(); });
+          fetch('/api/admin/notices/' + btn.dataset.delNotice, { method: 'DELETE' }).then(function () { loadNotices(); loadStats(); });
         });
       });
     });
@@ -580,6 +713,70 @@
     document.getElementById('faqAnswer').value = f.answer || '';
     document.getElementById('faqSortOrder').value = f.sort_order || 0;
     document.getElementById('faqModal').style.display = '';
+  }
+
+  // =============================
+  // USERS ADMIN
+  // =============================
+  var usersPage = 1;
+
+  function initUsersAdmin() {
+    var loadMoreBtn = document.getElementById('usersLoadMoreBtn');
+    if (loadMoreBtn) {
+      loadMoreBtn.addEventListener('click', function () {
+        usersPage++;
+        loadUsers(true);
+      });
+    }
+  }
+
+  function loadUsers(append) {
+    fetch('/api/admin/users?page=' + usersPage + '&limit=30').then(function (r) { return r.json(); }).then(function (data) {
+      var list = document.getElementById('usersList');
+      var countEl = document.getElementById('usersCount');
+
+      if (countEl) countEl.textContent = '총 ' + (data.total || 0) + '명';
+
+      if (!data.users || data.users.length === 0) {
+        if (!append) list.innerHTML = '<div class="admin-empty">가입한 회원이 없습니다</div>';
+        return;
+      }
+
+      if (!append) list.innerHTML = '';
+
+      data.users.forEach(function (u) {
+        var row = document.createElement('div');
+        row.className = 'admin-row';
+        row.innerHTML =
+          '<div class="admin-row-info" style="flex:1">' +
+            '<h4>' + (u.name || '') + ' <span class="admin-meta">' + formatPhone(u.phone) + '</span></h4>' +
+            '<span class="admin-meta">' +
+              (u.email ? u.email + ' · ' : '') +
+              '가입 ' + formatDate(u.created_at) +
+              (u.last_login_at ? ' · 최근 로그인 ' + formatDate(u.last_login_at) : '') +
+            '</span>' +
+            '<div class="user-consent-tags">' +
+              (u.agree_marketing ? '<span class="consent-tag marketing">마케팅 ✓</span>' : '') +
+              (u.agree_marketing_sms ? '<span class="consent-tag">SMS ✓</span>' : '') +
+              (u.agree_marketing_email ? '<span class="consent-tag">이메일 ✓</span>' : '') +
+              (u.agree_third_party ? '<span class="consent-tag">제3자 ✓</span>' : '') +
+            '</div>' +
+          '</div>';
+        list.appendChild(row);
+      });
+
+      var loadMore = document.getElementById('usersLoadMore');
+      if (loadMore) {
+        loadMore.style.display = (data.total > usersPage * 30) ? '' : 'none';
+      }
+    }).catch(function () {});
+  }
+
+  function formatPhone(phone) {
+    if (!phone) return '';
+    if (phone.length === 11) return phone.slice(0, 3) + '-' + phone.slice(3, 7) + '-' + phone.slice(7);
+    if (phone.length === 10) return phone.slice(0, 3) + '-' + phone.slice(3, 6) + '-' + phone.slice(6);
+    return phone;
   }
 
 })();

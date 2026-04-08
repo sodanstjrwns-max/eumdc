@@ -10,7 +10,7 @@ blogs.get('/api/blogs', async (c) => {
   const offset = (page - 1) * limit
 
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?'
+    'SELECT id, title, content, thumbnail, meta_title, meta_description, slug, views, created_at FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?'
   ).bind(limit, offset).all()
 
   const countResult = await c.env.DB.prepare(
@@ -43,14 +43,17 @@ blogs.get('/api/admin/blogs', async (c) => {
   return c.json({ blogs: results })
 })
 
-// Create blog
+// Create blog (with SEO + rich content)
 blogs.post('/api/admin/blogs', async (c) => {
   const body = await c.req.json()
-  const { title, content, thumbnail, images } = body
+  const { title, content, content_html, thumbnail, images, meta_title, meta_description, slug } = body
 
   const result = await c.env.DB.prepare(
-    'INSERT INTO blogs (title, content, thumbnail) VALUES (?, ?, ?)'
-  ).bind(title || '', content || '', thumbnail || null).run()
+    'INSERT INTO blogs (title, content, content_html, thumbnail, meta_title, meta_description, slug) VALUES (?, ?, ?, ?, ?, ?, ?)'
+  ).bind(
+    title || '', content || '', content_html || null,
+    thumbnail || null, meta_title || null, meta_description || null, slug || null
+  ).run()
 
   const blogId = result.meta.last_row_id
 
@@ -70,11 +73,17 @@ blogs.post('/api/admin/blogs', async (c) => {
 blogs.put('/api/admin/blogs/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, content, thumbnail, images, is_published } = body
+  const { title, content, content_html, thumbnail, images, is_published, meta_title, meta_description, slug } = body
 
   await c.env.DB.prepare(
-    'UPDATE blogs SET title=?, content=?, thumbnail=?, is_published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
-  ).bind(title, content, thumbnail || null, is_published ?? 1, id).run()
+    `UPDATE blogs SET title=?, content=?, content_html=?, thumbnail=?,
+     meta_title=?, meta_description=?, slug=?,
+     is_published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`
+  ).bind(
+    title, content, content_html || null, thumbnail || null,
+    meta_title || null, meta_description || null, slug || null,
+    is_published ?? 1, id
+  ).run()
 
   // Replace images
   if (images !== undefined) {
