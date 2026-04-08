@@ -104,7 +104,6 @@ export function mainPage() {
       {/* === SECTION 2: ABOUT (Manifesto Style) === */}
       <section class="section about-manifesto" id="section-about">
         <div class="container-wide">
-          <div class="manifesto-number">01</div>
           <div class="manifesto-text">
             <p class="reveal-text">모든 진료 과정에서</p>
             <p class="reveal-text">환자가 <em>충분히 이해</em>할 때까지 설명하고,</p>
