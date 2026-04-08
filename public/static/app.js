@@ -206,7 +206,7 @@
       var heroH = hero.offsetHeight;
       if (scrolled > heroH) return;
       var progress = scrolled / heroH;
-      heroImg.style.opacity = Math.max(0.05, 0.2 - progress * 0.15);
+      heroImg.style.opacity = Math.max(0.03, 0.15 - progress * 0.12);
       if (heroContent) {
         heroContent.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
         heroContent.style.opacity = Math.max(0, 1 - progress * 1.5);

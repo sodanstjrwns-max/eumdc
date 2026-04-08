@@ -5,16 +5,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg: #0a0a14;
-  --surface: #12121e;
-  --surface-2: #1a1a2e;
-  --surface-3: #222238;
-  --border: #2a2a44;
-  --white: #f0f0f5;
-  --white-dim: rgba(240,240,245,0.6);
-  --white-muted: rgba(240,240,245,0.35);
-  --gold: #c9a84c;
-  --gold-dim: rgba(201,168,76,0.15);
+  --bg: #0a1128;
+  --surface: #121d45;
+  --surface-2: #182456;
+  --surface-3: #1e2d68;
+  --border: #243a8a33;
+  --white: #f8f9fc;
+  --white-dim: rgba(248,249,252,0.7);
+  --white-muted: rgba(248,249,252,0.35);
+  --gold: #b8965a;
+  --gold-dim: rgba(184,150,90,0.12);
   --red: #e74c3c;
   --green: #2ecc71;
   --radius: 12px;
