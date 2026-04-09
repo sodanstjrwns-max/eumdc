@@ -3139,3 +3139,49 @@ a { text-decoration: none; color: inherit; }
   .consent-view-btn { align-self: flex-end; }
   .radio-group { flex-wrap: wrap; }
 }
+
+/* ============================================
+   SEO/AEO — Screen Reader Only (크롤러 가독 콘텐츠)
+   ============================================ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* noscript FAQ 서버사이드 렌더링 스타일 */
+.faq-ssr-content {
+  padding: 2rem 0;
+}
+.faq-ssr-content section {
+  margin-bottom: 2rem;
+}
+.faq-ssr-content h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--gold);
+  border-bottom: 2px solid var(--gold);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+.faq-item-static {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--white-ghost);
+}
+.faq-item-static h3 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.faq-item-static p {
+  font-size: 0.92rem;
+  color: var(--white-dim);
+  line-height: 1.8;
+}

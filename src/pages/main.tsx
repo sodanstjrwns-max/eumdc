@@ -47,14 +47,14 @@ export function mainPage() {
       </div>
 
       {/* === SECTION 1: HERO === */}
-      <section class="section hero" id="section-hero">
+      <section class="section hero" id="section-hero" aria-label="이음치과의원 소개">
         <div class="hero-bg">
-          <div class="hero-img" style="background-image:url('/static/img/photo_1.jpg')"></div>
-          <div class="grain"></div>
+          <div class="hero-img" style="background-image:url('/static/img/photo_1.jpg')" role="img" aria-label="이음치과의원 원내 전경"></div>
+          <div class="grain" aria-hidden="true"></div>
         </div>
         <div class="hero-content">
           <div class="hero-tag">
-            <span class="tag-line"></span>
+            <span class="tag-line" aria-hidden="true"></span>
             <span class="tag-text">EUM DENTAL CLINIC — BUSAN</span>
           </div>
           <h1 class="hero-title">
@@ -75,7 +75,7 @@ export function mainPage() {
       </section>
 
       {/* === MARQUEE BAND === */}
-      <div class="marquee-band">
+      <div class="marquee-band" aria-hidden="true">
         <div class="marquee-track">
           <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
           <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
@@ -93,17 +93,17 @@ export function mainPage() {
           <div class="gallery-item"><img src="/static/img/photo_4.jpg" alt="이음치과 내부" loading="lazy" /></div>
           <div class="gallery-item"><img src="/static/img/photo_9.jpg" alt="이음치과 편의공간" loading="lazy" /></div>
           <div class="gallery-item"><img src="/static/img/photo_1.jpg" alt="이음치과 로비" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_7.jpg" alt="" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_8.jpg" alt="" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_6.jpg" alt="" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_4.jpg" alt="" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_9.jpg" alt="" loading="lazy" /></div>
-          <div class="gallery-item"><img src="/static/img/photo_1.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.jpg" alt="" loading="lazy" /></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.jpg" alt="" loading="lazy" /></div>
         </div>
       </div>
 
       {/* === SECTION 2: ABOUT (Manifesto Style) === */}
-      <section class="section about-manifesto" id="section-about">
+      <section class="section about-manifesto" id="section-about" aria-label="이음치과 소개">
         <div class="container-wide">
           <div class="manifesto-text">
             <p class="reveal-text">모든 진료 과정에서</p>
@@ -145,7 +145,7 @@ export function mainPage() {
       </section>
 
       {/* === MARQUEE BAND 2 === */}
-      <div class="marquee-band dark">
+      <div class="marquee-band dark" aria-hidden="true">
         <div class="marquee-track reverse">
           <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
           <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
@@ -155,7 +155,7 @@ export function mainPage() {
       </div>
 
       {/* === SECTION 4: SERVICES (Horizontal Scroll Gallery) === */}
-      <section class="section services-horizontal" id="section-services">
+      <section class="section services-horizontal" id="section-services" aria-label="이음치과 진료 안내">
         <div class="container-wide">
           <div class="services-header">
             <span class="section-label">03 — SERVICES</span>
@@ -237,12 +237,12 @@ export function mainPage() {
       </section>
 
       {/* === SECTION 5: DIRECTOR (Full Bleed) === */}
-      <section class="section director-full" id="section-director">
+      <section class="section director-full" id="section-director" aria-label="대표원장 최효영 소개">
         <div class="container-wide">
           <div class="director-layout">
             <div class="director-visual">
               <div class="director-frame">
-                <img src="/static/img/photo_5.jpg" alt="최효영 원장" class="director-photo" />
+                <img src="/static/img/photo_5.jpg" alt="이음치과의원 대표원장 최효영" class="director-photo" width="400" height="500" />
                 <div class="frame-content">
                   <span class="frame-label">DIRECTOR</span>
                   <div class="frame-name">최효영</div>
@@ -295,8 +295,8 @@ export function mainPage() {
       </section>
 
       {/* === SECTION: 이음치과의 약속 (Promise) === */}
-      <section class="section promise-section" id="section-promise">
-        <div class="promise-bg">
+      <section class="section promise-section" id="section-promise" aria-label="이음치과의 약속">
+        <div class="promise-bg" aria-hidden="true">
           <div class="grain"></div>
         </div>
         <div class="container-wide">
@@ -350,7 +350,7 @@ export function mainPage() {
       </section>
 
       {/* === SECTION 6: EQUIPMENT (Minimal Grid) === */}
-      <section class="section equipment-minimal" id="section-equipment">
+      <section class="section equipment-minimal" id="section-equipment" aria-label="디지털 장비 안내">
         <div class="container-wide">
           <div class="equip-header">
             <span class="section-label">05 — EQUIPMENT</span>
@@ -392,8 +392,8 @@ export function mainPage() {
       </section>
 
       {/* === SECTION 7: CONTACT (Big Typography) === */}
-      <section class="section contact-big" id="section-contact">
-        <div class="contact-bg">
+      <section class="section contact-big" id="section-contact" aria-label="연락처 및 오시는 길">
+        <div class="contact-bg" aria-hidden="true">
           <div class="grain"></div>
         </div>
         <div class="container-wide">
@@ -447,7 +447,7 @@ export function mainPage() {
       </section>
 
       {/* === FOOTER === */}
-      <footer class="footer-minimal">
+      <footer class="footer-minimal" role="contentinfo">
         <div class="container-wide">
           <div class="footer-top">
             <div class="footer-brand-big">이음</div>

@@ -7,7 +7,7 @@ export function subPageLayout(title: string, children: any) {
       <div class="cursor-follower" id="cursorFollower"></div>
 
       {/* Navigation */}
-      <nav id="nav" class="scrolled">
+      <nav id="nav" class="scrolled" role="navigation" aria-label="서브페이지 네비게이션">
         <a href="/" class="nav-brand" data-hover>이음</a>
         <div class="nav-center">{title}</div>
         <div class="nav-right">
@@ -57,12 +57,12 @@ export function subPageLayout(title: string, children: any) {
       </div>
 
       {/* Page Content */}
-      <main class="sub-page-content">
+      <main class="sub-page-content" role="main">
         {children}
       </main>
 
       {/* Footer */}
-      <footer class="footer-minimal">
+      <footer class="footer-minimal" role="contentinfo">
         <div class="container-wide">
           <div class="footer-top">
             <div class="footer-brand-big">이음</div>
@@ -76,7 +76,7 @@ export function subPageLayout(title: string, children: any) {
       </footer>
 
       {/* Floating CTA */}
-      <a href="tel:051-206-5888" class="floating-call visible" id="floatingCall" data-hover>
+      <a href="tel:051-206-5888" class="floating-call visible" id="floatingCall" data-hover aria-label="이음치과 전화상담 051-206-5888">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
       </a>
 
