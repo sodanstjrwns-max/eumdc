@@ -69,8 +69,8 @@ app.route('', dictionaryRoutes)
 app.get('/', (c) => {
   return c.render(mainPage(), {
     seo: {
-      title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문 — 야간·주말진료',
-      description: '부산 강서구 명지 이음치과의원 - 실력으로 신뢰를, 신뢰로 마음까지 잇습니다. 임플란트, 심미보철, 심미레진, 턱관절(TMJ) 전문. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888. 주차 2시간 무료.',
+      title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문',
+      description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철·턱관절(TMJ) 전문. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888. 주차 2시간 무료.',
       keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
       canonical: SITE_URL,
       ogUrl: SITE_URL,
@@ -90,8 +90,8 @@ app.get('/', (c) => {
 app.get('/cases', (c) => {
   return c.render(casesPage(), {
     seo: {
-      title: '비포애프터 | 이음치과의원 실제 치료 전후 사진',
-      description: '이음치과의원의 실제 임플란트, 심미보철, 레진, 턱관절 치료 비포애프터 사진을 확인하세요. 파노라마·구내 사진으로 눈에 보이는 치료 결과를 증명합니다.',
+      title: '비포애프터 | 이음치과 실제 치료 전후 사진',
+      description: '이음치과의원의 임플란트·심미보철·레진·턱관절 치료 비포애프터 사진. 파노라마·구내 사진으로 치료 결과를 확인하세요.',
       keywords: '치과 비포애프터, 임플란트 전후사진, 심미보철 결과, 라미네이트 전후, 치아 성형 전후, 부산치과 치료사례',
       canonical: `${SITE_URL}/cases`,
       ogUrl: `${SITE_URL}/cases`,
@@ -150,8 +150,8 @@ app.get('/cases/:id', async (c) => {
 app.get('/blogs', (c) => {
   return c.render(blogsPage(), {
     seo: {
-      title: '치과 건강 블로그 | 이음치과의원 — 임플란트·보철·구강관리 정보',
-      description: '이음치과의원 블로그 - 임플란트, 심미보철, 충치 예방, 잇몸 관리 등 전문 치과 건강 정보. 최효영 원장이 직접 작성하는 치과 건강 가이드.',
+      title: '치과 건강 블로그 | 이음치과의원 구강관리 정보',
+      description: '이음치과의원 블로그. 임플란트·심미보철·충치예방·잇몸관리 전문 건강 정보. 최효영 원장이 직접 작성하는 치과 가이드.',
       keywords: '치과 블로그, 임플란트 정보, 치아 건강, 치과 상식, 구강 관리, 이음치과 블로그, 부산치과 정보',
       canonical: `${SITE_URL}/blogs`,
       ogUrl: `${SITE_URL}/blogs`,
@@ -211,7 +211,7 @@ app.get('/blogs/:id', async (c) => {
 app.get('/notices', (c) => {
   return c.render(noticesPage(), {
     seo: {
-      title: '공지사항 | 이음치과의원 — 진료 안내·휴진·이벤트',
+      title: '공지사항 | 이음치과의원 진료 안내·휴진·이벤트',
       description: '이음치과의원의 진료 안내, 휴진 일정, 이벤트 등 최신 공지사항을 확인하세요.',
       canonical: `${SITE_URL}/notices`,
       ogUrl: `${SITE_URL}/notices`,
@@ -289,8 +289,8 @@ app.get('/faq', async (c) => {
 
   return c.render(faqPage(grouped), {
     seo: {
-      title: '자주 묻는 질문 (FAQ) | 이음치과의원 — 임플란트 비용·보험·시술 총정리',
-      description: `이음치과의원 FAQ ${allFaqs.length}개 총정리 — 임플란트 비용은 얼마인가요? 시술 시간은? 보험 적용되나요? 턱관절 치료법은? 진료시간·주차·예약 방법까지, 환자분들이 가장 궁금해하시는 질문과 전문의 답변을 한곳에 모았습니다.`,
+      title: '자주 묻는 질문 (FAQ) | 이음치과 임플란트·보험·비용',
+      description: `이음치과의원 FAQ ${allFaqs.length}개 — 임플란트 비용, 시술 시간, 보험 적용, 턱관절 치료 등 자주 묻는 질문과 전문의 답변 총정리.`,
       keywords: '치과 FAQ, 임플란트 비용, 임플란트 시간, 치과 보험, 턱관절 치료, 부산치과 가격, 라미네이트 비용, 치과 주차, 야간진료치과, 이음치과 질문',
       canonical: `${SITE_URL}/faq`,
       ogUrl: `${SITE_URL}/faq`,
@@ -313,8 +313,8 @@ app.get('/dictionary', async (c) => {
 
   return c.render(dictionaryPage(), {
     seo: {
-      title: `치과 용어 백과사전 (${total}개) | 이음치과의원 — 임플란트·보철·치주 용어 총정리`,
-      description: `이음치과의원이 알려드리는 치과 용어 백과사전. ${total}개 치과 전문 용어를 쉽고 친절하게 설명합니다. 임플란트, 심미보철, 근관치료, 잇몸, 턱관절 등 카테고리별 정리.`,
+      title: `치과 용어 백과사전 (${total}개) | 이음치과 용어 사전`,
+      description: `이음치과 치과 용어 백과사전. ${total}개 전문 용어를 쉽게 설명합니다. 임플란트·보철·근관치료·잇몸·턱관절 카테고리별 정리.`,
       keywords: '치과 용어, 치과 사전, 임플란트 용어, 치과 백과사전, 치과 상식, 치아 용어, 보철 용어, 근관치료, 이음치과, 부산치과',
       canonical: `${SITE_URL}/dictionary`,
       ogUrl: `${SITE_URL}/dictionary`,
@@ -350,8 +350,8 @@ app.get('/dictionary/:slug', async (c) => {
 
   return c.render(dictionaryDetailPage(slug), {
     seo: {
-      title: `${termName} 뜻 | ${catName} — 이음치과 치과 용어 백과사전`,
-      description: `${termName}${termEn ? ` (${termEn})` : ''} — ${termDesc}. 이음치과의원이 쉽게 설명하는 치과 백과사전.`,
+      title: `${termName} 뜻 | ${catName} 용어 — 이음치과 백과사전`,
+      description: `${termName}${termEn ? ` (${termEn})` : ''} — ${termDesc.substring(0, 100)}. 이음치과 치과 용어 백과사전.`,
       keywords: `${termName}, ${termEn || ''}, ${catName}, 치과 용어, 치과 백과사전, 이음치과`,
       canonical: `${SITE_URL}/dictionary/${slug}`,
       ogUrl: `${SITE_URL}/dictionary/${slug}`,
@@ -379,8 +379,13 @@ app.get('/signup', (c) => {
   return c.render(signupPage(), {
     seo: {
       title: '회원가입 | 이음치과의원',
-      description: '이음치과의원 회원가입 - 비포애프터 사진 열람, 예약 문의 등 회원 전용 서비스를 이용하세요.',
-      noindex: true
+      description: '이음치과의원 회원가입. 비포애프터 사진 열람, 예약 문의 등 회원 전용 서비스를 이용하세요.',
+      canonical: `${SITE_URL}/signup`,
+      ogUrl: `${SITE_URL}/signup`,
+      noindex: true,
+      jsonLd: [
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '회원가입', url: '/signup' }])
+      ]
     }
   })
 })
@@ -389,8 +394,13 @@ app.get('/login', (c) => {
   return c.render(loginPage(), {
     seo: {
       title: '로그인 | 이음치과의원',
-      description: '이음치과의원 로그인',
-      noindex: true
+      description: '이음치과의원 로그인. 비포애프터 열람 등 회원 전용 서비스에 접속하세요.',
+      canonical: `${SITE_URL}/login`,
+      ogUrl: `${SITE_URL}/login`,
+      noindex: true,
+      jsonLd: [
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '로그인', url: '/login' }])
+      ]
     }
   })
 })

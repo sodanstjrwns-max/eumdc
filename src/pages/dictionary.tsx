@@ -172,6 +172,7 @@ export function dictionaryDetailPage(slug: string) {
           <nav class="breadcrumb" aria-label="브레드크럼">
             <a href="/">홈</a><span class="bc-sep">/</span><a href="/dictionary">치과 용어 백과사전</a><span class="bc-sep">/</span><span id="bcTerm">...</span>
           </nav>
+          <h1 class="dict-detail-h1" id="dictDetailH1" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">치과 용어 상세</h1>
         </div>
       </header>
 

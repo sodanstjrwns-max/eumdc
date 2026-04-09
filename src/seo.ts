@@ -40,7 +40,7 @@ export interface SeoMeta {
 /** 기본 SEO 메타 */
 export const defaultSeo: SeoMeta = {
   title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문',
-  description: '부산 강서구 명지 이음치과의원 - 실력으로 신뢰를, 신뢰로 마음까지 잇습니다. 임플란트, 심미보철, 심미레진, 턱관절(TMJ) 전문 진료. 월-목 야간진료 21시, 토·일 진료. 051-206-5888',
+  description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철·턱관절(TMJ) 전문. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888',
   keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, 최효영, 강서구치과, 명지국제신도시치과, 야간진료, 주말진료',
   ogType: 'website',
   ogImage: DEFAULT_IMAGE,

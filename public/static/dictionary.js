@@ -525,6 +525,10 @@
       var bc = document.getElementById('bcTerm');
       if (bc) bc.textContent = term.term;
 
+      // H1 태그 업데이트 (SEO — 페이지당 1개)
+      var h1 = document.getElementById('dictDetailH1');
+      if (h1) h1.textContent = term.term + ' 뜻 — 이음치과 치과 용어 백과사전';
+
       // 페이지 타이틀 업데이트
       document.title = term.term + ' 뜻 | ' + (term.english || term.term) + ' — 이음치과 치과 용어 백과사전';
 
@@ -541,7 +545,7 @@
         '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' +
         '조회 ' + (term.views || 0) + '회</span>' +
         '</div>' +
-        '<h1 class="dict-detail-term" itemprop="name">' + escHtml(term.term) + '</h1>' +
+        '<h2 class="dict-detail-term" itemprop="name">' + escHtml(term.term) + '</h2>' +
         '<div class="dict-detail-sub">' +
         (term.english ? '<span class="dict-detail-en" itemprop="alternateName">' + escHtml(term.english) + '</span>' : '') +
         (term.pronunciation ? '<span class="dict-detail-pron">' + escHtml(term.pronunciation) + '</span>' : '') +
