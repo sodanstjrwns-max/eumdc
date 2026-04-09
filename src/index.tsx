@@ -10,12 +10,14 @@ import authRoutes, { requireAdmin } from './routes/auth'
 import usersRoutes from './routes/users'
 import faqRoutes from './routes/faq'
 import reservationRoutes from './routes/reservations'
+import dictionaryRoutes from './routes/dictionary'
 import { mainPage } from './pages/main'
 import { casesPage, caseDetailPage } from './pages/cases'
 import { blogsPage, blogDetailPage } from './pages/blogs'
 import { noticesPage, noticeDetailPage } from './pages/notices'
 import { adminPage } from './pages/admin'
 import { faqPage } from './pages/faq'
+import { dictionaryPage, dictionaryDetailPage } from './pages/dictionary'
 import { signupPage } from './pages/signup'
 import { loginPage } from './pages/login'
 import {
@@ -57,6 +59,7 @@ app.route('', blogsRoutes)
 app.route('', noticesRoutes)
 app.route('', faqRoutes)
 app.route('', reservationRoutes)
+app.route('', dictionaryRoutes)
 
 // ═══════════════════════════════════════════
 // SEO/AEO OPTIMIZED PUBLIC PAGES
@@ -301,6 +304,76 @@ app.get('/faq', async (c) => {
   })
 })
 
+// ═══════════════════════════════════════════
+// 치과 용어 백과사전
+// ═══════════════════════════════════════════
+app.get('/dictionary', async (c) => {
+  const totalQ = await c.env.DB.prepare('SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1').first() as any
+  const total = totalQ?.total || 219
+
+  return c.render(dictionaryPage(), {
+    seo: {
+      title: `치과 용어 백과사전 (${total}개) | 이음치과의원 — 임플란트·보철·치주 용어 총정리`,
+      description: `이음치과의원이 알려드리는 치과 용어 백과사전. ${total}개 치과 전문 용어를 쉽고 친절하게 설명합니다. 임플란트, 심미보철, 근관치료, 잇몸, 턱관절 등 카테고리별 정리.`,
+      keywords: '치과 용어, 치과 사전, 임플란트 용어, 치과 백과사전, 치과 상식, 치아 용어, 보철 용어, 근관치료, 이음치과, 부산치과',
+      canonical: `${SITE_URL}/dictionary`,
+      ogUrl: `${SITE_URL}/dictionary`,
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'DefinedTermSet',
+          '@id': `${SITE_URL}/dictionary/#termset`,
+          name: '이음치과 치과 용어 백과사전',
+          description: `${total}개 치과 전문 용어를 알기 쉽게 정리한 백과사전입니다.`,
+          url: `${SITE_URL}/dictionary`,
+          inLanguage: 'ko-KR',
+          publisher: { '@id': `${SITE_URL}/#organization` },
+          isPartOf: { '@id': `${SITE_URL}/#website` }
+        },
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '치과 용어 백과사전', url: '/dictionary' }])
+      ]
+    }
+  })
+})
+
+app.get('/dictionary/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const term = await c.env.DB.prepare(
+    `SELECT dt.*, dc.name as category_name FROM dict_terms dt JOIN dict_categories dc ON dt.category_id = dc.id WHERE dt.slug = ?`
+  ).bind(slug).first() as any
+
+  const termName = term?.term || '치과 용어'
+  const termDesc = term?.short_desc || '이음치과의원 치과 용어 백과사전'
+  const termFull = term?.full_desc || termDesc
+  const termEn = term?.english || ''
+  const catName = term?.category_name || ''
+
+  return c.render(dictionaryDetailPage(slug), {
+    seo: {
+      title: `${termName} 뜻 | ${catName} — 이음치과 치과 용어 백과사전`,
+      description: `${termName}${termEn ? ` (${termEn})` : ''} — ${termDesc}. 이음치과의원이 쉽게 설명하는 치과 백과사전.`,
+      keywords: `${termName}, ${termEn || ''}, ${catName}, 치과 용어, 치과 백과사전, 이음치과`,
+      canonical: `${SITE_URL}/dictionary/${slug}`,
+      ogUrl: `${SITE_URL}/dictionary/${slug}`,
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'DefinedTerm',
+          name: termName,
+          description: termFull,
+          inDefinedTermSet: { '@id': `${SITE_URL}/dictionary/#termset` },
+          url: `${SITE_URL}/dictionary/${slug}`
+        },
+        breadcrumbJsonLd([
+          { name: '홈', url: '/' },
+          { name: '치과 용어 백과사전', url: '/dictionary' },
+          { name: termName, url: `/dictionary/${slug}` }
+        ])
+      ]
+    }
+  })
+})
+
 // === 회원가입 / 로그인 ===
 app.get('/signup', (c) => {
   return c.render(signupPage(), {
@@ -373,6 +446,9 @@ app.get('/sitemap.xml', async (c) => {
   const { results: notices } = await c.env.DB.prepare(
     'SELECT id, updated_at FROM notices WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100'
   ).all() as any
+  const { results: dictTerms } = await c.env.DB.prepare(
+    'SELECT slug, updated_at, term FROM dict_terms WHERE is_published = 1 ORDER BY term LIMIT 500'
+  ).all() as any
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -404,6 +480,12 @@ app.get('/sitemap.xml', async (c) => {
   </url>
   <url>
     <loc>${SITE_URL}/blogs</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/dictionary</loc>
     <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -441,6 +523,12 @@ app.get('/sitemap.xml', async (c) => {
   for (const n of (notices || [])) {
     const date = n.updated_at?.split(' ')[0] || now
     xml += `  <url>\n    <loc>${SITE_URL}/notices/${n.id}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`
+  }
+
+  // 백과사전 용어
+  for (const dt of (dictTerms || [])) {
+    const date = dt.updated_at?.split(' ')[0] || now
+    xml += `  <url>\n    <loc>${SITE_URL}/dictionary/${dt.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`
   }
 
   xml += '</urlset>'

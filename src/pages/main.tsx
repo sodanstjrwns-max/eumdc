@@ -26,6 +26,7 @@ export function mainPage() {
             <a href="/blogs" class="menu-link" data-hover data-index="05"><span data-text="블로그">블로그</span></a>
             <a href="/notices" class="menu-link" data-hover data-index="06"><span data-text="공지사항">공지사항</span></a>
             <a href="/faq" class="menu-link" data-hover data-index="07"><span data-text="자주 묻는 질문">자주 묻는 질문</span></a>
+            <a href="/dictionary" class="menu-link" data-hover data-index="07.5"><span data-text="치과 용어 백과사전">치과 용어 백과사전</span></a>
             <a href="/#section-director" class="menu-link" data-hover data-index="08"><span data-text="의료진">의료진</span></a>
             <a href="/#section-contact" class="menu-link" data-hover data-index="09"><span data-text="예약">예약</span></a>
           </div>
@@ -176,11 +177,12 @@ export function mainPage() {
                 <span class="h-card-badge">SIGNATURE</span>
                 <p class="h-card-desc">원내 3D 프린터로 가이드를 직접 제작. CBCT와 구강스캐너 기반 정밀 진단. 예측 가능한 결과를 위한 디지털 워크플로우.</p>
                 <div class="h-card-features">
-                  <span>원내 가이드 제작</span>
-                  <span>CBCT 정밀 진단</span>
-                  <span>디지털 인상</span>
+                  <span><a href="/dictionary/digital-guide" class="term-link">원내 가이드</a> 제작</span>
+                  <span><a href="/dictionary/cbct" class="term-link">CBCT</a> 정밀 진단</span>
+                  <span><a href="/dictionary/digital-impression" class="term-link">디지털 인상</a></span>
                   <span>최고 수준 기공소</span>
                 </div>
+                <a href="/dictionary?service=implant" class="h-card-dict-link">임플란트 관련 용어 보기 →</a>
               </div>
             </div>
             <div class="h-card" data-service="aesthetic">
@@ -190,10 +192,11 @@ export function mainPage() {
                 <span class="h-card-badge">RECOMMENDED</span>
                 <p class="h-card-desc">앞니는 기능과 심미성 모두 중요합니다. 자연치아와 구별 불가한 정밀 보철로 아름다운 미소를 되찾아 드립니다.</p>
                 <div class="h-card-features">
-                  <span>라미네이트</span>
-                  <span>올세라믹</span>
-                  <span>정밀 색조 매칭</span>
+                  <span><a href="/dictionary/laminate" class="term-link">라미네이트</a></span>
+                  <span><a href="/dictionary/all-ceramic" class="term-link">올세라믹</a></span>
+                  <span>정밀 <a href="/dictionary/shade-matching" class="term-link">색조 매칭</a></span>
                 </div>
+                <a href="/dictionary?service=aesthetic" class="h-card-dict-link">심미보철 관련 용어 보기 →</a>
               </div>
             </div>
             <div class="h-card" data-service="resin">
@@ -206,6 +209,7 @@ export function mainPage() {
                   <span>최소 침습</span>
                   <span>당일 완료</span>
                 </div>
+                <a href="/dictionary?service=resin" class="h-card-dict-link">레진 관련 용어 보기 →</a>
               </div>
             </div>
             <div class="h-card" data-service="tmj">
@@ -214,10 +218,11 @@ export function mainPage() {
                 <h3 class="h-card-title">턱관절</h3>
                 <p class="h-card-desc">턱관절 통증, 소리, 개구제한을 정밀 진단. 물리치료와 체계적 치료 프로토콜.</p>
                 <div class="h-card-features">
-                  <span>물리치료</span>
-                  <span>교합 분석</span>
-                  <span>맞춤 스플린트</span>
+                  <span><a href="/dictionary/physical-therapy" class="term-link">물리치료</a></span>
+                  <span><a href="/dictionary/occlusion" class="term-link">교합</a> 분석</span>
+                  <span>맞춤 <a href="/dictionary/splint" class="term-link">스플린트</a></span>
                 </div>
+                <a href="/dictionary?service=tmj" class="h-card-dict-link">턱관절 관련 용어 보기 →</a>
               </div>
             </div>
             <div class="h-card" data-service="general">
@@ -226,10 +231,11 @@ export function mainPage() {
                 <h3 class="h-card-title">일반진료</h3>
                 <p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링. 기본에 충실하게, 꼼꼼하게.</p>
                 <div class="h-card-features">
-                  <span>충치 · 신경치료</span>
-                  <span>사랑니 발치</span>
-                  <span>잇몸 · 스케일링</span>
+                  <span><a href="/dictionary/cavity" class="term-link">충치</a> · <a href="/dictionary/root-canal" class="term-link">신경치료</a></span>
+                  <span><a href="/dictionary/wisdom-tooth" class="term-link">사랑니</a> <a href="/dictionary/extraction" class="term-link">발치</a></span>
+                  <span>잇몸 · <a href="/dictionary/scaling" class="term-link">스케일링</a></span>
                 </div>
+                <a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a>
               </div>
             </div>
           </div>
