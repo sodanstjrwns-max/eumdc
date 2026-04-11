@@ -50,11 +50,12 @@ export function mainPage() {
       {/* === SECTION 1: HERO === */}
       <section class="section hero" id="section-hero" aria-label="이음치과의원 소개">
         <div class="hero-bg">
-          <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
-          <div class="hero-gradient-orbs" aria-hidden="true">
-            <div class="hero-orb hero-orb-1"></div>
-            <div class="hero-orb hero-orb-2"></div>
-            <div class="hero-orb hero-orb-3"></div>
+          <div class="hero-mesh" id="heroMesh" aria-hidden="true">
+            <div class="mesh-blob mesh-blob-1"></div>
+            <div class="mesh-blob mesh-blob-2"></div>
+            <div class="mesh-blob mesh-blob-3"></div>
+            <div class="mesh-blob mesh-blob-4"></div>
+            <div class="mesh-blob mesh-blob-5"></div>
           </div>
           <div class="grain" aria-hidden="true"></div>
         </div>

@@ -183,194 +183,51 @@
     });
   }
 
-  // === HERO: Canvas Particle Network + Gradient ===
+  // === HERO: Abstract 3D Mesh Gradient ===
   function initParallaxHero() {
-    var canvas = document.getElementById('heroCanvas');
+    var mesh = document.getElementById('heroMesh');
     var heroContent = document.querySelector('.hero-content');
     var hero = document.querySelector('.hero');
-    if (!canvas || !hero) return;
+    if (!mesh || !hero) return;
 
-    var ctx = canvas.getContext('2d');
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w, h;
-    var mouseX = -1000, mouseY = -1000;
-    var particles = [];
-    var PARTICLE_COUNT = window.innerWidth > 768 ? 60 : 30;
-    var CONNECT_DIST = window.innerWidth > 768 ? 160 : 120;
-    var MOUSE_RADIUS = 200;
-    var animId;
-
-    function resize() {
-      var rect = canvas.parentElement.getBoundingClientRect();
-      w = rect.width;
-      h = rect.height;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function Particle() {
-      this.x = Math.random() * w;
-      this.y = Math.random() * h;
-      this.vx = (Math.random() - 0.5) * 0.4;
-      this.vy = (Math.random() - 0.5) * 0.4;
-      this.r = Math.random() * 1.8 + 0.5;
-      this.baseAlpha = Math.random() * 0.5 + 0.2;
-      this.alpha = this.baseAlpha;
-      // Colour: mix of gold and blue-white
-      var t = Math.random();
-      if (t < 0.4) {
-        this.color = '110,159,212';  // blue
-      } else if (t < 0.7) {
-        this.color = '177,150,97';   // gold
-      } else {
-        this.color = '200,210,225';  // silver-white
-      }
-    }
-
-    Particle.prototype.update = function() {
-      this.x += this.vx;
-      this.y += this.vy;
-      if (this.x < 0) this.x = w;
-      if (this.x > w) this.x = 0;
-      if (this.y < 0) this.y = h;
-      if (this.y > h) this.y = 0;
-
-      // Mouse interaction — gentle repel
-      var dx = this.x - mouseX;
-      var dy = this.y - mouseY;
-      var dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < MOUSE_RADIUS) {
-        var force = (1 - dist / MOUSE_RADIUS) * 0.02;
-        this.vx += dx * force;
-        this.vy += dy * force;
-        this.alpha = Math.min(1, this.baseAlpha + (1 - dist / MOUSE_RADIUS) * 0.5);
-      } else {
-        this.alpha += (this.baseAlpha - this.alpha) * 0.05;
-      }
-
-      // Dampen velocity
-      this.vx *= 0.99;
-      this.vy *= 0.99;
-    };
-
-    Particle.prototype.draw = function() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(' + this.color + ',' + this.alpha + ')';
-      ctx.fill();
-    };
-
-    function drawConnections() {
-      for (var i = 0; i < particles.length; i++) {
-        for (var j = i + 1; j < particles.length; j++) {
-          var dx = particles[i].x - particles[j].x;
-          var dy = particles[i].y - particles[j].y;
-          var dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < CONNECT_DIST) {
-            var alpha = (1 - dist / CONNECT_DIST) * 0.12;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(110,159,212,' + alpha + ')';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
-      }
-    }
-
-    // Draw subtle grid lines
-    function drawGrid() {
-      var gridSize = 80;
-      ctx.strokeStyle = 'rgba(110,159,212,0.03)';
-      ctx.lineWidth = 0.5;
-      for (var x = 0; x < w; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
-        ctx.stroke();
-      }
-      for (var y = 0; y < h; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-        ctx.stroke();
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, w, h);
-      drawGrid();
-      for (var i = 0; i < particles.length; i++) {
-        particles[i].update();
-      }
-      drawConnections();
-      for (var k = 0; k < particles.length; k++) {
-        particles[k].draw();
-      }
-      animId = requestAnimationFrame(animate);
-    }
-
-    function init() {
-      resize();
-      particles = [];
-      for (var i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push(new Particle());
-      }
-      if (animId) cancelAnimationFrame(animId);
-      animate();
-    }
-
-    init();
-
-    // Mouse tracking
+    // Mouse parallax — mesh responds to cursor with depth
     if (window.innerWidth > 768) {
+      var mx = 0, my = 0, cx = 0, cy = 0;
+
       hero.addEventListener('mousemove', function(e) {
         var rect = hero.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        mx = (e.clientX - rect.left) / rect.width - 0.5;
+        my = (e.clientY - rect.top) / rect.height - 0.5;
       });
+
       hero.addEventListener('mouseleave', function() {
-        mouseX = -1000;
-        mouseY = -1000;
+        mx = 0; my = 0;
       });
+
+      (function meshLoop() {
+        cx = lerp(cx, mx, 0.025);
+        cy = lerp(cy, my, 0.025);
+        mesh.style.transform = 'translate(' + (cx * -25) + 'px,' + (cy * -18) + 'px)';
+        // Also subtly move hero content opposite direction for depth
+        if (heroContent) {
+          heroContent.style.marginLeft = (cx * 8) + 'px';
+        }
+        requestAnimationFrame(meshLoop);
+      })();
     }
 
-    // Resize handler
-    var resizeTimer;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(init, 200);
-    });
-
-    // Scroll parallax for content (keep existing behavior)
+    // Scroll parallax + opacity
     window.addEventListener('scroll', function () {
       var scrolled = window.scrollY;
       var heroH = hero.offsetHeight;
       if (scrolled > heroH) return;
       var progress = scrolled / heroH;
+      mesh.style.opacity = Math.max(0.1, 0.6 - progress * 0.5);
       if (heroContent) {
         heroContent.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
         heroContent.style.opacity = Math.max(0, 1 - progress * 1.5);
       }
-      // Fade canvas on scroll
-      if (canvas) {
-        canvas.style.opacity = Math.max(0.1, 0.7 - progress * 0.6);
-      }
     }, { passive: true });
-
-    // Pause animation when hero is not visible
-    var heroObserver = new IntersectionObserver(function(entries) {
-      if (entries[0].isIntersecting) {
-        if (!animId) animate();
-      } else {
-        if (animId) { cancelAnimationFrame(animId); animId = null; }
-      }
-    }, { threshold: 0.05 });
-    heroObserver.observe(hero);
   }
 
   // === SCROLL REVEALS (with stagger) ===
