@@ -50,7 +50,12 @@ export function mainPage() {
       {/* === SECTION 1: HERO === */}
       <section class="section hero" id="section-hero" aria-label="이음치과의원 소개">
         <div class="hero-bg">
-          <div class="hero-img" style="background-image:url('/static/img/photo_1.jpg')" role="img" aria-label="이음치과의원 원내 전경"></div>
+          <canvas class="hero-canvas" id="heroCanvas" aria-hidden="true"></canvas>
+          <div class="hero-gradient-orbs" aria-hidden="true">
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-orb hero-orb-3"></div>
+          </div>
           <div class="grain" aria-hidden="true"></div>
         </div>
         <div class="hero-content">
