@@ -1,4 +1,4 @@
-/** Home page JSX - extracted from original index.tsx */
+/** Home page JSX - REVOLUTIONARY REDESIGN v3 */
 export function HomePage() {
   return (
     <div id="app">
@@ -6,13 +6,14 @@ export function HomePage() {
       <div class="cursor" id="cursor"></div>
       <div class="cursor-follower" id="cursorFollower"></div>
 
-      {/* Navigation */}
+      {/* === NAVIGATION (Glassmorphism) === */}
       <nav id="nav">
         <a href="/" class="nav-brand" data-hover>이음</a>
         <div class="nav-center" id="navTime"></div>
         <button class="nav-menu-btn" id="menuBtn" data-hover>
           <span>MENU</span>
         </button>
+        <div class="nav-progress" id="navProgress"></div>
       </nav>
 
       {/* Full Screen Menu */}
@@ -20,13 +21,14 @@ export function HomePage() {
         <div class="menu-overlay"></div>
         <div class="menu-content">
           <div class="menu-links">
-            <a href="/#section-about" class="menu-link" data-hover><span>소개</span></a>
-            <a href="/#section-services" class="menu-link" data-hover><span>진료</span></a>
-            <a href="/cases" class="menu-link" data-hover><span>비포애프터</span></a>
-            <a href="/blog" class="menu-link" data-hover><span>블로그</span></a>
-            <a href="/notice" class="menu-link" data-hover><span>공지사항</span></a>
-            <a href="/#section-director" class="menu-link" data-hover><span>의료진</span></a>
-            <a href="/#section-contact" class="menu-link" data-hover><span>예약</span></a>
+            <a href="/#section-about" class="menu-link" data-hover data-index="01"><span>소개</span></a>
+            <a href="/#section-services" class="menu-link" data-hover data-index="02"><span>진료</span></a>
+            <a href="/cases" class="menu-link" data-hover data-index="03"><span>비포애프터</span></a>
+            <a href="/blogs" class="menu-link" data-hover data-index="04"><span>블로그</span></a>
+            <a href="/notices" class="menu-link" data-hover data-index="05"><span>공지사항</span></a>
+            <a href="/dictionary" class="menu-link" data-hover data-index="06"><span>백과사전</span></a>
+            <a href="/#section-director" class="menu-link" data-hover data-index="07"><span>의료진</span></a>
+            <a href="/#section-contact" class="menu-link" data-hover data-index="08"><span>예약</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
@@ -45,9 +47,24 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* === HERO === */}
+      {/* ═══════════════════════════════════
+          HERO — Immersive Full-Screen
+      ═══════════════════════════════════ */}
       <section class="section hero" id="section-hero">
-        <div class="hero-bg"><div class="grain"></div></div>
+        <div class="hero-bg">
+          <div class="hero-mesh" id="heroMesh">
+            <div class="mesh-blob mesh-blob-1"></div>
+            <div class="mesh-blob mesh-blob-2"></div>
+            <div class="mesh-blob mesh-blob-3"></div>
+            <div class="mesh-blob mesh-blob-4"></div>
+            <div class="mesh-blob mesh-blob-5"></div>
+          </div>
+          <div class="grain"></div>
+        </div>
+
+        {/* Horizontal line scanner */}
+        <div class="hero-scan-line" id="heroScanLine"></div>
+
         <div class="hero-content">
           <div class="hero-tag">
             <span class="tag-line"></span>
@@ -58,12 +75,34 @@ export function HomePage() {
             <span class="title-line"><span class="title-word" data-split>신뢰를,</span></span>
             <span class="title-line accent"><span class="title-word" data-split>잇습니다.</span></span>
           </h1>
+
+          {/* Hero Stats Counter */}
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="hero-stat-num" data-count="387">0</span>
+              <span class="hero-stat-unit">+</span>
+              <span class="hero-stat-label">리뷰 수</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num" data-count="4.9">0</span>
+              <span class="hero-stat-unit">★</span>
+              <span class="hero-stat-label">네이버 평점</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <span class="hero-stat-num" data-count="8">0</span>
+              <span class="hero-stat-unit">년</span>
+              <span class="hero-stat-label">진료 경력</span>
+            </div>
+          </div>
+
           <div class="hero-bottom">
             <div class="hero-scroll-hint">
-              <div class="scroll-circle">
-                <svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="29" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/></svg>
+              <div class="scroll-line-wrap">
+                <div class="scroll-line" id="scrollLine"></div>
               </div>
-              <span>SCROLL</span>
+              <span>SCROLL TO EXPLORE</span>
             </div>
             <p class="hero-sub">환자의 불안을 확신으로 바꾸는 곳</p>
           </div>
@@ -80,7 +119,9 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* ABOUT */}
+      {/* ═══════════════════════════════════
+          ABOUT — Manifesto
+      ═══════════════════════════════════ */}
       <section class="section about-manifesto" id="section-about">
         <div class="container-wide">
           <div class="manifesto-number">01</div>
@@ -93,7 +134,9 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* PHILOSOPHY */}
+      {/* ═══════════════════════════════════
+          PHILOSOPHY — Split Screen
+      ═══════════════════════════════════ */}
       <section class="section philosophy-split" id="section-philosophy">
         <div class="split-left">
           <div class="split-sticky">
@@ -130,7 +173,9 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* SERVICES */}
+      {/* ═══════════════════════════════════
+          SERVICES — Horizontal Scroll
+      ═══════════════════════════════════ */}
       <section class="section services-horizontal" id="section-services">
         <div class="container-wide">
           <div class="services-header">
@@ -141,21 +186,91 @@ export function HomePage() {
         <div class="horizontal-wrap">
           <div class="horizontal-track" id="horizontalTrack">
             <div class="h-card h-card-intro"><div class="h-card-inner"><p class="h-intro-text">충분한 설명,<br/>확실한 결과로<br/><em>최선의 선택</em>을<br/>함께합니다.</p></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">원내 3D 프린터로 가이드를 직접 제작. CBCT와 구강스캐너 기반 정밀 진단.</p><div class="h-card-features"><span>원내 가이드 제작</span><span>CBCT 정밀 진단</span><span>디지털 인상</span><span>최고 수준 기공소</span></div></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">자연치아와 구별 불가한 정밀 보철로 아름다운 미소를 되찾아 드립니다.</p><div class="h-card-features"><span>라미네이트</span><span>올세라믹</span><span>정밀 색조 매칭</span></div></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">자연치아 색상에 완벽히 맞춘 레진. 최소 삭제, 당일 치료.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span></div></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱관절 통증, 소리, 개구제한을 정밀 진단. 물리치료와 체계적 프로토콜.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span></div></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링. 기본에 충실하게.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span></div></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">원내 3D 프린터로 가이드를 직접 제작. CBCT와 구강스캐너 기반 정밀 진단.</p><div class="h-card-features"><span>원내 가이드 제작</span><span>CBCT 정밀 진단</span><span>디지털 인상</span><span>최고 수준 기공소</span></div><div class="h-card-arrow">→</div></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">자연치아와 구별 불가한 정밀 보철로 아름다운 미소를 되찾아 드립니다.</p><div class="h-card-features"><span>라미네이트</span><span>올세라믹</span><span>정밀 색조 매칭</span></div><div class="h-card-arrow">→</div></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">자연치아 색상에 완벽히 맞춘 레진. 최소 삭제, 당일 치료.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span></div><div class="h-card-arrow">→</div></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱관절 통증, 소리, 개구제한을 정밀 진단. 물리치료와 체계적 프로토콜.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span></div><div class="h-card-arrow">→</div></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링. 기본에 충실하게.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span></div><div class="h-card-arrow">→</div></div></div>
           </div>
         </div>
       </section>
 
-      {/* DIRECTOR */}
+      {/* ═══════════════════════════════════
+          GALLERY — Cinematic Strip
+      ═══════════════════════════════════ */}
+      <div class="gallery-strip">
+        <div class="gallery-track">
+          <div class="gallery-item" data-hover><img src="/static/img/photo_7.jpg" alt="접수" loading="lazy"/><div class="gallery-caption">접수</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_8.jpg" alt="대기실" loading="lazy"/><div class="gallery-caption">대기실</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_6.jpg" alt="진료실" loading="lazy"/><div class="gallery-caption">진료실</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_4.jpg" alt="내부" loading="lazy"/><div class="gallery-caption">내부</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_9.jpg" alt="편의공간" loading="lazy"/><div class="gallery-caption">편의공간</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_1.jpg" alt="로비" loading="lazy"/><div class="gallery-caption">로비</div></div>
+          {/* Duplicate for seamless loop */}
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.jpg" alt="" loading="lazy"/><div class="gallery-caption">접수</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.jpg" alt="" loading="lazy"/><div class="gallery-caption">대기실</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.jpg" alt="" loading="lazy"/><div class="gallery-caption">진료실</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.jpg" alt="" loading="lazy"/><div class="gallery-caption">내부</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.jpg" alt="" loading="lazy"/><div class="gallery-caption">편의공간</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.jpg" alt="" loading="lazy"/><div class="gallery-caption">로비</div></div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════
+          PROMISE — Our 4 Commitments
+      ═══════════════════════════════════ */}
+      <section class="section promise-section" id="section-promise">
+        <div class="promise-bg"><div class="grain"></div></div>
+        <div class="container-wide">
+          <div class="promise-header">
+            <span class="section-label">04 — PROMISE</span>
+            <h2 class="promise-main-title">이음의<br/><em>약속</em></h2>
+          </div>
+          <div class="promise-grid">
+            <div class="promise-item" data-reveal data-num="01">
+              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+              <div class="promise-content">
+                <h3>투명한 진단</h3>
+                <p class="promise-quote">"무엇을, 왜, 어떻게 하는지 모두 설명합니다"</p>
+                <p class="promise-desc">진료 전 과정을 환자가 이해할 때까지 충분히 설명하고, CT 영상과 구강스캐너 결과를 함께 보며 치료 계획을 세웁니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="02">
+              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+              <div class="promise-content">
+                <h3>바른 진료</h3>
+                <p class="promise-quote">"환자에게 필요한 진료만 정확히 합니다"</p>
+                <p class="promise-desc">과잉 진료 없이 꼭 필요한 치료만 제안합니다. 불필요한 비용 부담을 드리지 않겠습니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="03">
+              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+              <div class="promise-content">
+                <h3>공감하는 케어</h3>
+                <p class="promise-quote">"치과 공포증도 함께 치료합니다"</p>
+                <p class="promise-desc">환자의 두려움과 불편함을 이해합니다. 모든 진료에서 통증 최소화, 충분한 마취, 편안한 환경을 약속합니다.</p>
+              </div>
+            </div>
+            <div class="promise-item" data-reveal data-num="04">
+              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
+              <div class="promise-content">
+                <h3>열린 병원</h3>
+                <p class="promise-quote">"주말에도, 야간에도 함께합니다"</p>
+                <p class="promise-desc">월~목 야간 21시까지, 토·일 진료. 바쁜 직장인도 편하게 내원할 수 있는 진료 시스템을 운영합니다.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════
+          DIRECTOR
+      ═══════════════════════════════════ */}
       <section class="section director-full" id="section-director">
         <div class="container-wide">
           <div class="director-layout">
             <div class="director-visual">
-              <div class="director-frame">
+              <div class="director-frame" data-hover>
                 <div class="frame-deco"></div>
                 <div class="frame-content">
                   <span class="frame-label">DIRECTOR</span>
@@ -165,7 +280,7 @@ export function HomePage() {
               </div>
             </div>
             <div class="director-info">
-              <span class="section-label">04 — DIRECTOR</span>
+              <span class="section-label">05 — DIRECTOR</span>
               <blockquote class="director-quote" data-reveal>"다른 사람들이 치과 이야기를 할 때<br/>정직하게 치료를 잘하는 병원이라며<br/>추천하는 곳을 만들고 싶습니다."</blockquote>
               <div class="credentials-grid">
                 <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 졸업</li></ul></div>
@@ -178,11 +293,13 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* EQUIPMENT */}
+      {/* ═══════════════════════════════════
+          EQUIPMENT
+      ═══════════════════════════════════ */}
       <section class="section equipment-minimal" id="section-equipment">
         <div class="container-wide">
           <div class="equip-header">
-            <span class="section-label">05 — EQUIPMENT</span>
+            <span class="section-label">06 — EQUIPMENT</span>
             <h2 class="equip-title">Digital<br/>Dentistry</h2>
           </div>
           <div class="equip-grid">
@@ -196,13 +313,15 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* CONTACT */}
+      {/* ═══════════════════════════════════
+          CONTACT
+      ═══════════════════════════════════ */}
       <section class="section contact-big" id="section-contact">
         <div class="contact-bg"><div class="grain"></div></div>
         <div class="container-wide">
           <div class="contact-layout">
             <div class="contact-left">
-              <span class="section-label light">06 — CONTACT</span>
+              <span class="section-label light">07 — CONTACT</span>
               <a href="tel:051-206-5888" class="contact-phone-big" data-hover>
                 <span class="phone-label">Call us</span>
                 <span class="phone-number">051-206-5888</span>
@@ -238,7 +357,11 @@ export function HomePage() {
           </div>
           <div class="footer-bottom-bar">
             <span>&copy; 2025 이음치과의원. 대표원장 최효영</span>
-            <span><a href="mailto:hyogunim@gmail.com">hyogunim@gmail.com</a></span>
+            <div class="footer-links">
+              <a href="/faq">자주 묻는 질문</a>
+              <a href="/dictionary">치과 백과사전</a>
+              <a href="mailto:hyogunim@gmail.com">hyogunim@gmail.com</a>
+            </div>
           </div>
         </div>
       </footer>

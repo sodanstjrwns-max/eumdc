@@ -1,19 +1,15 @@
 /* ============================================
-   이음치과의원 — ULTRA RADICAL INTERACTIVE
-   Magnetic cursor, 3D cards, parallax,
-   text distortion, scroll-driven cinema
+   이음치과의원 — REVOLUTIONARY INTERACTIVE v3
+   Counter animations, immersive scroll,
+   3D cards, magnetic cursor, parallax cinema
    ============================================ */
 (function () {
   'use strict';
 
-  // RAF-based smooth value interpolation
   function lerp(a, b, n) { return a + (b - a) * n; }
 
   // === INIT ON LOAD ===
-  window.addEventListener('DOMContentLoaded', function () {
-    initAll();
-  });
-
+  window.addEventListener('DOMContentLoaded', function () { initAll(); });
   if (document.readyState === 'complete' || document.readyState === 'interactive') {
     setTimeout(initAll, 0);
   }
@@ -39,15 +35,15 @@
     initSmoothLinks();
     initImageBreakParallax();
     initSectionIndicator();
+    initCounterAnimation();
   }
 
-  // === SMOOTH SCROLL (Lenis-like) ===
+  // === SMOOTH SCROLL ===
   var smoothScrollY = 0;
   var targetScrollY = 0;
   var scrollSpeed = 0;
 
   function initSmoothScroll() {
-    // Track scroll speed for velocity effects
     var lastScroll = window.scrollY;
     window.addEventListener('scroll', function () {
       targetScrollY = window.scrollY;
@@ -62,7 +58,7 @@
     smoothLoop();
   }
 
-  // === CUSTOM CURSOR (Magnetic + Morphing) ===
+  // === CUSTOM CURSOR ===
   function initCursor() {
     if (window.innerWidth < 1025) return;
 
@@ -71,10 +67,7 @@
     if (!cursor || !follower) return;
 
     var mx = 0, my = 0, fx = 0, fy = 0;
-    var cursorScale = 1;
-    var targetScale = 1;
-    var isHovering = false;
-    var cursorText = '';
+    var targetScale = 1, cursorScale = 1;
 
     document.addEventListener('mousemove', function (e) {
       mx = e.clientX;
@@ -88,20 +81,18 @@
 
       cursor.style.transform = 'translate(-50%, -50%) translate(' + mx + 'px,' + my + 'px)';
       follower.style.transform = 'translate(-50%, -50%) translate(' + fx + 'px,' + fy + 'px) scale(' + cursorScale + ')';
-
       requestAnimationFrame(followLoop);
     }
     followLoop();
 
-    // Hover states with labels
+    // Hover states
     document.querySelectorAll('[data-hover]').forEach(function (el) {
       el.addEventListener('mouseenter', function () {
         follower.classList.add('hover');
         targetScale = 2;
       });
       el.addEventListener('mouseleave', function () {
-        follower.classList.remove('hover');
-        follower.classList.remove('text-mode');
+        follower.classList.remove('hover', 'text-mode');
         follower.innerHTML = '';
         targetScale = 1;
       });
@@ -119,7 +110,7 @@
       });
     });
 
-    // Drag cursor for horizontal scroll
+    // Drag cursor
     document.querySelectorAll('.horizontal-wrap').forEach(function (el) {
       el.addEventListener('mouseenter', function () {
         follower.classList.add('drag-mode');
@@ -177,20 +168,19 @@
       document.body.style.overflow = '';
     }
 
-    // ESC key
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && isOpen) closeMenu();
     });
   }
 
-  // === HERO: Abstract 3D Mesh Gradient ===
+  // === HERO: 3D Mesh Gradient ===
   function initParallaxHero() {
     var mesh = document.getElementById('heroMesh');
     var heroContent = document.querySelector('.hero-content');
     var hero = document.querySelector('.hero');
     if (!mesh || !hero) return;
 
-    // Mouse parallax — mesh responds to cursor with depth
+    // Mouse parallax
     if (window.innerWidth > 768) {
       var mx = 0, my = 0, cx = 0, cy = 0;
 
@@ -208,7 +198,6 @@
         cx = lerp(cx, mx, 0.025);
         cy = lerp(cy, my, 0.025);
         mesh.style.transform = 'translate(' + (cx * -25) + 'px,' + (cy * -18) + 'px)';
-        // Also subtly move hero content opposite direction for depth
         if (heroContent) {
           heroContent.style.marginLeft = (cx * 8) + 'px';
         }
@@ -216,7 +205,7 @@
       })();
     }
 
-    // Scroll parallax + opacity
+    // Scroll fade
     window.addEventListener('scroll', function () {
       var scrolled = window.scrollY;
       var heroH = hero.offsetHeight;
@@ -230,14 +219,72 @@
     }, { passive: true });
   }
 
-  // === SCROLL REVEALS (with stagger) ===
+  // === COUNTER ANIMATION ===
+  function initCounterAnimation() {
+    var statNums = document.querySelectorAll('.hero-stat-num');
+    if (statNums.length === 0) return;
+
+    var animated = false;
+
+    function animateCounters() {
+      if (animated) return;
+      animated = true;
+
+      statNums.forEach(function (el) {
+        var target = el.getAttribute('data-count');
+        var isFloat = target.indexOf('.') > -1;
+        var targetNum = parseFloat(target);
+        var duration = 2000;
+        var startTime = null;
+
+        function step(timestamp) {
+          if (!startTime) startTime = timestamp;
+          var elapsed = timestamp - startTime;
+          var progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          var ease = 1 - Math.pow(1 - progress, 3);
+          var current = targetNum * ease;
+
+          if (isFloat) {
+            el.textContent = current.toFixed(1);
+          } else {
+            el.textContent = Math.floor(current).toLocaleString();
+          }
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            if (isFloat) {
+              el.textContent = targetNum.toFixed(1);
+            } else {
+              el.textContent = Math.floor(targetNum).toLocaleString();
+            }
+          }
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    // Trigger when hero stats become visible
+    var statsEl = document.querySelector('.hero-stats');
+    if (statsEl) {
+      var observer = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) {
+          animateCounters();
+          observer.disconnect();
+        }
+      }, { threshold: 0.5 });
+      observer.observe(statsEl);
+    }
+  }
+
+  // === SCROLL REVEALS ===
   function initScrollReveals() {
     var elements = document.querySelectorAll('[data-reveal]');
 
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
-          // Stagger siblings
           var parent = entry.target.parentElement;
           var siblings = parent.querySelectorAll('[data-reveal]');
           var idx = Array.from(siblings).indexOf(entry.target);
@@ -251,7 +298,7 @@
     elements.forEach(function (el) { observer.observe(el); });
   }
 
-  // === MANIFESTO TEXT REVEAL (Character-level) ===
+  // === MANIFESTO TEXT REVEAL ===
   function initManifesto() {
     var lines = document.querySelectorAll('.reveal-text');
 
@@ -268,7 +315,7 @@
     lines.forEach(function (line) { observer.observe(line); });
   }
 
-  // === HORIZONTAL SCROLL (Enhanced with snap feel) ===
+  // === HORIZONTAL SCROLL ===
   function initHorizontalScroll() {
     var track = document.getElementById('horizontalTrack');
     if (!track) return;
@@ -286,7 +333,6 @@
     wrap.style.scrollbarWidth = 'none';
     wrap.style.msOverflowStyle = 'none';
 
-    // Mouse drag with momentum
     track.addEventListener('mousedown', function (e) {
       isDragging = true;
       startX = e.pageX;
@@ -301,7 +347,6 @@
       if (!isDragging) return;
       isDragging = false;
       track.style.cursor = '';
-      // Momentum scroll
       function decelerate() {
         if (Math.abs(velocity) < 0.5) return;
         velocity *= 0.95;
@@ -320,11 +365,9 @@
       wrap.scrollLeft = scrollLeft - x;
     });
 
-    // Wheel -> horizontal scroll (smoother)
     section.addEventListener('wheel', function (e) {
       var maxScroll = wrap.scrollWidth - wrap.clientWidth;
       if (maxScroll <= 0) return;
-
       var atStart = wrap.scrollLeft <= 0;
       var atEnd = wrap.scrollLeft >= maxScroll - 2;
 
@@ -337,9 +380,8 @@
       }
     }, { passive: false });
 
-    // Touch support
-    var touchStartX = 0;
-    var touchScrollLeft = 0;
+    // Touch
+    var touchStartX = 0, touchScrollLeft = 0;
     wrap.addEventListener('touchstart', function (e) {
       touchStartX = e.touches[0].pageX;
       touchScrollLeft = wrap.scrollLeft;
@@ -360,14 +402,12 @@
         var rect = card.getBoundingClientRect();
         var x = (e.clientX - rect.left) / rect.width;
         var y = (e.clientY - rect.top) / rect.height;
-
         var rotateX = (y - 0.5) * -8;
         var rotateY = (x - 0.5) * 8;
 
         card.style.transform = 'perspective(800px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.02)';
         card.style.transition = 'transform 0.1s ease';
 
-        // Shine effect
         var shine = card.querySelector('.card-shine');
         if (!shine) {
           shine = document.createElement('div');
@@ -399,29 +439,25 @@
         var dy = (e.clientY - cy) * 0.3;
         el.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       });
-
       el.addEventListener('mouseleave', function () {
         el.style.transform = '';
         el.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
       });
-
       el.addEventListener('mouseenter', function () {
         el.style.transition = 'transform 0.15s ease';
       });
     });
   }
 
-  // === TEXT MASK (reveal image through text) ===
+  // === TEXT MASK ===
   function initTextMask() {
     var hero = document.querySelector('.hero');
     if (!hero) return;
 
-    // Scroll-driven title distortion
     window.addEventListener('scroll', function () {
       var scrolled = window.scrollY;
       var titles = document.querySelectorAll('.title-word');
       titles.forEach(function (title, i) {
-        var skew = Math.min(scrolled * 0.01 * (i + 1), 5);
         if (scrolled < hero.offsetHeight) {
           title.style.letterSpacing = (scrolled * 0.005) + 'em';
         }
@@ -429,7 +465,7 @@
     }, { passive: true });
   }
 
-  // === GALLERY PARALLAX (Speed Difference) ===
+  // === GALLERY PARALLAX ===
   function initGalleryParallax() {
     var strip = document.querySelector('.gallery-strip');
     if (!strip) return;
@@ -437,7 +473,6 @@
     var track = strip.querySelector('.gallery-track');
     var baseSpeed = parseFloat(getComputedStyle(track).animationDuration) || 40;
 
-    // Speed up/slow down based on scroll velocity
     window.addEventListener('scroll', function () {
       var newDuration = Math.max(15, baseSpeed - Math.abs(scrollSpeed) * 0.5);
       track.style.animationDuration = newDuration + 's';
@@ -477,19 +512,22 @@
   // === NAV SCROLL PROGRESS ===
   function initNavScrollProgress() {
     var nav = document.getElementById('nav');
+    var progressBar = document.getElementById('navProgress');
     if (!nav) return;
 
-    // Create progress bar
-    var progressBar = document.createElement('div');
-    progressBar.className = 'nav-progress';
-    nav.appendChild(progressBar);
+    // Create progress bar if not in HTML
+    if (!progressBar) {
+      progressBar = document.createElement('div');
+      progressBar.className = 'nav-progress';
+      progressBar.id = 'navProgress';
+      nav.appendChild(progressBar);
+    }
 
     window.addEventListener('scroll', function () {
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
       var progress = (window.scrollY / docHeight) * 100;
       progressBar.style.width = progress + '%';
 
-      // Nav bg on scroll
       if (window.scrollY > 100) {
         nav.classList.add('scrolled');
       } else {
@@ -498,7 +536,7 @@
     }, { passive: true });
   }
 
-  // === SMOOTH SCROLL FOR LINKS ===
+  // === SMOOTH LINKS ===
   function initSmoothLinks() {
     document.querySelectorAll('a[href^="#section-"]').forEach(function (link) {
       link.addEventListener('click', function (e) {
@@ -528,7 +566,6 @@
 
   // === SECTION INDICATOR ===
   function initSectionIndicator() {
-    // Create indicator dots
     var sections = document.querySelectorAll('.section[id]');
     if (sections.length === 0) return;
 
@@ -536,7 +573,7 @@
     indicator.className = 'section-indicator';
     var dots = [];
 
-    sections.forEach(function (section, i) {
+    sections.forEach(function (section) {
       var dot = document.createElement('div');
       dot.className = 'indicator-dot';
       dot.addEventListener('click', function () {
@@ -548,7 +585,6 @@
 
     document.body.appendChild(indicator);
 
-    // Update active dot
     var sectionObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
