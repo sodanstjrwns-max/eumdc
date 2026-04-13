@@ -1,62 +1,81 @@
-# 이음치과의원 홈페이지
+# 이음치과의원 웹사이트 (Eum Dental Clinic)
 
 ## Project Overview
-- **Name**: 이음치과의원 (EUM Dental Clinic)
-- **Goal**: 부산 명지 이음치과의원의 프리미엄 홈페이지
-- **Design**: wearebrand.io 스타일 기반 - 미니멀, 프리미엄, 네이비/화이트/골드
-- **Slogan**: 실력으로 신뢰를, 신뢰로 마음까지 잇습니다.
-
-## Features (완료)
-- Hero Section: 슬로건과 예약 CTA
-- 병원 소개: 투명성, 실력, 신뢰 핵심 가치
-- 원장 소개: 최효영 원장 학력/경력/수료 과정
-- 진료 안내: 임플란트(대표), 심미보철, 심미레진, 턱관절, 일반진료
-- 시설·장비: CBCT, 구강스캐너, 3D 프린터, 플라즈마 소독기 등
-- 진료시간: 월-목 12:00-21:00, 토-일 10:00-17:00, 금 정기휴무
-- 오시는 길: 주소, 자차/대중교통 안내
-- 반응형 디자인: 데스크톱, 태블릿, 모바일 완전 대응
-- 스크롤 애니메이션, 프리로더, 플로팅 전화 버튼
+- **Name**: eum-dental
+- **Goal**: 부산 강서구 명지 이음치과의원의 SEO/AEO 최적화 종합 웹사이트
+- **Stack**: Hono + TypeScript + Cloudflare Pages + D1 + R2
+- **Design**: Dark theme, GSAP interactive motion, responsive
 
 ## URLs
-- **Dev**: http://localhost:3000
-- **Phone**: 051-206-5888
-- **Email**: hyogunim@gmail.com
+- **Sandbox**: https://3000-iccn9mgndswaqvt3ffm6e-ecea8f22.sandbox.novita.ai
+- **Production**: https://eum-dental.pages.dev
 
-## URI Paths
-| Path | Description |
-|------|-------------|
-| `/` | 메인 홈페이지 (원페이지) |
-| `/#about` | 병원 소개 |
-| `/#director` | 의료진 소개 |
-| `/#services` | 진료 안내 |
-| `/#equipment` | 시설·장비 |
-| `/#hours` | 진료시간 |
-| `/#location` | 오시는 길 |
-| `/static/style.css` | 스타일시트 |
-| `/static/app.js` | JavaScript |
-| `/static/favicon.svg` | 파비콘 |
+## Completed Features
+
+### Public Pages
+| Route | Description |
+|-------|-------------|
+| `/` | 메인 페이지 - 히어로, 마퀴, 갤러리, 원장소개, 장비, 연락처 |
+| `/treatments` | 진료과목 목록 (핵심 3 + 일반 6) |
+| `/treatments/:slug` | 진료과목 상세 (FAQ 포함, SEO 스키마) |
+| `/doctors` | 의료진 전체 소개 |
+| `/doctors/:slug` | 의료진 개별 상세 |
+| `/about` | 병원 미션/가치/장비/시설 |
+| `/visit` | 내원 안내 (길찾기, 진료시간, 수가) |
+| `/cases` | 비포애프터 (Before 공개, After 로그인 필요) |
+| `/cases/:id` | 케이스 상세 (환자정보, 담당의, 지역, 기간) |
+| `/blogs` | 블로그 목록 |
+| `/blogs/:id` | 블로그 상세 (저자, SEO 스키마) |
+| `/notices` | 공지사항 (고정 공지, 썸네일) |
+| `/notices/:id` | 공지 상세 (이미지 포함) |
+| `/faq` | FAQ 통합 페이지 (180+ FAQ, 카테고리/검색) |
+| `/dictionary` | 치과 용어 백과사전 (219+ 용어) |
+| `/dictionary/:slug` | 용어 상세 |
+| `/regions` | 지역별 SEO 랜딩 목록 |
+| `/regions/:slug` | 지역별 SEO 랜딩 상세 |
+| `/signup` | 회원가입 (개인정보/마케팅 동의, 이메일+전화) |
+| `/login` | 로그인 |
+| `/admin` | 관리자 대시보드 |
+
+### SEO/AEO
+- Perfect meta tags (Title <= 60자, Description <= 160자)
+- Canonical URLs, Open Graph, Twitter Card
+- JSON-LD: LocalBusiness, Person, WebSite, FAQPage, BlogPosting, MedicalWebPage, DefinedTermSet, HowTo, Speakable, BreadcrumbList
+- robots.txt + dynamic sitemap.xml
+- Regional SEO landing pages
+- AI crawler friendly (GPTBot, ClaudeBot, ChatGPT-User)
+
+### Design & Motion
+- GSAP ScrollTrigger animations
+- Scroll progress bar
+- Parallax effects, staggered grid reveals
+- Custom cursor (desktop), magnetic buttons
+- Text split animations, counter animations
+- Image clip-path reveal on scroll
+
+### Admin CRUD
+- Dashboard (통계: 회원수, 가입추이, 마케팅동의, 조회수)
+- Cases CRUD (4 이미지, 환자정보, 지역 자동완성, 담당의, 치료기간)
+- Blogs CRUD (SEO 제목/설명/슬러그, 마크다운 에디터, 드래그앤드롭 이미지, 저자 선택)
+- Notices CRUD (고정 공지, 이미지 업로드, 썸네일)
+- FAQ CRUD (카테고리별)
+- Users 관리 (동의항목 표시)
+
+### Data Architecture
+- **D1 Database**: users, cases, blogs, notices, faqs, dict_terms, treatments, doctors, regions, seo_regions, view_logs, reservations, notice_images, blog_images, treatment_faqs
+- **R2 Storage**: Image uploads
+- **Dictionary Auto-Link**: Blog/Case 본문에서 치과 용어 자동 하이퍼링크
 
 ## Tech Stack
-- **Backend**: Hono (Cloudflare Workers)
-- **Frontend**: Vanilla HTML/CSS/JS (Noto Sans KR + Playfair Display)
-- **Build**: Vite
-- **Platform**: Cloudflare Pages
-
-## 미구현 사항
-- 실제 원장/병원 사진 교체 필요
-- 네이버 지도 임베드 (현재 링크형)
-- 블로그/SNS 연동
-- 투명교정 케이스 추가 (향후)
-- 시술 전후 사진 갤러리
-
-## 운영정보
-- **병원명**: 이음치과의원
-- **대표원장**: 최효영
-- **주소**: 부산광역시 강서구 명지국제8로 265 2층
-- **전화**: 051-206-5888
-- **개원**: 2025년 12월 말
+- Hono 4.x (Cloudflare Pages)
+- TypeScript, JSX (server-rendered)
+- D1 SQLite + R2 Object Storage
+- GSAP 3.12 (ScrollTrigger)
+- Noto Sans KR + Playfair Display
+- Custom CSS (no framework, dark theme)
 
 ## Deployment
 - **Platform**: Cloudflare Pages
-- **Status**: 개발 완료 (배포 대기)
-- **Last Updated**: 2026-04-02
+- **Build**: `npm run build` -> `dist/_worker.js`
+- **Deploy**: `npm run deploy`
+- **DB Migrations**: `wrangler d1 migrations apply eum-dental-db --local`
