@@ -35,6 +35,10 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         {/* CSS */}
         <link href="/static/style.css" rel="stylesheet" />
 
+        {/* GSAP for advanced animations */}
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+
         {/* 동적 SEO 메타 + JSON-LD */}
         {raw(seoHead)}
       </head>

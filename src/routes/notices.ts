@@ -11,7 +11,7 @@ notices.get('/api/notices', async (c) => {
   const offset = (page - 1) * limit
 
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM notices WHERE is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT ? OFFSET ?'
+    'SELECT id, title, content, thumbnail, is_pinned, views, created_at FROM notices WHERE is_published = 1 ORDER BY is_pinned DESC, created_at DESC LIMIT ? OFFSET ?'
   ).bind(limit, offset).all()
 
   const countResult = await c.env.DB.prepare(
@@ -21,13 +21,19 @@ notices.get('/api/notices', async (c) => {
   return c.json({ notices: results, total: (countResult as any)?.total || 0, page, limit })
 })
 
-// Get single notice + increment views
+// Get single notice + images + increment views
 notices.get('/api/notices/:id', async (c) => {
   const id = c.req.param('id')
   await incrementView(c, 'notice', id, 'notices')
   const result = await c.env.DB.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first()
   if (!result) return c.notFound()
-  return c.json(result)
+
+  // Get notice images
+  const { results: images } = await c.env.DB.prepare(
+    'SELECT * FROM notice_images WHERE notice_id = ? ORDER BY sort_order'
+  ).bind(id).all()
+
+  return c.json({ ...(result as any), images })
 })
 
 // Admin: list all
@@ -38,27 +44,53 @@ notices.get('/api/admin/notices', async (c) => {
   return c.json({ notices: results })
 })
 
-// Create notice
+// Create notice (with thumbnail + images)
 notices.post('/api/admin/notices', async (c) => {
   const body = await c.req.json()
-  const { title, content, is_pinned } = body
+  const { title, content, is_pinned, thumbnail, images } = body
+
+  // Generate content_html from content
+  const contentHtml = (content || '').split('\n').filter((l: string) => l.trim()).map((l: string) => `<p>${l}</p>`).join('\n')
 
   const result = await c.env.DB.prepare(
-    'INSERT INTO notices (title, content, is_pinned) VALUES (?, ?, ?)'
-  ).bind(title || '', content || '', is_pinned ? 1 : 0).run()
+    'INSERT INTO notices (title, content, content_html, thumbnail, is_pinned) VALUES (?, ?, ?, ?, ?)'
+  ).bind(title || '', content || '', contentHtml, thumbnail || null, is_pinned ? 1 : 0).run()
 
-  return c.json({ id: result.meta.last_row_id }, 201)
+  const noticeId = result.meta.last_row_id
+
+  // Insert images
+  if (images && images.length > 0) {
+    for (let i = 0; i < images.length; i++) {
+      await c.env.DB.prepare(
+        'INSERT INTO notice_images (notice_id, image_url, sort_order) VALUES (?, ?, ?)'
+      ).bind(noticeId, images[i], i).run()
+    }
+  }
+
+  return c.json({ id: noticeId }, 201)
 })
 
 // Update notice
 notices.put('/api/admin/notices/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, content, is_pinned, is_published } = body
+  const { title, content, is_pinned, is_published, thumbnail, images } = body
+
+  const contentHtml = (content || '').split('\n').filter((l: string) => l.trim()).map((l: string) => `<p>${l}</p>`).join('\n')
 
   await c.env.DB.prepare(
-    'UPDATE notices SET title=?, content=?, is_pinned=?, is_published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
-  ).bind(title, content, is_pinned ? 1 : 0, is_published ?? 1, id).run()
+    'UPDATE notices SET title=?, content=?, content_html=?, thumbnail=?, is_pinned=?, is_published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?'
+  ).bind(title, content, contentHtml, thumbnail || null, is_pinned ? 1 : 0, is_published ?? 1, id).run()
+
+  // Replace images if provided
+  if (images !== undefined) {
+    await c.env.DB.prepare('DELETE FROM notice_images WHERE notice_id = ?').bind(id).run()
+    for (let i = 0; i < images.length; i++) {
+      await c.env.DB.prepare(
+        'INSERT INTO notice_images (notice_id, image_url, sort_order) VALUES (?, ?, ?)'
+      ).bind(id, images[i], i).run()
+    }
+  }
 
   return c.json({ ok: true })
 })
@@ -66,6 +98,7 @@ notices.put('/api/admin/notices/:id', async (c) => {
 // Delete notice
 notices.delete('/api/admin/notices/:id', async (c) => {
   const id = c.req.param('id')
+  await c.env.DB.prepare('DELETE FROM notice_images WHERE notice_id = ?').bind(id).run()
   await c.env.DB.prepare('DELETE FROM notices WHERE id = ?').bind(id).run()
   return c.json({ ok: true })
 })

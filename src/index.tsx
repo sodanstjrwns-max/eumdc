@@ -11,6 +11,9 @@ import usersRoutes from './routes/users'
 import faqRoutes from './routes/faq'
 import reservationRoutes from './routes/reservations'
 import dictionaryRoutes from './routes/dictionary'
+import treatmentsRoutes from './routes/treatments'
+import doctorsRoutes from './routes/doctors'
+import regionsRoutes from './routes/regions'
 import { mainPage } from './pages/main'
 import { casesPage, caseDetailPage } from './pages/cases'
 import { blogsPage, blogDetailPage } from './pages/blogs'
@@ -20,11 +23,15 @@ import { faqPage } from './pages/faq'
 import { dictionaryPage, dictionaryDetailPage } from './pages/dictionary'
 import { signupPage } from './pages/signup'
 import { loginPage } from './pages/login'
+import { treatmentsPage, treatmentDetailPage } from './pages/treatments'
+import { doctorsPage, doctorDetailPage } from './pages/doctors'
+import { missionPage, visitGuidePage } from './pages/about'
+import { seoRegionPage, seoRegionListPage } from './pages/seo-region'
 import {
   defaultSeo, localBusinessJsonLd, websiteJsonLd, breadcrumbJsonLd,
   faqPageJsonLd, blogPostingJsonLd, medicalWebPageJsonLd,
   caseDetailJsonLd, blogListJsonLd, personJsonLd, visitHowToJsonLd,
-  speakableJsonLd,
+  speakableJsonLd, treatmentJsonLd, doctorJsonLd,
   SITE_URL, SITE_NAME
 } from './seo'
 
@@ -52,6 +59,8 @@ app.use('/api/admin/users/*', requireAdmin())
 app.use('/api/admin/stats', requireAdmin())
 app.use('/api/admin/reservations', requireAdmin())
 app.use('/api/admin/reservations/*', requireAdmin())
+app.use('/api/admin/doctors', requireAdmin())
+app.use('/api/admin/doctors/*', requireAdmin())
 
 // === API routes ===
 app.route('', casesRoutes)
@@ -60,6 +69,9 @@ app.route('', noticesRoutes)
 app.route('', faqRoutes)
 app.route('', reservationRoutes)
 app.route('', dictionaryRoutes)
+app.route('', treatmentsRoutes)
+app.route('', doctorsRoutes)
+app.route('', regionsRoutes)
 
 // ═══════════════════════════════════════════
 // SEO/AEO OPTIMIZED PUBLIC PAGES
@@ -86,6 +98,147 @@ app.get('/', (c) => {
   })
 })
 
+// === 진료과목 목록 ===
+app.get('/treatments', (c) => {
+  return c.render(treatmentsPage(), {
+    seo: {
+      title: '진료 안내 | 이음치과 임플란트·심미보철·턱관절',
+      description: '이음치과의원 진료과목 안내. 임플란트, 심미보철, 턱관절, 심미레진, 충치·신경치료, 잇몸치료, 소아치과 등 전문 진료를 제공합니다.',
+      keywords: '이음치과 진료, 임플란트, 심미보철, 턱관절, 심미레진, 충치치료, 신경치료, 잇몸치료, 소아치과, 부산치과 진료',
+      canonical: `${SITE_URL}/treatments`,
+      ogUrl: `${SITE_URL}/treatments`,
+      jsonLd: [
+        medicalWebPageJsonLd({ name: '이음치과 진료 안내', description: '이음치과의원의 전문 진료과목을 소개합니다.', url: '/treatments', specialty: 'Dentistry' }),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '진료 안내', url: '/treatments' }])
+      ]
+    }
+  })
+})
+
+// === 진료과목 상세 ===
+app.get('/treatments/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const treatment = await c.env.DB.prepare(
+    'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
+  ).bind(slug).first() as any
+
+  const name = treatment?.name || '진료 안내'
+  const desc = treatment?.meta_description || treatment?.short_desc || `이음치과의원 ${name} 전문 진료 안내.`
+  const metaTitle = treatment?.meta_title || `${name} | 이음치과 전문 진료`
+
+  // FAQ for schema
+  let faqJsonLd = null
+  if (treatment) {
+    const { results: faqs } = await c.env.DB.prepare(
+      'SELECT question, answer FROM treatment_faqs WHERE treatment_id = ? AND is_published = 1 ORDER BY sort_order'
+    ).bind(treatment.id).all() as any
+    if (faqs && faqs.length > 0) {
+      faqJsonLd = faqPageJsonLd(faqs)
+    }
+  }
+
+  return c.render(treatmentDetailPage(slug), {
+    seo: {
+      title: metaTitle,
+      description: desc,
+      keywords: treatment?.keywords || `${name}, 이음치과, 부산치과`,
+      canonical: `${SITE_URL}/treatments/${slug}`,
+      ogUrl: `${SITE_URL}/treatments/${slug}`,
+      ogImage: treatment?.hero_image || undefined,
+      jsonLd: [
+        treatment ? treatmentJsonLd(treatment) : medicalWebPageJsonLd({ name, description: desc, url: `/treatments/${slug}` }),
+        breadcrumbJsonLd([
+          { name: '홈', url: '/' },
+          { name: '진료 안내', url: '/treatments' },
+          { name, url: `/treatments/${slug}` }
+        ]),
+        ...(faqJsonLd ? [faqJsonLd] : [])
+      ]
+    }
+  })
+})
+
+// === 의료진 전체 ===
+app.get('/doctors', (c) => {
+  return c.render(doctorsPage(), {
+    seo: {
+      title: '의료진 소개 | 이음치과의원 전문 치과의사',
+      description: '이음치과의원 의료진 소개. 임플란트·심미보철·턱관절 전문 의료진이 정성을 다해 진료합니다.',
+      keywords: '이음치과 의료진, 최효영 원장, 부산치과 전문의, 임플란트 전문의, 치과의사',
+      canonical: `${SITE_URL}/doctors`,
+      ogUrl: `${SITE_URL}/doctors`,
+      jsonLd: [
+        medicalWebPageJsonLd({ name: '이음치과 의료진 소개', description: '이음치과의원의 전문 의료진을 소개합니다.', url: '/doctors' }),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '의료진 소개', url: '/doctors' }])
+      ]
+    }
+  })
+})
+
+// === 의료진 상세 ===
+app.get('/doctors/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const doctor = await c.env.DB.prepare(
+    'SELECT * FROM doctors WHERE slug = ? AND is_published = 1'
+  ).bind(slug).first() as any
+
+  const name = doctor?.name || '의료진'
+  const title = doctor?.title || '원장'
+
+  return c.render(doctorDetailPage(slug), {
+    seo: {
+      title: `${name} ${title} | 이음치과의원 의료진`,
+      description: doctor?.greeting || `이음치과의원 ${name} ${title}. 실력과 진심으로 진료합니다.`,
+      keywords: `${name}, ${title}, 이음치과 의료진, 부산치과`,
+      canonical: `${SITE_URL}/doctors/${slug}`,
+      ogUrl: `${SITE_URL}/doctors/${slug}`,
+      ogImage: doctor?.photo || undefined,
+      jsonLd: [
+        doctor ? doctorJsonLd(doctor) : {},
+        breadcrumbJsonLd([
+          { name: '홈', url: '/' },
+          { name: '의료진 소개', url: '/doctors' },
+          { name: `${name} ${title}`, url: `/doctors/${slug}` }
+        ])
+      ]
+    }
+  })
+})
+
+// === 병원 미션 ===
+app.get('/about', (c) => {
+  return c.render(missionPage(), {
+    seo: {
+      title: '병원 소개 | 이음치과의원 미션과 가치',
+      description: '이음치과의원의 미션, 핵심 가치, 최첨단 디지털 장비, 병원 시설을 소개합니다. 투명성, 실력, 신뢰, 공감의 가치로 진료합니다.',
+      keywords: '이음치과 소개, 병원미션, 치과 철학, 디지털 치과, CBCT, 구강스캐너, 3D프린터, 부산치과',
+      canonical: `${SITE_URL}/about`,
+      ogUrl: `${SITE_URL}/about`,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '병원 소개', url: '/about' }])
+      ]
+    }
+  })
+})
+
+// === 내원 안내 ===
+app.get('/visit', (c) => {
+  return c.render(visitGuidePage(), {
+    seo: {
+      title: '내원 안내 | 이음치과 오시는 길·진료시간·수가',
+      description: '이음치과의원 오시는 길, 진료시간, 수가 안내. 부산 강서구 명지국제8로 265 2층. 주차 2시간 무료. ☎ 051-206-5888.',
+      keywords: '이음치과 오시는 길, 이음치과 진료시간, 이음치과 주차, 이음치과 비용, 부산 명지 치과, 야간진료',
+      canonical: `${SITE_URL}/visit`,
+      ogUrl: `${SITE_URL}/visit`,
+      jsonLd: [
+        visitHowToJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '내원 안내', url: '/visit' }])
+      ]
+    }
+  })
+})
+
 // === 비포애프터 목록 ===
 app.get('/cases', (c) => {
   return c.render(casesPage(), {
@@ -99,8 +252,7 @@ app.get('/cases', (c) => {
         medicalWebPageJsonLd({
           name: '비포애프터 치료 사례',
           description: '이음치과의원의 실제 치료 전후 사진 모음. 임플란트, 심미보철, 레진 수복 결과를 확인하세요.',
-          url: '/cases',
-          specialty: 'Dentistry'
+          url: '/cases', specialty: 'Dentistry'
         }),
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '비포애프터', url: '/cases' }])
       ]
@@ -189,8 +341,7 @@ app.get('/blogs/:id', async (c) => {
       },
       jsonLd: [
         blogPostingJsonLd({
-          title, description: desc,
-          slug,
+          title, description: desc, slug,
           content: blog?.content,
           thumbnail: blog?.thumbnail,
           created_at: blog?.created_at || new Date().toISOString(),
@@ -238,10 +389,8 @@ app.get('/notices/:id', async (c) => {
       ogUrl: `${SITE_URL}/notices/${id}`,
       jsonLd: [
         {
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: title,
-          description: desc,
+          '@context': 'https://schema.org', '@type': 'Article',
+          headline: title, description: desc,
           datePublished: notice?.created_at,
           dateModified: notice?.updated_at || notice?.created_at,
           author: { '@type': 'Organization', name: SITE_NAME },
@@ -258,11 +407,8 @@ app.get('/notices/:id', async (c) => {
   })
 })
 
-// ═══════════════════════════════════════════
-// FAQ 페이지 — AEO 핵심! 서버사이드 FAQPage + 카테고리별 스키마
-// ═══════════════════════════════════════════
+// === FAQ ===
 app.get('/faq', async (c) => {
-  // DB에서 FAQ 데이터 조회하여 서버사이드 JSON-LD + noscript 렌더링
   const { results } = await c.env.DB.prepare(
     `SELECT f.id, f.question, f.answer, fc.name as category_name, fc.slug as category_slug
      FROM faqs f JOIN faq_categories fc ON f.category_id = fc.id
@@ -275,7 +421,6 @@ app.get('/faq', async (c) => {
     category_name: r.category_name, category_slug: r.category_slug
   }))
 
-  // 카테고리별 그룹핑 (서버사이드 noscript 렌더링용)
   const grouped: Record<string, { name: string; faqs: typeof allFaqs }> = {}
   for (const faq of allFaqs) {
     if (!grouped[faq.category_slug]) {
@@ -284,8 +429,7 @@ app.get('/faq', async (c) => {
     grouped[faq.category_slug].faqs.push(faq)
   }
 
-  // 전체 FAQ JSON-LD
-  const faqJsonLd = faqPageJsonLd(allFaqs)
+  const faqJsonLdData = faqPageJsonLd(allFaqs)
 
   return c.render(faqPage(grouped), {
     seo: {
@@ -296,7 +440,7 @@ app.get('/faq', async (c) => {
       ogUrl: `${SITE_URL}/faq`,
       speakable: ['.page-title', '.faq-q-text', '.faq-answer-inner'],
       jsonLd: [
-        faqJsonLd,
+        faqJsonLdData,
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '자주 묻는 질문', url: '/faq' }]),
         speakableJsonLd(`${SITE_URL}/faq`, ['.page-title', '.faq-group-title', '.faq-q-text'])
       ]
@@ -304,9 +448,7 @@ app.get('/faq', async (c) => {
   })
 })
 
-// ═══════════════════════════════════════════
-// 치과 용어 백과사전
-// ═══════════════════════════════════════════
+// === 치과 용어 백과사전 ===
 app.get('/dictionary', async (c) => {
   const totalQ = await c.env.DB.prepare('SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1').first() as any
   const total = totalQ?.total || 219
@@ -320,13 +462,11 @@ app.get('/dictionary', async (c) => {
       ogUrl: `${SITE_URL}/dictionary`,
       jsonLd: [
         {
-          '@context': 'https://schema.org',
-          '@type': 'DefinedTermSet',
+          '@context': 'https://schema.org', '@type': 'DefinedTermSet',
           '@id': `${SITE_URL}/dictionary/#termset`,
           name: '이음치과 치과 용어 백과사전',
           description: `${total}개 치과 전문 용어를 알기 쉽게 정리한 백과사전입니다.`,
-          url: `${SITE_URL}/dictionary`,
-          inLanguage: 'ko-KR',
+          url: `${SITE_URL}/dictionary`, inLanguage: 'ko-KR',
           publisher: { '@id': `${SITE_URL}/#organization` },
           isPartOf: { '@id': `${SITE_URL}/#website` }
         },
@@ -357,10 +497,8 @@ app.get('/dictionary/:slug', async (c) => {
       ogUrl: `${SITE_URL}/dictionary/${slug}`,
       jsonLd: [
         {
-          '@context': 'https://schema.org',
-          '@type': 'DefinedTerm',
-          name: termName,
-          description: termFull,
+          '@context': 'https://schema.org', '@type': 'DefinedTerm',
+          name: termName, description: termFull,
           inDefinedTermSet: { '@id': `${SITE_URL}/dictionary/#termset` },
           url: `${SITE_URL}/dictionary/${slug}`
         },
@@ -383,9 +521,7 @@ app.get('/signup', (c) => {
       canonical: `${SITE_URL}/signup`,
       ogUrl: `${SITE_URL}/signup`,
       noindex: true,
-      jsonLd: [
-        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '회원가입', url: '/signup' }])
-      ]
+      jsonLd: [breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '회원가입', url: '/signup' }])]
     }
   })
 })
@@ -398,8 +534,50 @@ app.get('/login', (c) => {
       canonical: `${SITE_URL}/login`,
       ogUrl: `${SITE_URL}/login`,
       noindex: true,
+      jsonLd: [breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '로그인', url: '/login' }])]
+    }
+  })
+})
+
+// === 지역 SEO 랜딩 페이지 ===
+app.get('/regions', (c) => {
+  return c.render(seoRegionListPage(), {
+    seo: {
+      title: '지역별 치과 안내 | 이음치과의원',
+      description: '이음치과의원 지역별 치과 안내. 부산 강서구 명지 일대 지역 맞춤 치과 진료 정보를 확인하세요.',
+      canonical: `${SITE_URL}/regions`,
+      ogUrl: `${SITE_URL}/regions`,
       jsonLd: [
-        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '로그인', url: '/login' }])
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '지역별 안내', url: '/regions' }])
+      ]
+    }
+  })
+})
+
+app.get('/regions/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  const region = await c.env.DB.prepare(
+    'SELECT * FROM seo_regions WHERE slug = ? AND is_published = 1'
+  ).bind(slug).first() as any
+
+  const regionName = region?.region_name || '지역'
+  const metaTitle = region?.meta_title || `${regionName} 치과 이음치과의원 | 임플란트·심미보철`
+  const metaDesc = region?.meta_description || `${regionName} 근처 치과를 찾고 계신가요? 이음치과의원 임플란트·심미보철·턱관절 전문. ☎ 051-206-5888`
+
+  return c.render(seoRegionPage(slug), {
+    seo: {
+      title: metaTitle,
+      description: metaDesc,
+      keywords: `${regionName} 치과, ${regionName} 임플란트, ${regionName} 심미보철, 이음치과, 부산치과, 명지치과`,
+      canonical: `${SITE_URL}/regions/${slug}`,
+      ogUrl: `${SITE_URL}/regions/${slug}`,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([
+          { name: '홈', url: '/' },
+          { name: '지역별 안내', url: '/regions' },
+          { name: `${regionName} 치과`, url: `/regions/${slug}` }
+        ])
       ]
     }
   })
@@ -446,7 +624,6 @@ Allow: /
 app.get('/sitemap.xml', async (c) => {
   const now = new Date().toISOString().split('T')[0]
 
-  // 동적 콘텐츠 URL
   const { results: blogs } = await c.env.DB.prepare(
     'SELECT id, slug, updated_at, thumbnail FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
   ).all() as any
@@ -459,56 +636,45 @@ app.get('/sitemap.xml', async (c) => {
   const { results: dictTerms } = await c.env.DB.prepare(
     'SELECT slug, updated_at, term FROM dict_terms WHERE is_published = 1 ORDER BY term LIMIT 500'
   ).all() as any
+  const { results: treatments } = await c.env.DB.prepare(
+    'SELECT slug, updated_at, name FROM treatments WHERE is_published = 1 ORDER BY sort_order'
+  ).all() as any
+  const { results: doctors } = await c.env.DB.prepare(
+    'SELECT slug, updated_at, name FROM doctors WHERE is_published = 1 ORDER BY sort_order'
+  ).all() as any
+  const { results: seoRegions } = await c.env.DB.prepare(
+    'SELECT slug, updated_at, region_name FROM seo_regions WHERE is_published = 1 ORDER BY region_name'
+  ).all() as any
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <!-- 정적 페이지 -->
-  <url>
-    <loc>${SITE_URL}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="${SITE_URL}"/>
-    <image:image>
-      <image:loc>${SITE_URL}/static/img/photo_1.jpg</image:loc>
-      <image:title>이음치과의원 외관</image:title>
-    </image:image>
-  </url>
-  <url>
-    <loc>${SITE_URL}/faq</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>${SITE_URL}/cases</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${SITE_URL}/blogs</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${SITE_URL}/dictionary</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${SITE_URL}/notices</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
+  <url><loc>${SITE_URL}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>${SITE_URL}/treatments</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/doctors</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/about</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>${SITE_URL}/visit</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/faq</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>${SITE_URL}/cases</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/blogs</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/dictionary</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>${SITE_URL}/notices</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <url><loc>${SITE_URL}/regions</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 `
 
-  // 동적 블로그
+  // 진료과목
+  for (const t of (treatments || [])) {
+    xml += `  <url><loc>${SITE_URL}/treatments/${t.slug}</loc><lastmod>${t.updated_at?.split(' ')[0] || now}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>\n`
+  }
+
+  // 의료진
+  for (const d of (doctors || [])) {
+    xml += `  <url><loc>${SITE_URL}/doctors/${d.slug}</loc><lastmod>${d.updated_at?.split(' ')[0] || now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`
+  }
+
+  // 블로그
   for (const b of (blogs || [])) {
     const date = b.updated_at?.split(' ')[0] || now
     const loc = `${SITE_URL}/blogs/${b.slug || b.id}`
@@ -519,7 +685,6 @@ app.get('/sitemap.xml', async (c) => {
     xml += `  </url>\n`
   }
 
-  // 동적 케이스
   for (const cs of (cases || [])) {
     const date = cs.updated_at?.split(' ')[0] || now
     xml += `  <url>\n    <loc>${SITE_URL}/cases/${cs.id}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n`
@@ -529,16 +694,19 @@ app.get('/sitemap.xml', async (c) => {
     xml += `  </url>\n`
   }
 
-  // 동적 공지
   for (const n of (notices || [])) {
     const date = n.updated_at?.split(' ')[0] || now
-    xml += `  <url>\n    <loc>${SITE_URL}/notices/${n.id}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.5</priority>\n  </url>\n`
+    xml += `  <url><loc>${SITE_URL}/notices/${n.id}</loc><lastmod>${date}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>\n`
   }
 
-  // 백과사전 용어
+  // 지역 SEO 페이지
+  for (const sr of (seoRegions || [])) {
+    xml += `  <url><loc>${SITE_URL}/regions/${sr.slug}</loc><lastmod>${sr.updated_at?.split(' ')[0] || now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`
+  }
+
   for (const dt of (dictTerms || [])) {
     const date = dt.updated_at?.split(' ')[0] || now
-    xml += `  <url>\n    <loc>${SITE_URL}/dictionary/${dt.slug}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n`
+    xml += `  <url><loc>${SITE_URL}/dictionary/${dt.slug}</loc><lastmod>${date}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
   }
 
   xml += '</urlset>'
@@ -551,7 +719,6 @@ app.get('/sitemap.xml', async (c) => {
   })
 })
 
-// XML 이스케이프
 function escXml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 }

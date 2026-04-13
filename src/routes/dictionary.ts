@@ -92,12 +92,21 @@ app.get('/api/dictionary', async (c) => {
   })
 })
 
+// ─── 용어 인덱스 (자동 링크용, 가벼운 응답) ───
+app.get('/api/dictionary/terms-index', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT term, slug FROM dict_terms WHERE is_published = 1 AND LENGTH(term) >= 2 ORDER BY LENGTH(term) DESC LIMIT 200`
+  ).all()
+  c.header('Cache-Control', 'public, max-age=3600')
+  return c.json({ terms: results })
+})
+
 // ─── 용어 상세 (slug 기반) ───
 app.get('/api/dictionary/:slug', async (c) => {
   const slug = c.req.param('slug')
   
   // 예약어 체크 — stats, service, search 등 API 경로와 충돌 방지
-  if (['stats', 'service', 'search', 'categories'].includes(slug)) {
+  if (['stats', 'service', 'search', 'categories', 'terms-index'].includes(slug)) {
     return c.json({ error: 'Invalid slug' }, 400)
   }
 

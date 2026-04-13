@@ -21,15 +21,15 @@ export function mainPage() {
         <div class="menu-overlay"></div>
         <div class="menu-content">
           <div class="menu-links">
-            <a href="/#section-about" class="menu-link" data-hover data-index="01"><span>소개</span></a>
-            <a href="/#section-services" class="menu-link" data-hover data-index="02"><span>진료</span></a>
-            <a href="/cases" class="menu-link" data-hover data-index="03"><span>비포애프터</span></a>
-            <a href="/blogs" class="menu-link" data-hover data-index="04"><span>블로그</span></a>
-            <a href="/notices" class="menu-link" data-hover data-index="05"><span>공지사항</span></a>
+            <a href="/about" class="menu-link" data-hover data-index="01"><span>병원 소개</span></a>
+            <a href="/doctors" class="menu-link" data-hover data-index="02"><span>의료진</span></a>
+            <a href="/treatments" class="menu-link" data-hover data-index="03"><span>진료 안내</span></a>
+            <a href="/cases" class="menu-link" data-hover data-index="04"><span>비포애프터</span></a>
+            <a href="/blogs" class="menu-link" data-hover data-index="05"><span>블로그</span></a>
             <a href="/faq" class="menu-link" data-hover data-index="06"><span>자주 묻는 질문</span></a>
             <a href="/dictionary" class="menu-link" data-hover data-index="07"><span>백과사전</span></a>
-            <a href="/#section-director" class="menu-link" data-hover data-index="08"><span>의료진</span></a>
-            <a href="/#section-contact" class="menu-link" data-hover data-index="09"><span>예약</span></a>
+            <a href="/visit" class="menu-link" data-hover data-index="08"><span>내원 안내</span></a>
+            <a href="/notices" class="menu-link" data-hover data-index="09"><span>공지사항</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
@@ -333,18 +333,50 @@ export function mainPage() {
       </section>
 
       {/* FOOTER */}
-      <footer class="footer-minimal" role="contentinfo">
+      <footer class="footer-full" role="contentinfo">
         <div class="container-wide">
-          <div class="footer-top">
-            <div class="footer-brand-big">이음</div>
-            <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
+          <div class="footer-top-grid">
+            <div class="footer-brand-col">
+              <div class="footer-brand-big">이음</div>
+              <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
+              <div class="footer-sns">
+                <a href="https://www.instagram.com/eum.dental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+                </a>
+                <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" aria-label="이음치과 네이버 지도">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="footer-nav-col">
+              <h4>진료</h4>
+              <a href="/treatments">진료 안내</a>
+              <a href="/doctors">의료진 소개</a>
+              <a href="/cases">비포애프터</a>
+              <a href="/faq">자주 묻는 질문</a>
+            </div>
+            <div class="footer-nav-col">
+              <h4>콘텐츠</h4>
+              <a href="/blogs">블로그</a>
+              <a href="/dictionary">치과 백과사전</a>
+              <a href="/notices">공지사항</a>
+            </div>
+            <div class="footer-nav-col">
+              <h4>안내</h4>
+              <a href="/about">병원 소개</a>
+              <a href="/visit">내원 안내</a>
+              <a href="tel:051-206-5888">전화 상담</a>
+            </div>
+          </div>
+          <div class="footer-biz-info">
+            <p>이음치과의원 | 대표원장: 최효영 | 사업자등록번호: 000-00-00000</p>
+            <p>부산광역시 강서구 명지국제8로 265 2층 | TEL: 051-206-5888 | E-mail: hyogunim@gmail.com</p>
           </div>
           <div class="footer-bottom-bar">
-            <span>&copy; 2025 이음치과의원. 대표원장 최효영</span>
-            <div class="footer-links">
-              <a href="/faq">자주 묻는 질문</a>
-              <a href="/dictionary">치과 백과사전</a>
-              <a href="mailto:hyogunim@gmail.com">hyogunim@gmail.com</a>
+            <span>&copy; 2025 이음치과의원. All rights reserved.</span>
+            <div class="footer-legal-links">
+              <a href="/about">개인정보처리방침</a>
+              <a href="/about">이용약관</a>
             </div>
           </div>
         </div>
@@ -356,6 +388,7 @@ export function mainPage() {
       </a>
 
       <script src="/static/app.js"></script>
+      <script src="/static/gsap-init.js"></script>
     </div>
   )
 }

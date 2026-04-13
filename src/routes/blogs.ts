@@ -44,16 +44,17 @@ blogs.get('/api/admin/blogs', async (c) => {
   return c.json({ blogs: results })
 })
 
-// Create blog (with SEO + rich content)
+// Create blog (with SEO + rich content + author)
 blogs.post('/api/admin/blogs', async (c) => {
   const body = await c.req.json()
-  const { title, content, content_html, thumbnail, images, meta_title, meta_description, slug } = body
+  const { title, content, content_html, thumbnail, images, meta_title, meta_description, slug, author_name, doctor_id } = body
 
   const result = await c.env.DB.prepare(
-    'INSERT INTO blogs (title, content, content_html, thumbnail, meta_title, meta_description, slug) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    'INSERT INTO blogs (title, content, content_html, thumbnail, meta_title, meta_description, slug, author_name, doctor_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
   ).bind(
     title || '', content || '', content_html || null,
-    thumbnail || null, meta_title || null, meta_description || null, slug || null
+    thumbnail || null, meta_title || null, meta_description || null, slug || null,
+    author_name || '최효영', doctor_id || null
   ).run()
 
   const blogId = result.meta.last_row_id
@@ -74,15 +75,16 @@ blogs.post('/api/admin/blogs', async (c) => {
 blogs.put('/api/admin/blogs/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, content, content_html, thumbnail, images, is_published, meta_title, meta_description, slug } = body
+  const { title, content, content_html, thumbnail, images, is_published, meta_title, meta_description, slug, author_name, doctor_id } = body
 
   await c.env.DB.prepare(
     `UPDATE blogs SET title=?, content=?, content_html=?, thumbnail=?,
-     meta_title=?, meta_description=?, slug=?,
+     meta_title=?, meta_description=?, slug=?, author_name=?, doctor_id=?,
      is_published=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`
   ).bind(
     title, content, content_html || null, thumbnail || null,
     meta_title || null, meta_description || null, slug || null,
+    author_name || '최효영', doctor_id || null,
     is_published ?? 1, id
   ).run()
 

@@ -7,7 +7,7 @@
 export const SITE_URL = 'https://eum-dental.pages.dev'
 export const SITE_NAME = '이음치과의원'
 export const SITE_NAME_EN = 'Eum Dental Clinic'
-const DEFAULT_IMAGE = `${SITE_URL}/static/img/photo_1.jpg`
+const DEFAULT_IMAGE = `${SITE_URL}/static/og-image.png`
 const LOGO_URL = `${SITE_URL}/static/favicon.svg`
 const PHONE = '+82-51-206-5888'
 const PHONE_DISPLAY = '051-206-5888'
@@ -524,6 +524,76 @@ export function renderSeoHead(meta: SeoMeta): string {
   })
 
   return html
+}
+
+// ═══════════════════════════════════════════
+// 12. 진료과목 상세 스키마
+// ═══════════════════════════════════════════
+
+export function treatmentJsonLd(treatment: any) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalWebPage',
+    name: treatment.name,
+    description: treatment.meta_description || treatment.short_desc || `이음치과의원 ${treatment.name} 전문 진료`,
+    url: `${SITE_URL}/treatments/${treatment.slug}`,
+    specialty: treatment.name,
+    image: treatment.hero_image ? (treatment.hero_image.startsWith('http') ? treatment.hero_image : `${SITE_URL}${treatment.hero_image}`) : DEFAULT_IMAGE,
+    lastReviewed: treatment.updated_at || new Date().toISOString().split('T')[0],
+    reviewedBy: { '@id': `${SITE_URL}/#director` },
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    about: {
+      '@type': 'MedicalProcedure',
+      name: treatment.name,
+      description: treatment.short_desc || '',
+      bodyLocation: '구강',
+      ...(treatment.duration ? { estimatedTime: treatment.duration } : {})
+    },
+    mainContentOfPage: {
+      '@type': 'WebPageElement',
+      cssSelector: '.treat-detail-hero, .treat-section'
+    },
+    inLanguage: 'ko-KR'
+  }
+}
+
+// ═══════════════════════════════════════════
+// 13. 의료진 상세 스키마
+// ═══════════════════════════════════════════
+
+export function doctorJsonLd(doctor: any) {
+  const specs = typeof doctor.specialties === 'string'
+    ? (() => { try { return JSON.parse(doctor.specialties) } catch { return [] } })()
+    : doctor.specialties || []
+
+  const edu = typeof doctor.education === 'string'
+    ? (() => { try { return JSON.parse(doctor.education) } catch { return [] } })()
+    : doctor.education || []
+
+  const membershipsArr = typeof doctor.memberships === 'string'
+    ? (() => { try { return JSON.parse(doctor.memberships) } catch { return [] } })()
+    : doctor.memberships || []
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE_URL}/doctors/${doctor.slug}/#person`,
+    name: doctor.name,
+    jobTitle: doctor.title || '원장',
+    description: doctor.greeting || `이음치과의원 ${doctor.name} ${doctor.title || '원장'}`,
+    image: doctor.photo ? (doctor.photo.startsWith('http') ? doctor.photo : `${SITE_URL}${doctor.photo}`) : undefined,
+    url: `${SITE_URL}/doctors/${doctor.slug}`,
+    worksFor: { '@type': 'Dentist', name: SITE_NAME, '@id': `${SITE_URL}/#organization` },
+    knowsAbout: specs,
+    ...(edu.length > 0 ? {
+      alumniOf: edu.map((e: any) => ({ '@type': 'CollegeOrUniversity', name: e.school || e.name || '' }))
+    } : {}),
+    ...(membershipsArr.length > 0 ? {
+      memberOf: membershipsArr.map((m: any) => ({
+        '@type': 'Organization', name: typeof m === 'string' ? m : (m.org || m.name || '')
+      }))
+    } : {})
+  }
 }
 
 function esc(s: string): string {

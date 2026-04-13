@@ -100,33 +100,84 @@ export function adminPage() {
               </div>
               <div class="admin-list" id="casesList"></div>
 
-              {/* Case Form Modal */}
+              {/* Case Form Modal — Expanded */}
               <div class="modal-overlay" id="caseModal" style="display:none">
-                <div class="modal-card">
+                <div class="modal-card modal-large">
                   <div class="modal-header">
                     <h3 id="caseModalTitle">새 케이스 등록</h3>
                     <button class="modal-close" data-close="caseModal">&times;</button>
                   </div>
                   <form id="caseForm" class="admin-form">
                     <input type="hidden" id="caseId" />
-                    <div class="form-group">
-                      <label>제목</label>
-                      <input type="text" id="caseTitle" placeholder="예: 임플란트 2개 식립 케이스" required />
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>제목 (SEO 키워드 포함 권장)</label>
+                        <input type="text" id="caseTitle" placeholder="예: 상악 임플란트 2개 식립" required />
+                      </div>
+                      <div class="form-group">
+                        <label>카테고리</label>
+                        <select id="caseCategory">
+                          <option value="implant">임플란트</option>
+                          <option value="aesthetic">심미보철</option>
+                          <option value="resin">심미 레진</option>
+                          <option value="tmj">턱관절</option>
+                          <option value="general">일반진료</option>
+                        </select>
+                      </div>
                     </div>
-                    <div class="form-group">
-                      <label>카테고리</label>
-                      <select id="caseCategory">
-                        <option value="implant">임플란트</option>
-                        <option value="aesthetic">심미보철</option>
-                        <option value="resin">심미 레진</option>
-                        <option value="tmj">턱관절</option>
-                        <option value="general">일반진료</option>
-                      </select>
-                    </div>
+
                     <div class="form-group">
                       <label>설명</label>
-                      <textarea id="caseDesc" rows={3} placeholder="케이스에 대한 간단한 설명"></textarea>
+                      <textarea id="caseDesc" rows={3} placeholder="케이스에 대한 간단한 설명 (SEO 설명으로도 활용됩니다)"></textarea>
                     </div>
+
+                    {/* Expanded patient/treatment fields */}
+                    <div class="form-section-title">환자 및 치료 정보</div>
+                    <div class="form-row-3">
+                      <div class="form-group">
+                        <label>환자 연령대</label>
+                        <select id="caseAgeGroup">
+                          <option value="">선택 안함</option>
+                          <option value="10대">10대</option>
+                          <option value="20대">20대</option>
+                          <option value="30대">30대</option>
+                          <option value="40대">40대</option>
+                          <option value="50대">50대</option>
+                          <option value="60대">60대</option>
+                          <option value="70대 이상">70대 이상</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>환자 성별</label>
+                        <select id="caseGender">
+                          <option value="">선택 안함</option>
+                          <option value="M">남성</option>
+                          <option value="F">여성</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>치료 기간</label>
+                        <input type="text" id="caseDuration" placeholder="예: 3개월, 6개월" />
+                      </div>
+                    </div>
+
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>담당 의료진</label>
+                        <select id="caseDoctorId">
+                          <option value="">선택 안함</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>지역 (SEO 지역키워드)</label>
+                        <div class="region-autocomplete-wrap">
+                          <input type="text" id="caseRegionInput" placeholder="동 이름 입력 (예: 초지, 명지)" autocomplete="off" />
+                          <div class="region-suggestions" id="regionSuggestions" style="display:none"></div>
+                          <input type="hidden" id="caseRegionText" />
+                        </div>
+                      </div>
+                    </div>
+
                     <div class="form-group">
                       <label>이미지 업로드 (올린 칸만 사이트에 표시됩니다)</label>
                       <div class="case-images-grid">
@@ -207,6 +258,13 @@ export function adminPage() {
                         <label>URL 슬러그 (영문, 비워두면 자동생성)</label>
                         <input type="text" id="blogSlug" placeholder="busan-myeongji-implant-cost" />
                       </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label>작성자</label>
+                      <select id="blogAuthor">
+                        <option value="">자동 (의료진 목록에서 선택)</option>
+                      </select>
                     </div>
 
                     {/* Rich Content Editor */}
@@ -312,10 +370,29 @@ export function adminPage() {
                       <textarea id="noticeContent" rows={6} placeholder="공지 내용을 입력하세요"></textarea>
                     </div>
                     <div class="form-group">
-                      <label class="checkbox-label">
-                        <input type="checkbox" id="noticePinned" />
-                        상단 고정
-                      </label>
+                      <label>이미지 업로드 (공지 본문에 삽입됩니다)</label>
+                      <div class="dropzone dropzone-sm" id="noticeDropzone">
+                        <div class="dropzone-msg"><p>이미지를 드래그하거나 클릭하세요</p></div>
+                        <input type="file" id="noticeFiles" accept="image/*" multiple style="display:none" />
+                      </div>
+                      <div class="blog-preview-grid" id="noticePreviewGrid"></div>
+                    </div>
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label class="checkbox-label">
+                          <input type="checkbox" id="noticePinned" />
+                          상단 고정 (메인 공지)
+                        </label>
+                      </div>
+                      <div class="form-group">
+                        <label>썸네일 (목록에 표시)</label>
+                        <div class="notice-thumb-upload">
+                          <div id="noticeThumbPreview" class="img-slot-preview"></div>
+                          <input type="file" id="noticeThumbFile" accept="image/*" style="display:none" />
+                          <button type="button" class="btn-sm" id="noticeThumbBtn">선택</button>
+                          <input type="hidden" id="noticeThumbVal" />
+                        </div>
+                      </div>
                     </div>
                     <div class="form-actions">
                       <button type="button" class="btn-secondary" data-close="noticeModal">취소</button>

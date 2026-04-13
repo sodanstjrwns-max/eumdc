@@ -1,9 +1,13 @@
 /* ============================================
-   이음치과 — Admin Dashboard Scripts
-   Dashboard Stats, Cases, Blog (SEO), Notices, FAQ, Users CRUD
+   이음치과 — Admin Dashboard Scripts v2
+   Dashboard Stats, Cases (expanded), Blog (SEO + author),
+   Notices (images + thumbnail), FAQ, Users CRUD,
+   Region autocomplete
    ============================================ */
 (function () {
   'use strict';
+
+  var doctors = [];
 
   document.addEventListener('DOMContentLoaded', init);
 
@@ -13,11 +17,42 @@
     initLogout();
     initTabs();
     initModals();
-    initCasesAdmin();
-    initBlogsAdmin();
-    initNoticesAdmin();
-    initFaqAdmin();
-    initUsersAdmin();
+    loadDoctors(function () {
+      initCasesAdmin();
+      initBlogsAdmin();
+      initNoticesAdmin();
+      initFaqAdmin();
+      initUsersAdmin();
+      initRegionAutocomplete();
+    });
+  }
+
+  // === Load doctors for dropdowns ===
+  function loadDoctors(callback) {
+    fetch('/api/doctors').then(function (r) { return r.json(); }).then(function (data) {
+      doctors = data.doctors || [];
+      // Populate case doctor select
+      var caseSel = document.getElementById('caseDoctorId');
+      if (caseSel) {
+        doctors.forEach(function (d) {
+          var opt = document.createElement('option');
+          opt.value = d.id;
+          opt.textContent = d.name + ' ' + d.title;
+          caseSel.appendChild(opt);
+        });
+      }
+      // Populate blog author select
+      var blogSel = document.getElementById('blogAuthor');
+      if (blogSel) {
+        doctors.forEach(function (d) {
+          var opt = document.createElement('option');
+          opt.value = d.name;
+          opt.textContent = d.name + ' ' + d.title;
+          blogSel.appendChild(opt);
+        });
+      }
+      callback();
+    }).catch(function () { callback(); });
   }
 
   // === AUTH ===
@@ -101,7 +136,7 @@
     });
   }
 
-  // === Upload helper ===
+  // === Upload helpers ===
   function uploadFile(file) {
     var fd = new FormData();
     fd.append('file', file);
@@ -128,6 +163,63 @@
   }
 
   // =============================
+  // REGION AUTOCOMPLETE
+  // =============================
+  function initRegionAutocomplete() {
+    var input = document.getElementById('caseRegionInput');
+    var suggestions = document.getElementById('regionSuggestions');
+    var hiddenField = document.getElementById('caseRegionText');
+    if (!input || !suggestions) return;
+
+    var debounceTimer = null;
+
+    input.addEventListener('input', function () {
+      clearTimeout(debounceTimer);
+      var q = input.value.trim();
+      if (q.length < 1) {
+        suggestions.style.display = 'none';
+        return;
+      }
+      debounceTimer = setTimeout(function () {
+        fetch('/api/regions/autocomplete?q=' + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            var regions = data.regions || [];
+            if (regions.length === 0) {
+              suggestions.style.display = 'none';
+              return;
+            }
+            suggestions.innerHTML = '';
+            regions.forEach(function (r) {
+              var item = document.createElement('div');
+              item.className = 'region-suggestion-item';
+              item.textContent = r.full_address;
+              item.addEventListener('click', function () {
+                input.value = r.full_address;
+                hiddenField.value = r.full_address;
+                suggestions.style.display = 'none';
+              });
+              suggestions.appendChild(item);
+            });
+            suggestions.style.display = '';
+          });
+      }, 200);
+    });
+
+    // Close on click outside
+    document.addEventListener('click', function (e) {
+      if (!suggestions.contains(e.target) && e.target !== input) {
+        suggestions.style.display = 'none';
+      }
+    });
+
+    // Allow manual entry (fallback if no suggestion picked)
+    input.addEventListener('change', function () {
+      hiddenField.value = input.value;
+    });
+  }
+
+  // =============================
   // DASHBOARD STATS
   // =============================
   function loadStats() {
@@ -142,13 +234,15 @@
   }
 
   // =============================
-  // CASES ADMIN
+  // CASES ADMIN (Expanded fields)
   // =============================
   function initCasesAdmin() {
     document.getElementById('newCaseBtn').addEventListener('click', function () {
       document.getElementById('caseModalTitle').textContent = '새 케이스 등록';
       document.getElementById('caseForm').reset();
       document.getElementById('caseId').value = '';
+      document.getElementById('caseRegionInput').value = '';
+      document.getElementById('caseRegionText').value = '';
       clearCasePreviews();
       document.getElementById('caseModal').style.display = '';
     });
@@ -166,7 +260,7 @@
       });
     });
 
-    // Form submit
+    // Form submit with expanded fields
     document.getElementById('caseForm').addEventListener('submit', function (e) {
       e.preventDefault();
       var id = document.getElementById('caseId').value;
@@ -178,6 +272,11 @@
         pano_after: document.getElementById('val-pano_after').value || null,
         intra_before: document.getElementById('val-intra_before').value || null,
         intra_after: document.getElementById('val-intra_after').value || null,
+        patient_age_group: document.getElementById('caseAgeGroup').value || '',
+        patient_gender: document.getElementById('caseGender').value || '',
+        treatment_duration: document.getElementById('caseDuration').value || '',
+        doctor_id: document.getElementById('caseDoctorId').value || null,
+        region_text: document.getElementById('caseRegionText').value || document.getElementById('caseRegionInput').value || '',
       };
 
       var url = id ? '/api/admin/cases/' + id : '/api/admin/cases';
@@ -213,6 +312,13 @@
       data.cases.forEach(function (c) {
         var thumb = c.pano_before || c.intra_before || '';
         var imgCount = [c.pano_before, c.pano_after, c.intra_before, c.intra_after].filter(Boolean).length;
+
+        var metaParts = [];
+        if (c.patient_age_group) metaParts.push(c.patient_age_group);
+        if (c.patient_gender) metaParts.push(c.patient_gender === 'M' ? '남' : c.patient_gender === 'F' ? '여' : c.patient_gender);
+        if (c.doctor_name) metaParts.push(c.doctor_name);
+        if (c.region_text) metaParts.push(c.region_text);
+
         var row = document.createElement('div');
         row.className = 'admin-row';
         row.innerHTML =
@@ -221,6 +327,7 @@
             '<h4>' + (c.title || '(제목 없음)') + '</h4>' +
             '<span class="admin-tag">' + categoryLabel(c.category) + '</span>' +
             '<span class="admin-meta">사진 ' + imgCount + '장 · 조회 ' + (c.views || 0) + ' · ' + formatDate(c.created_at) + '</span>' +
+            (metaParts.length > 0 ? '<span class="admin-meta">' + metaParts.join(' · ') + '</span>' : '') +
           '</div>' +
           '<div class="admin-row-actions">' +
             '<button class="btn-edit" data-edit-case="' + c.id + '">수정</button>' +
@@ -250,6 +357,12 @@
     document.getElementById('caseTitle').value = c.title || '';
     document.getElementById('caseCategory').value = c.category || 'implant';
     document.getElementById('caseDesc').value = c.description || '';
+    document.getElementById('caseAgeGroup').value = c.patient_age_group || '';
+    document.getElementById('caseGender').value = c.patient_gender || '';
+    document.getElementById('caseDuration').value = c.treatment_duration || '';
+    document.getElementById('caseDoctorId').value = c.doctor_id || '';
+    document.getElementById('caseRegionInput').value = c.region_text || '';
+    document.getElementById('caseRegionText').value = c.region_text || '';
 
     ['pano_before', 'pano_after', 'intra_before', 'intra_after'].forEach(function (s) {
       var val = c[s] || '';
@@ -266,7 +379,7 @@
   }
 
   // =============================
-  // BLOGS ADMIN (SEO Enhanced)
+  // BLOGS ADMIN (SEO Enhanced + Author)
   // =============================
   var blogImages = [];
 
@@ -319,7 +432,6 @@
           case 'bold': insert = '**' + (selected || '굵은 텍스트') + '**'; break;
           case 'ul': insert = '\n- ' + (selected || '목록 항목') + '\n'; break;
           case 'img':
-            // Trigger file upload
             var fileInput = document.getElementById('blogFiles');
             if (fileInput) fileInput.click();
             return;
@@ -351,9 +463,17 @@
       e.preventDefault();
       var id = document.getElementById('blogId').value;
 
-      // Convert markdown to HTML for content_html
       var rawContent = document.getElementById('blogContent').value;
       var contentHtml = markdownToHtml(rawContent);
+
+      var authorSel = document.getElementById('blogAuthor');
+      var authorName = authorSel ? authorSel.value : '';
+      // Find doctor_id from author name
+      var doctorId = null;
+      if (authorName) {
+        var found = doctors.find(function (d) { return d.name === authorName; });
+        if (found) doctorId = found.id;
+      }
 
       var payload = {
         title: document.getElementById('blogTitle').value,
@@ -363,7 +483,9 @@
         images: blogImages,
         meta_title: document.getElementById('blogMetaTitle').value || null,
         meta_description: document.getElementById('blogMetaDesc').value || null,
-        slug: document.getElementById('blogSlug').value || null
+        slug: document.getElementById('blogSlug').value || null,
+        author_name: authorName || '최효영',
+        doctor_id: doctorId
       };
 
       var url = id ? '/api/admin/blogs/' + id : '/api/admin/blogs';
@@ -399,7 +521,6 @@
     }
   }
 
-  // Simple markdown -> HTML converter
   function markdownToHtml(md) {
     if (!md) return '';
     var html = md
@@ -409,12 +530,10 @@
       .replace(/^---$/gm, '<hr/>')
       .replace(/^- (.+)$/gm, '<li>$1</li>');
 
-    // Wrap consecutive <li> in <ul>
     html = html.replace(/(<li>.*<\/li>\n?)+/g, function (match) {
       return '<ul>' + match + '</ul>';
     });
 
-    // Wrap remaining lines in <p> tags
     var lines = html.split('\n');
     var result = [];
     lines.forEach(function (line) {
@@ -478,8 +597,10 @@
           '<div class="admin-row-thumb">' + (b.thumbnail ? '<img src="' + b.thumbnail + '"/>' : '') + '</div>' +
           '<div class="admin-row-info">' +
             '<h4>' + (b.title || '(제목 없음)') + '</h4>' +
-            '<span class="admin-meta">조회 ' + (b.views || 0) + ' · ' + formatDate(b.created_at) +
-            (b.slug ? ' · /' + b.slug : '') + '</span>' +
+            '<span class="admin-meta">' +
+              (b.author_name ? b.author_name + ' · ' : '') +
+              '조회 ' + (b.views || 0) + ' · ' + formatDate(b.created_at) +
+              (b.slug ? ' · /' + b.slug : '') + '</span>' +
           '</div>' +
           '<div class="admin-row-actions">' +
             '<button class="btn-edit" data-edit-blog="' + b.id + '">수정</button>' +
@@ -510,6 +631,8 @@
       document.getElementById('blogMetaTitle').value = b.meta_title || '';
       document.getElementById('blogMetaDesc').value = b.meta_description || '';
       document.getElementById('blogSlug').value = b.slug || '';
+      var authorSel = document.getElementById('blogAuthor');
+      if (authorSel) authorSel.value = b.author_name || '';
       blogImages = (b.images || []).map(function (img) { return img.image_url; });
       renderBlogPreviews();
       updateCharCounts();
@@ -518,15 +641,50 @@
   }
 
   // =============================
-  // NOTICES ADMIN
+  // NOTICES ADMIN (with images + thumbnail)
   // =============================
+  var noticeImages = [];
+
   function initNoticesAdmin() {
     document.getElementById('newNoticeBtn').addEventListener('click', function () {
       document.getElementById('noticeModalTitle').textContent = '새 공지사항';
       document.getElementById('noticeForm').reset();
       document.getElementById('noticeId').value = '';
+      document.getElementById('noticeThumbVal').value = '';
+      document.getElementById('noticeThumbPreview').innerHTML = '';
+      noticeImages = [];
+      renderNoticePreviews();
       document.getElementById('noticeModal').style.display = '';
     });
+
+    // Thumbnail upload
+    var thumbBtn = document.getElementById('noticeThumbBtn');
+    var thumbFile = document.getElementById('noticeThumbFile');
+    if (thumbBtn && thumbFile) {
+      thumbBtn.addEventListener('click', function () { thumbFile.click(); });
+      thumbFile.addEventListener('change', function () {
+        if (!this.files[0]) return;
+        uploadFile(this.files[0]).then(function (data) {
+          document.getElementById('noticeThumbVal').value = data.url;
+          document.getElementById('noticeThumbPreview').innerHTML = '<img src="' + data.url + '" />';
+        });
+      });
+    }
+
+    // Image dropzone
+    var dz = document.getElementById('noticeDropzone');
+    var fileInput = document.getElementById('noticeFiles');
+    if (dz && fileInput) {
+      dz.addEventListener('click', function () { fileInput.click(); });
+      dz.addEventListener('dragover', function (e) { e.preventDefault(); dz.classList.add('dragover'); });
+      dz.addEventListener('dragleave', function () { dz.classList.remove('dragover'); });
+      dz.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dz.classList.remove('dragover');
+        handleNoticeFiles(e.dataTransfer.files);
+      });
+      fileInput.addEventListener('change', function () { handleNoticeFiles(this.files); this.value = ''; });
+    }
 
     document.getElementById('noticeForm').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -534,7 +692,9 @@
       var payload = {
         title: document.getElementById('noticeTitle').value,
         content: document.getElementById('noticeContent').value,
-        is_pinned: document.getElementById('noticePinned').checked
+        is_pinned: document.getElementById('noticePinned').checked,
+        thumbnail: document.getElementById('noticeThumbVal').value || null,
+        images: noticeImages
       };
 
       var url = id ? '/api/admin/notices/' + id : '/api/admin/notices';
@@ -552,6 +712,33 @@
     });
   }
 
+  function handleNoticeFiles(files) {
+    if (!files || files.length === 0) return;
+    var arr = Array.from(files);
+    uploadMulti(arr).then(function (data) {
+      data.files.forEach(function (f) { noticeImages.push(f.url); });
+      renderNoticePreviews();
+    });
+  }
+
+  function renderNoticePreviews() {
+    var grid = document.getElementById('noticePreviewGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    noticeImages.forEach(function (url, i) {
+      var item = document.createElement('div');
+      item.className = 'blog-preview-item';
+      item.innerHTML = '<img src="' + url + '" /><button type="button" class="remove-img" data-remove-notice="' + i + '">&times;</button>';
+      grid.appendChild(item);
+    });
+    grid.querySelectorAll('[data-remove-notice]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        noticeImages.splice(parseInt(btn.dataset.removeNotice), 1);
+        renderNoticePreviews();
+      });
+    });
+  }
+
   function loadNotices() {
     fetch('/api/admin/notices').then(function (r) { return r.json(); }).then(function (data) {
       var list = document.getElementById('noticesList2');
@@ -564,6 +751,7 @@
         var row = document.createElement('div');
         row.className = 'admin-row';
         row.innerHTML =
+          '<div class="admin-row-thumb">' + (n.thumbnail ? '<img src="' + n.thumbnail + '"/>' : '') + '</div>' +
           '<div class="admin-row-info">' +
             (n.is_pinned ? '<span class="admin-pin">📌</span>' : '') +
             '<h4>' + (n.title || '(제목 없음)') + '</h4>' +
@@ -597,6 +785,10 @@
     document.getElementById('noticeTitle').value = n.title || '';
     document.getElementById('noticeContent').value = n.content || '';
     document.getElementById('noticePinned').checked = !!n.is_pinned;
+    document.getElementById('noticeThumbVal').value = n.thumbnail || '';
+    document.getElementById('noticeThumbPreview').innerHTML = n.thumbnail ? '<img src="' + n.thumbnail + '" />' : '';
+    noticeImages = [];
+    renderNoticePreviews();
     document.getElementById('noticeModal').style.display = '';
   }
 
