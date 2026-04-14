@@ -26,6 +26,9 @@
   function initCinematicEngine() {
     gsap.registerPlugin(ScrollTrigger);
 
+    // Mark body so CSS knows GSAP is handling reveals (not app.js fallback)
+    document.body.classList.add('gsap-active');
+
     ScrollTrigger.defaults({
       toggleActions: 'play none none none'
     });
@@ -686,19 +689,25 @@
   // GENERIC REVEALS — Enhanced with stagger + blur
   // ═══════════════════════════════════════════════════
   function initGenericReveals() {
-    // Data-reveal elements with blur-in effect
+    // Data-reveal elements — GSAP takes full control
+    // Set initial hidden state immediately, then animate on scroll
     gsap.utils.toArray('[data-reveal]').forEach(function (el) {
-      gsap.from(el, {
-        scrollTrigger: {
-          trigger: el,
-          start: 'top 85%',
-          once: true
-        },
-        y: 60,
-        opacity: 0,
-        filter: 'blur(4px)',
-        duration: 1.2,
-        ease: 'power3.out'
+      // Force initial hidden state via GSAP (overrides any CSS)
+      gsap.set(el, { opacity: 0, y: 40, filter: 'blur(4px)' });
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 88%',
+        once: true,
+        onEnter: function() {
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 1.0,
+            ease: 'power3.out'
+          });
+        }
       });
     });
 

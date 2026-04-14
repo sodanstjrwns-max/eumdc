@@ -2429,10 +2429,8 @@ body::after {
   margin-bottom: 2rem;
   padding-left: 2rem;
   border-left: 2px solid var(--cta-bright);
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s var(--ease);
   font-style: italic;
+  /* opacity/transform handled by [data-reveal] system */
 }
 
 /* Director — philosophy paragraph */
@@ -2443,18 +2441,7 @@ body::after {
   color: var(--dark-text-dim);
   margin-bottom: 3rem;
   max-width: 520px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.7s var(--ease);
-}
-.director-philosophy.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.director-quote.visible {
-  opacity: 1;
-  transform: translateY(0);
+  /* opacity/transform handled by [data-reveal] system */
 }
 
 .credentials-grid {
@@ -2464,14 +2451,8 @@ body::after {
 }
 
 .cred-block {
-  opacity: 0;
-  transform: translateY(20px);
+  /* opacity/transform handled by [data-reveal] system */
   transition: all 0.6s var(--ease);
-}
-
-.cred-block.visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .cred-block h4 {
@@ -2547,16 +2528,10 @@ body::after {
   margin: -0.5px;
   transition: all 0.5s var(--ease);
   border-radius: 0;
-  opacity: 0;
-  transform: translateY(20px);
   position: relative;
   overflow: hidden;
   transform-style: preserve-3d;
-}
-
-.equip-item.visible {
-  opacity: 1;
-  transform: translateY(0);
+  /* opacity/transform handled by [data-reveal] system */
 }
 
 /* Corner accent on hover */
@@ -3313,6 +3288,9 @@ body::after {
 }
 
 /* === REVEAL ANIMATIONS === */
+/* When GSAP is loaded (main page), GSAP handles [data-reveal] via gsap.from().
+   When GSAP is NOT loaded (sub-pages), app.js IntersectionObserver adds .visible.
+   We set initial hidden state ONLY for non-GSAP (sub-page) fallback. */
 [data-reveal] {
   opacity: 0;
   transform: translateY(30px);
@@ -3322,6 +3300,15 @@ body::after {
 [data-reveal].visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* When GSAP is active, it sets inline styles that override CSS.
+   Mark body so we know GSAP is in charge. */
+body.gsap-active [data-reveal] {
+  /* Let GSAP control opacity/transform via inline styles */
+  opacity: unset;
+  transform: unset;
+  transition: none;
 }
 
 /* === RESPONSIVE === */

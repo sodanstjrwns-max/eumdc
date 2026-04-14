@@ -289,7 +289,16 @@
   }
 
   // === SCROLL REVEALS ===
+  // Fallback for sub-pages where GSAP is not loaded.
+  // When GSAP is active (body.gsap-active), GSAP handles [data-reveal].
   function initScrollReveals() {
+    // Delay check — GSAP may not have initialized yet
+    setTimeout(function() {
+      if (document.body.classList.contains('gsap-active')) return;
+      _initScrollRevealsCore();
+    }, 300);
+  }
+  function _initScrollRevealsCore() {
     var elements = document.querySelectorAll('[data-reveal]');
 
     var observer = new IntersectionObserver(function (entries) {
