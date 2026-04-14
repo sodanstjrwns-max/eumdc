@@ -26,6 +26,9 @@
       toggleActions: 'play none none none'
     });
 
+    // === STORY NARRATIVE — Scroll-triggered text sequence ===
+    initStoryNarrative();
+
     // === Reveal animations for [data-reveal] elements ===
     gsap.utils.toArray('[data-reveal]').forEach(function (el) {
       gsap.from(el, {
@@ -283,5 +286,119 @@
     });
 
     console.log('[EUM] GSAP animations initialized');
+  }
+
+  // ═══════════════════════════════════════════
+  // STORY NARRATIVE ENGINE
+  // Each .story-line enters viewport → text becomes visible
+  // with staggered, mood-appropriate timing
+  // ═══════════════════════════════════════════
+  function initStoryNarrative() {
+    var storyLines = document.querySelectorAll('.story-line');
+    if (!storyLines.length) return;
+
+    storyLines.forEach(function (line) {
+      var text = line.querySelector('.story-text');
+      if (!text) return;
+
+      var storyIndex = parseInt(line.dataset.story) || 0;
+
+      // Determine timing based on story beat
+      var duration = 0.9;
+      var startPos = 'top 70%';
+      var yOffset = 50;
+
+      // Question beats — reveal sooner, bigger motion
+      if (text.classList.contains('story-question')) {
+        duration = 1.2;
+        yOffset = 60;
+        startPos = 'top 75%';
+      }
+
+      // Whisper/small — subtle entrance
+      if (text.classList.contains('story-whisper') || text.classList.contains('story-small')) {
+        duration = 1.0;
+        yOffset = 20;
+      }
+
+      // Pause — quick snap
+      if (text.classList.contains('story-pause')) {
+        duration = 0.6;
+        yOffset = 0;
+      }
+
+      // Turn — dramatic entrance
+      if (text.classList.contains('story-turn')) {
+        duration = 1.4;
+        yOffset = 80;
+      }
+
+      // Finale — big reveal
+      if (text.classList.contains('story-finale')) {
+        duration = 1.5;
+        yOffset = 100;
+        startPos = 'top 65%';
+      }
+
+      ScrollTrigger.create({
+        trigger: line,
+        start: startPos,
+        once: true,
+        onEnter: function () {
+          text.classList.add('visible');
+          // GSAP enhancement on top of CSS transition
+          gsap.fromTo(text, 
+            { y: yOffset, opacity: 0 },
+            { 
+              y: 0, 
+              opacity: 1, 
+              duration: duration, 
+              ease: 'power3.out',
+              clearProps: 'transform'
+            }
+          );
+        }
+      });
+    });
+
+    // === Climax chapter — background transition ===
+    var climax = document.getElementById('storyChapter6');
+    if (climax) {
+      // Parallax-like effect on the finale text
+      var finaleText = climax.querySelector('.story-finale');
+      if (finaleText) {
+        gsap.fromTo(finaleText, 
+          { scale: 0.85 },
+          {
+            scale: 1,
+            scrollTrigger: {
+              trigger: climax,
+              start: 'top 80%',
+              end: 'center center',
+              scrub: 1
+            },
+            ease: 'none'
+          }
+        );
+      }
+    }
+
+    // === Turn chapter — subtle bg color shift ===
+    var turnChapter = document.getElementById('storyChapter4');
+    if (turnChapter) {
+      gsap.fromTo(turnChapter,
+        { backgroundColor: 'rgba(245,247,250,0)' },
+        {
+          backgroundColor: 'rgba(245,247,250,1)',
+          scrollTrigger: {
+            trigger: turnChapter,
+            start: 'top 80%',
+            end: 'top 20%',
+            scrub: 1
+          },
+          ease: 'none'
+        }
+      );
+    }
   }
 })();

@@ -1,4 +1,7 @@
-/** Main page JSX — REVOLUTIONARY REDESIGN v3 */
+/** Main page JSX — STORY-DRIVEN REDESIGN v4
+ *  Flow: Question → Insight → Aha → Therefore → Proof
+ *  "Why is the dentist so scary?" → "Because you can't see" → "We show everything" → Trust
+ */
 export function mainPage() {
   return (
     <div id="app">
@@ -48,10 +51,11 @@ export function mainPage() {
         </div>
       </div>
 
-      {/* ═══════════════════════════════════
-          HERO — Immersive Full-Screen
-      ═══════════════════════════════════ */}
-      <section class="section hero" id="section-hero" aria-label="이음치과의원 소개">
+      {/* ═══════════════════════════════════════════════════
+          ACT 1 — THE QUESTION (치과가 두려운 이유)
+          Opening hook: 누구나 공감하는 질문으로 시작
+      ═══════════════════════════════════════════════════ */}
+      <section class="section story-hero" id="section-hero" aria-label="이음치과의원 소개">
         <div class="hero-bg">
           <div class="hero-mesh" id="heroMesh" aria-hidden="true">
             <div class="mesh-blob mesh-blob-1"></div>
@@ -62,8 +66,6 @@ export function mainPage() {
           </div>
           <div class="grain" aria-hidden="true"></div>
         </div>
-
-        {/* Horizontal scan line effect */}
         <div class="hero-scan-line" id="heroScanLine" aria-hidden="true"></div>
 
         <div class="hero-content">
@@ -72,40 +74,123 @@ export function mainPage() {
             <span class="tag-text">EUM DENTAL CLINIC — BUSAN</span>
           </div>
           <h1 class="hero-title">
-            <span class="title-line"><span class="title-word" data-split>실력으로</span></span>
-            <span class="title-line"><span class="title-word" data-split>신뢰를,</span></span>
-            <span class="title-line accent"><span class="title-word" data-split>잇습니다.</span></span>
+            <span class="title-line"><span class="title-word" data-split>치과가</span></span>
+            <span class="title-line"><span class="title-word" data-split>그렇게도</span></span>
+            <span class="title-line accent"><span class="title-word" data-split>두려운 이유</span></span>
           </h1>
-
-          {/* Hero Stats Counter */}
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="387">0</span>
-              <span class="hero-stat-unit">+</span>
-              <span class="hero-stat-label">리뷰 수</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="4.9">0</span>
-              <span class="hero-stat-unit">★</span>
-              <span class="hero-stat-label">네이버 평점</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="8">0</span>
-              <span class="hero-stat-unit">년</span>
-              <span class="hero-stat-label">진료 경력</span>
-            </div>
-          </div>
-
           <div class="hero-bottom">
             <div class="hero-scroll-hint">
               <div class="scroll-line-wrap">
                 <div class="scroll-line" id="scrollLine"></div>
               </div>
-              <span>SCROLL TO EXPLORE</span>
+              <span>SCROLL TO DISCOVER</span>
             </div>
-            <p class="hero-sub">환자의 불안을 확신으로 바꾸는 곳</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          ACT 2 — THE NARRATIVE (스크롤 스토리텔링)
+          한 문장씩 나타나는 몰입형 스토리
+      ═══════════════════════════════════════════════════ */}
+      <section class="story-narrative" id="storyNarrative" aria-label="이음치과 이야기">
+
+        {/* Chapter 1: 질문 — 공포의 원인 */}
+        <div class="story-chapter" id="storyChapter1">
+          <div class="story-line" data-story="1">
+            <p class="story-text story-question">치과가 그렇게도 두려운 장소인 이유는<br/>무엇일까요?</p>
+          </div>
+        </div>
+
+        {/* Chapter 2: 인사이트 — 보이지 않기 때문 */}
+        <div class="story-chapter" id="storyChapter2">
+          <div class="story-line" data-story="2">
+            <p class="story-text">바로</p>
+          </div>
+          <div class="story-line" data-story="3">
+            <p class="story-text story-emphasis">내 입안에서 일어나는 일이기 때문입니다.</p>
+          </div>
+        </div>
+
+        {/* Chapter 3: 공감 — 보이지 않는 것의 공포 */}
+        <div class="story-chapter" id="storyChapter3">
+          <div class="story-line" data-story="4">
+            <p class="story-text story-small">입 안은 보이지 않죠.</p>
+          </div>
+          <div class="story-line" data-story="5">
+            <p class="story-text story-pause">맞습니다.</p>
+          </div>
+          <div class="story-line" data-story="6">
+            <p class="story-text">우리는<br/><em>보이지 않는 것</em>을 무서워합니다.</p>
+          </div>
+          <div class="story-line" data-story="7">
+            <p class="story-text story-whisper">귀신처럼요.</p>
+          </div>
+        </div>
+
+        {/* Chapter 4: 전환 — 그렇다면 반대로 */}
+        <div class="story-chapter story-chapter-turn" id="storyChapter4">
+          <div class="story-line" data-story="8">
+            <p class="story-text story-turn">반대로,</p>
+          </div>
+          <div class="story-line" data-story="9">
+            <p class="story-text">우리 입안에서<br/><em>무슨 일이 일어나는지</em>를 알면</p>
+          </div>
+          <div class="story-line" data-story="10">
+            <p class="story-text story-emphasis">공포의 대부분을 해결할 수 있습니다.</p>
+          </div>
+        </div>
+
+        {/* Chapter 5: 결론 — 그래서 이음치과는 */}
+        <div class="story-chapter story-chapter-resolve" id="storyChapter5">
+          <div class="story-line" data-story="11">
+            <p class="story-text story-bridge">그래서 이음치과는</p>
+          </div>
+          <div class="story-line" data-story="12">
+            <p class="story-text story-action"><em>충분히</em> 설명하고,</p>
+          </div>
+          <div class="story-line" data-story="13">
+            <p class="story-text story-action">매 과정을 <em>보여드립니다.</em></p>
+          </div>
+        </div>
+
+        {/* Chapter 6: 약속 — 신뢰를 잇습니다 */}
+        <div class="story-chapter story-chapter-climax" id="storyChapter6">
+          <div class="story-line" data-story="14">
+            <p class="story-text story-bridge">그렇게 이음치과는</p>
+          </div>
+          <div class="story-line" data-story="15">
+            <p class="story-text story-finale">신뢰를,<br/>잇습니다.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════
+          ACT 3 — THE PROOF (증거)
+          스토리 이후 증거를 순서대로 제시
+      ═══════════════════════════════════════════════════ */}
+
+      {/* Stats — 숫자로 보는 신뢰 */}
+      <section class="story-stats" id="storyStats" aria-label="이음치과 성과">
+        <div class="container-wide">
+          <div class="story-stats-inner">
+            <div class="hero-stat" data-reveal>
+              <span class="hero-stat-num" data-count="387">0</span>
+              <span class="hero-stat-unit">+</span>
+              <span class="hero-stat-label">리뷰 수</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat" data-reveal>
+              <span class="hero-stat-num" data-count="4.9">0</span>
+              <span class="hero-stat-unit">★</span>
+              <span class="hero-stat-label">네이버 평점</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat" data-reveal>
+              <span class="hero-stat-num" data-count="8">0</span>
+              <span class="hero-stat-unit">년</span>
+              <span class="hero-stat-label">진료 경력</span>
+            </div>
           </div>
         </div>
       </section>
@@ -138,42 +223,32 @@ export function mainPage() {
         </div>
       </div>
 
-      {/* ABOUT — Manifesto */}
-      <section class="section about-manifesto" id="section-about" aria-label="이음치과 소개">
+      {/* HOW WE PROVE IT — 3 Pillars */}
+      <section class="section story-pillars" id="section-pillars" aria-label="이음치과의 증명 방식">
         <div class="container-wide">
-          <div class="manifesto-number">01</div>
-          <div class="manifesto-text">
-            <p class="reveal-text">모든 진료 과정에서</p>
-            <p class="reveal-text">환자가 <em>충분히 이해</em>할 때까지 설명하고,</p>
-            <p class="reveal-text">그 결과를 눈으로 <em>직접 증명</em>하여</p>
-            <p class="reveal-text">환자의 <strong>불안</strong>을 <strong>확신</strong>으로 바꿉니다.</p>
+          <div class="pillars-header">
+            <span class="section-label">01 — HOW WE PROVE IT</span>
+            <h2 class="pillars-title">우리가 신뢰를<br/><em>증명</em>하는 방법</h2>
           </div>
-        </div>
-      </section>
-
-      {/* PHILOSOPHY — Split Screen */}
-      <section class="section philosophy-split" id="section-philosophy">
-        <div class="split-left">
-          <div class="split-sticky">
-            <span class="section-label">02 — PHILOSOPHY</span>
-            <h2 class="split-title">우리가<br/><em>다른</em> 이유</h2>
-          </div>
-        </div>
-        <div class="split-right">
-          <div class="philosophy-card" data-reveal>
-            <div class="card-num">01</div>
-            <h3>투명성</h3>
-            <p>모든 진료 과정을 환자가 충분히 이해할 때까지 설명합니다. 다른 병원에서 들은 진단이 궁금하시면, 솔직하게 세컨드 오피니언을 드립니다.</p>
-          </div>
-          <div class="philosophy-card" data-reveal>
-            <div class="card-num">02</div>
-            <h3>실력</h3>
-            <p>진료 결과를 눈으로 직접 증명합니다. 디지털 가이드를 원내에서 직접 제작하고, 최고 수준의 기공소와 협업합니다.</p>
-          </div>
-          <div class="philosophy-card" data-reveal>
-            <div class="card-num">03</div>
-            <h3>신뢰</h3>
-            <p>정직하게 치료를 잘하는 병원. 자신있게 추천할 수 있는 병원을 만듭니다.</p>
+          <div class="pillars-grid">
+            <div class="pillar-card" data-reveal>
+              <div class="pillar-num">01</div>
+              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+              <h3>보여드립니다</h3>
+              <p>말로만 설명하지 않습니다. 디지털 장비로 환자의 상태를 직접 보여드리고, 납득하실 때 치료를 시작합니다.</p>
+            </div>
+            <div class="pillar-card" data-reveal>
+              <div class="pillar-num">02</div>
+              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
+              <h3>살립니다</h3>
+              <p>임플란트보다 좋은 건 내 치아입니다. 발치는 더 이상 방법이 없을 때 권하는 마지막 선택이어야 합니다.</p>
+            </div>
+            <div class="pillar-card" data-reveal>
+              <div class="pillar-num">03</div>
+              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
+              <h3>편안하게</h3>
+              <p>치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 공포가 아닌 안심을 느끼도록 돕겠습니다.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -192,7 +267,7 @@ export function mainPage() {
       <section class="section services-horizontal" id="section-services" aria-label="이음치과 진료 안내">
         <div class="container-wide">
           <div class="services-header">
-            <span class="section-label">03 — SERVICES</span>
+            <span class="section-label">02 — SERVICES</span>
             <h2 class="services-title">진료 안내</h2>
           </div>
         </div>
@@ -223,7 +298,7 @@ export function mainPage() {
               </div>
             </div>
             <div class="director-info">
-              <span class="section-label">04 — DIRECTOR</span>
+              <span class="section-label">03 — DIRECTOR</span>
               <blockquote class="director-quote" data-reveal>"다른 사람들이 치과 이야기를 할 때<br/>정직하게 치료를 잘하는 병원이라며<br/>추천하는 곳을 만들고 싶습니다."</blockquote>
               <div class="credentials-grid">
                 <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 졸업</li></ul></div>
@@ -241,7 +316,7 @@ export function mainPage() {
         <div class="promise-bg" aria-hidden="true"><div class="grain"></div></div>
         <div class="container-wide">
           <div class="promise-header">
-            <span class="section-label">05 — PROMISE</span>
+            <span class="section-label">04 — PROMISE</span>
             <h2 class="promise-main-title">이음의<br/><em>약속</em></h2>
           </div>
           <div class="promise-grid">
@@ -285,7 +360,7 @@ export function mainPage() {
       <section class="section equipment-minimal" id="section-equipment" aria-label="디지털 장비 안내">
         <div class="container-wide">
           <div class="equip-header">
-            <span class="section-label">06 — EQUIPMENT</span>
+            <span class="section-label">05 — EQUIPMENT</span>
             <h2 class="equip-title">Digital<br/>Dentistry</h2>
           </div>
           <div class="equip-grid">
@@ -305,7 +380,7 @@ export function mainPage() {
         <div class="container-wide">
           <div class="contact-layout">
             <div class="contact-left">
-              <span class="section-label light">07 — CONTACT</span>
+              <span class="section-label light">06 — CONTACT</span>
               <a href="tel:051-206-5888" class="contact-phone-big" data-hover>
                 <span class="phone-label">Call us</span>
                 <span class="phone-number">051-206-5888</span>

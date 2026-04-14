@@ -842,6 +842,359 @@ a { text-decoration: none; color: inherit; }
   color: var(--cta-bright);
 }
 
+/* ═══════════════════════════════════════════
+   STORY NARRATIVE — Immersive Scroll Text
+   Question → Insight → Turn → Resolve
+   ═══════════════════════════════════════════ */
+.story-hero {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.story-narrative {
+  position: relative;
+  background: var(--bg);
+}
+
+.story-chapter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.story-line {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem clamp(1.5rem, 5vw, 6rem);
+  position: relative;
+}
+
+.story-text {
+  font-family: var(--font-kr);
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: center;
+  color: var(--white);
+  max-width: 800px;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.story-text.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Question style — larger, bolder */
+.story-text.story-question {
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  color: var(--navy);
+}
+
+/* Emphasis — bold with accent underline */
+.story-text.story-emphasis {
+  font-weight: 700;
+  color: var(--navy);
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+}
+
+.story-text.story-emphasis::after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--cta-bright));
+  margin: 1rem auto 0;
+  transition: width 1s var(--ease) 0.4s;
+}
+
+.story-text.story-emphasis.visible::after {
+  width: 80px;
+}
+
+/* Small — contemplative, quieter */
+.story-text.story-small {
+  font-size: clamp(1.2rem, 3vw, 2.2rem);
+  color: var(--white-dim);
+  font-weight: 300;
+}
+
+/* Pause — agreement, reflective */
+.story-text.story-pause {
+  font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: 0.1em;
+}
+
+/* Whisper — ghost metaphor, eerie feel */
+.story-text.story-whisper {
+  font-size: clamp(1rem, 2.5vw, 1.8rem);
+  font-weight: 300;
+  color: var(--white-muted);
+  font-style: italic;
+  letter-spacing: 0.2em;
+}
+
+/* Turn — pivotal moment */
+.story-text.story-turn {
+  font-family: var(--font-en);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--gold);
+}
+
+/* Bridge — "그래서 이음치과는" connector */
+.story-text.story-bridge {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-weight: 300;
+  color: var(--white-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: var(--font-kr);
+}
+
+/* Action — what we actually do */
+.story-text.story-action {
+  font-size: clamp(1.8rem, 4.5vw, 3.6rem);
+  font-weight: 600;
+}
+
+.story-text.story-action em {
+  color: var(--gold);
+  font-style: normal;
+  position: relative;
+}
+
+.story-text.story-action em::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.8s var(--ease) 0.6s;
+}
+
+.story-text.story-action.visible em::after {
+  transform: scaleX(1);
+}
+
+/* Finale — the big payoff */
+.story-text.story-finale {
+  font-size: clamp(2.5rem, 6.5vw, 6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--navy);
+  letter-spacing: -0.03em;
+}
+
+/* Italic em within story text */
+.story-text em {
+  font-style: normal;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* Chapter backgrounds for mood shift */
+.story-chapter-turn {
+  background: var(--bg-2);
+}
+
+.story-chapter-resolve {
+  background: var(--bg);
+}
+
+.story-chapter-climax {
+  background: var(--dark-bg);
+}
+
+.story-chapter-climax .story-text {
+  color: var(--dark-text);
+}
+
+.story-chapter-climax .story-text.story-bridge {
+  color: var(--dark-text-muted);
+}
+
+.story-chapter-climax .story-text.story-finale {
+  color: #FFFFFF;
+}
+
+/* === STORY STATS (after narrative) === */
+.story-stats {
+  padding: clamp(4rem, 8vw, 8rem) 0;
+  background: var(--bg);
+  border-top: 1px solid var(--white-ghost);
+  border-bottom: 1px solid var(--white-ghost);
+}
+
+.story-stats-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+}
+
+/* === STORY PILLARS (3 proof points) === */
+.story-pillars {
+  padding: clamp(6rem, 12vw, 12rem) 0;
+}
+
+.pillars-header {
+  margin-bottom: 4rem;
+}
+
+.pillars-title {
+  font-family: var(--font-kr);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--white);
+}
+
+.pillars-title em {
+  font-style: italic;
+  font-family: var(--font-en);
+  color: var(--gold);
+}
+
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.pillar-card {
+  position: relative;
+  padding: 3rem 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--white-ghost);
+  border-radius: 16px;
+  transition: all 0.4s var(--ease);
+  overflow: hidden;
+}
+
+.pillar-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--cta-bright));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.6s var(--ease);
+}
+
+.pillar-card:hover::before {
+  transform: scaleX(1);
+}
+
+.pillar-card:hover {
+  border-color: rgba(27, 58, 92, 0.2);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+
+.pillar-num {
+  font-family: var(--font-en);
+  font-size: 0.75rem;
+  color: var(--white-muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.pillar-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: var(--gold);
+}
+
+.pillar-icon svg {
+  width: 32px;
+  height: 32px;
+}
+
+.pillar-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--navy);
+}
+
+.pillar-card p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--white-dim);
+}
+
+/* Responsive: story + pillars */
+@media (max-width: 1024px) {
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+  
+  .story-stats-inner {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .story-text {
+    font-size: clamp(1.3rem, 4vw, 2.4rem);
+  }
+  
+  .story-text.story-question {
+    font-size: clamp(1.5rem, 5vw, 2.8rem);
+  }
+  
+  .story-text.story-finale {
+    font-size: clamp(2rem, 7vw, 4rem);
+  }
+  
+  .story-text.story-turn {
+    font-size: clamp(1.6rem, 5vw, 3rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .story-line {
+    min-height: 80vh;
+    min-height: 80dvh;
+    padding: 2rem 1.5rem;
+  }
+  
+  .story-stats-inner {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .hero-stat-divider {
+    display: none;
+  }
+}
+
 /* === MANIFESTO SECTION === */
 .about-manifesto {
   min-height: 100vh;
