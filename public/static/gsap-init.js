@@ -316,7 +316,7 @@
       var cfg = { dur: 1.2, y: 60, start: 'top 68%', ease: 'power3.out', blur: 10, scale: 1 };
 
       if (text.classList.contains('story-question')) {
-        cfg = { dur: 1.6, y: 80, start: 'top 72%', ease: 'power4.out', blur: 15, scale: 0.96 };
+        cfg = { dur: 1.8, y: 80, start: 'top 72%', ease: 'power4.out', blur: 18, scale: 0.96 };
       } else if (text.classList.contains('story-solo')) {
         cfg = { dur: 2.0, y: 0, start: 'top 65%', ease: 'expo.out', blur: 0, scale: 0.6, letterSpacing: true };
       } else if (text.classList.contains('story-small')) {
@@ -326,7 +326,7 @@
       } else if (text.classList.contains('story-whisper')) {
         cfg = { dur: 2.5, y: 0, start: 'top 65%', ease: 'power1.out', blur: 20, opacity: 0.6, scale: 1.05 };
       } else if (text.classList.contains('story-turn')) {
-        cfg = { dur: 2.0, y: 120, start: 'top 70%', ease: 'expo.out', blur: 25, rotX: 10, scale: 0.9 };
+        cfg = { dur: 2.5, y: 140, start: 'top 70%', ease: 'expo.out', blur: 30, rotX: 12, scale: 0.85 };
       } else if (text.classList.contains('story-bridge')) {
         cfg = { dur: 1.2, y: 25, start: 'top 68%', ease: 'power2.out', blur: 5 };
       } else if (text.classList.contains('story-action')) {
@@ -334,7 +334,7 @@
       } else if (text.classList.contains('story-emphasis')) {
         cfg = { dur: 1.5, y: 65, start: 'top 68%', ease: 'power3.out', blur: 12 };
       } else if (text.classList.contains('story-finale')) {
-        cfg = { dur: 2.5, y: 150, start: 'top 60%', ease: 'expo.out', blur: 30, scale: 0.5, finale: true };
+        cfg = { dur: 3.0, y: 180, start: 'top 60%', ease: 'expo.out', blur: 35, scale: 0.4, finale: true };
       }
 
       var fromVars = {
@@ -363,14 +363,21 @@
         };
       }
 
-      // Finale: extra dramatic with staggered elements
+      // Finale: ultra-cinematic with breathing glow
       if (cfg.finale) {
         toVars.onComplete = function() {
-          // Pulse effect after landing
+          // Breathing bioluminescent pulse
           gsap.to(text, {
-            textShadow: '0 0 60px rgba(42,90,143,0.6), 0 0 120px rgba(42,90,143,0.3), 0 0 240px rgba(27,58,92,0.15)',
-            duration: 2,
-            ease: 'power2.inOut',
+            textShadow: '0 0 50px rgba(42,90,143,0.7), 0 0 100px rgba(42,90,143,0.4), 0 0 200px rgba(42,90,143,0.2), 0 0 400px rgba(27,58,92,0.1)',
+            duration: 3,
+            ease: 'sine.inOut',
+            yoyo: true,
+            repeat: -1
+          });
+          gsap.to(text, {
+            scale: 1.02,
+            duration: 4,
+            ease: 'sine.inOut',
             yoyo: true,
             repeat: -1
           });
@@ -416,40 +423,49 @@
         }
       );
 
-      // Fog parallax
+      // Multi-layer fog parallax — depth illusion
       var fog = document.getElementById('chapterFog');
       if (fog) {
         gsap.to(fog, {
-          x: '5%', y: '-3%',
-          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 2 },
+          x: '5%', y: '-4%', scale: 1.08,
+          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 2.5 },
+          ease: 'none'
+        });
+      }
+      var fog2 = ch3.querySelector('.chapter-fog-2');
+      if (fog2) {
+        gsap.to(fog2, {
+          x: '-4%', y: '3%', scale: 1.05,
+          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 3.5 },
           ease: 'none'
         });
       }
     }
 
-    // --- Turn chapter (ch4) — volumetric light beam + cone ---
+    // --- Turn chapter (ch4) — volumetric light beam + cone + glow ---
+    var ch4El = document.getElementById('storyChapter4');
     var lightBurst = document.getElementById('chapterLightBurst');
     var lightCone = document.getElementById('chapterLightCone');
-    if (lightBurst) {
+    if (lightBurst && ch4El) {
       gsap.fromTo(lightBurst,
-        { height: '0%', opacity: 0 },
+        { height: '0%', opacity: 0, filter: 'blur(8px)' },
         {
-          height: '100%', opacity: 0.8,
+          height: '100%', opacity: 0.85, filter: 'blur(0px)',
           scrollTrigger: {
-            trigger: document.getElementById('storyChapter4'),
+            trigger: ch4El,
             start: 'top 60%', end: 'center center', scrub: 1.5
           },
           ease: 'none'
         }
       );
     }
-    if (lightCone) {
+    if (lightCone && ch4El) {
       gsap.fromTo(lightCone,
         { width: '0%', opacity: 0 },
         {
-          width: '100%', opacity: 0.8,
+          width: '100%', opacity: 0.9,
           scrollTrigger: {
-            trigger: document.getElementById('storyChapter4'),
+            trigger: ch4El,
             start: 'top 50%', end: '60% center', scrub: 2
           },
           ease: 'none'
@@ -557,9 +573,9 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // CINEMATIC BLACKOUT — Dark → Light Transition
+  // CINEMATIC BLACKOUT — Dark → Light Transition v2
   // "보이지 않죠" → screen goes BLACK → "보여드립니다" → LIGHT EXPLODES
-  // Movie-trailer level dramatic reveal
+  // Movie-trailer level dramatic reveal — refined timing
   // ═══════════════════════════════════════════════════
   function initCinematicBlackout() {
     var overlay = document.getElementById('blackoutOverlay');
@@ -567,81 +583,103 @@
     var ch4 = document.getElementById('storyChapter4');
     if (!overlay || !ch3 || !ch4) return;
 
+    var particles = overlay.querySelector('.blackout-particles');
+
     // ── Phase 1: Progressive darkening during Chapter 3 ──
-    // As user scrolls through "보이지 않죠", the world fades to black
-    gsap.fromTo(overlay,
-      { opacity: 0 },
-      {
-        opacity: 1,
-        ease: 'power2.in',
-        scrollTrigger: {
-          trigger: ch3,
-          start: 'top 60%',      // Start darkening when ch3 enters
-          end: 'bottom 30%',     // Fully black by end of ch3
-          scrub: 1.2,            // Smooth scroll-synced
-          onLeave: function() {
-            // Ensure fully black when leaving ch3
-            gsap.set(overlay, { opacity: 1 });
-          },
-          onEnterBack: function() {
-            // Re-engage darkening on scroll back
-            gsap.set(overlay, { opacity: 1 });
-          }
+    // Multi-stage darkness: subtle → deep → total
+    var blackoutTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: ch3,
+        start: 'top 65%',
+        end: 'bottom 25%',
+        scrub: 1.5,
+        onLeave: function() {
+          gsap.set(overlay, { opacity: 1 });
+        },
+        onEnterBack: function() {
+          gsap.set(overlay, { opacity: 1 });
         }
       }
-    );
+    });
+
+    blackoutTL
+      .fromTo(overlay,
+        { opacity: 0 },
+        { opacity: 0.4, ease: 'power1.in', duration: 0.4 }
+      )
+      .to(overlay, { opacity: 0.75, ease: 'power2.in', duration: 0.3 })
+      .to(overlay, { opacity: 1, ease: 'power3.in', duration: 0.3 });
+
+    // Particles intensify during darkness
+    if (particles) {
+      gsap.fromTo(particles,
+        { opacity: 0.3 },
+        {
+          opacity: 0.9,
+          scale: 1.05,
+          scrollTrigger: {
+            trigger: ch3,
+            start: 'top 50%',
+            end: 'bottom 30%',
+            scrub: 2
+          },
+          ease: 'none'
+        }
+      );
+    }
 
     // ── Phase 2: Light explosion when entering Chapter 4 ──
-    // "반대로," — the light breaks through dramatically
+    // Layered reveal: ring → burst → fade — trailer-grade
     ScrollTrigger.create({
       trigger: ch4,
       start: 'top 70%',
       end: 'top 20%',
-      scrub: false,             // Triggered once, not scrubbed
+      scrub: false,
       once: false,
       onEnter: function() {
-        // Add light burst flash effect
         overlay.classList.add('light-burst');
 
-        // Dramatic fade-out: black → transparent with light wash
+        // Layered dramatic fade-out
         gsap.to(overlay, {
           opacity: 0,
-          duration: 2.0,
-          ease: 'power3.out',
-          delay: 0.15,
+          duration: 2.5,
+          ease: 'power2.out',
+          delay: 0.1,
           onComplete: function() {
             overlay.classList.remove('light-burst');
           }
         });
+
+        // Particles fade quickly
+        if (particles) {
+          gsap.to(particles, { opacity: 0, duration: 0.8, ease: 'power3.in' });
+        }
       },
       onEnterBack: function() {
-        // When scrolling back UP into ch4 from below, bring back overlay
         gsap.to(overlay, {
           opacity: 1,
-          duration: 1.5,
+          duration: 1.8,
           ease: 'power2.inOut'
         });
+        if (particles) {
+          gsap.to(particles, { opacity: 0.7, duration: 1.2 });
+        }
       },
       onLeaveBack: function() {
-        // Scrolling back up out of ch4 into ch3 — keep dark
         gsap.set(overlay, { opacity: 1 });
       }
     });
 
-    // ── Phase 3: Ensure overlay is gone during ch5+ ──
-    // Safety: if user scrolls past ch4, overlay stays invisible
+    // ── Phase 3: Safety — ensure overlay is gone during ch5+ ──
     ScrollTrigger.create({
       trigger: ch4,
       start: 'center center',
       onEnter: function() {
         gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true });
-      },
-      onLeaveBack: function() {
-        // Going back above ch4 center — re-engage
       }
     });
 
-    console.log('[EUM] Cinematic Blackout system initialized');
+    console.log('[EUM] Cinematic Blackout v2 initialized');
   }
 
   // ═══════════════════════════════════════════════════

@@ -124,6 +124,7 @@ export function mainPage() {
       {/* ═══ CINEMATIC BLACKOUT OVERLAY — Dark-to-Light Transition ═══ */}
       <div class="blackout-overlay" id="blackoutOverlay" aria-hidden="true">
         <div class="blackout-particles" aria-hidden="true"></div>
+        <div class="blackout-light-ring" aria-hidden="true"></div>
       </div>
 
       <section class="story-narrative" id="storyNarrative" aria-label="이음치과 이야기">

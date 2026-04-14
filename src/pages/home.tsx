@@ -1,13 +1,16 @@
-/** Home page JSX - REVOLUTIONARY REDESIGN v3 */
+/** Home page JSX - CINEMATIC REDESIGN v4 */
 export function HomePage() {
   return (
     <div id="app">
+      {/* Skip to main content — Accessibility */}
+      <a href="#section-hero" class="skip-link">본문 바로가기</a>
+
       {/* Custom Cursor */}
       <div class="cursor" id="cursor"></div>
       <div class="cursor-follower" id="cursorFollower"></div>
 
-      {/* === NAVIGATION (Glassmorphism) === */}
-      <nav id="nav">
+      {/* === NAVIGATION === */}
+      <nav id="nav" role="navigation" aria-label="메인 네비게이션">
         <a href="/" class="nav-brand" data-hover>이음</a>
         <div class="nav-center" id="navTime"></div>
         <button class="nav-menu-btn" id="menuBtn" data-hover>
@@ -21,14 +24,15 @@ export function HomePage() {
         <div class="menu-overlay"></div>
         <div class="menu-content">
           <div class="menu-links">
-            <a href="/#section-about" class="menu-link" data-hover data-index="01"><span>소개</span></a>
-            <a href="/#section-services" class="menu-link" data-hover data-index="02"><span>진료</span></a>
-            <a href="/cases" class="menu-link" data-hover data-index="03"><span>비포애프터</span></a>
-            <a href="/blogs" class="menu-link" data-hover data-index="04"><span>블로그</span></a>
-            <a href="/notices" class="menu-link" data-hover data-index="05"><span>공지사항</span></a>
-            <a href="/dictionary" class="menu-link" data-hover data-index="06"><span>백과사전</span></a>
-            <a href="/#section-director" class="menu-link" data-hover data-index="07"><span>의료진</span></a>
-            <a href="/#section-contact" class="menu-link" data-hover data-index="08"><span>예약</span></a>
+            <a href="/about" class="menu-link" data-hover data-index="01"><span>병원 소개</span></a>
+            <a href="/doctors" class="menu-link" data-hover data-index="02"><span>의료진</span></a>
+            <a href="/treatments" class="menu-link" data-hover data-index="03"><span>진료 안내</span></a>
+            <a href="/cases" class="menu-link" data-hover data-index="04"><span>비포애프터</span></a>
+            <a href="/blogs" class="menu-link" data-hover data-index="05"><span>블로그</span></a>
+            <a href="/faq" class="menu-link" data-hover data-index="06"><span>자주 묻는 질문</span></a>
+            <a href="/dictionary" class="menu-link" data-hover data-index="07"><span>백과사전</span></a>
+            <a href="/visit" class="menu-link" data-hover data-index="08"><span>내원 안내</span></a>
+            <a href="/notices" class="menu-link" data-hover data-index="09"><span>공지사항</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
