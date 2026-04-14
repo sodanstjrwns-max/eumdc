@@ -2694,7 +2694,10 @@ body::after {
   display: flex;
   gap: 0.75rem;
   animation: galleryScroll 40s linear infinite;
-  will-change: transform;
+  /* GPU-composited layer — avoids main-thread layout jitter */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .gallery-item {
@@ -2920,7 +2923,10 @@ body::after {
   object-fit: cover;
   object-position: center;
   filter: saturate(0.5) contrast(1.1);
-  will-change: transform;
+  /* GPU layer for parallax — no will-change to reduce compositing cost */
+  transform: translate3d(0,0,0) scale(1.08);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   transition: filter 0.5s;
 }
 

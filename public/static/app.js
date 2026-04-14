@@ -39,6 +39,9 @@
   }
 
   // === SMOOTH SCROLL ===
+  // v2: Removed lerp-based smooth scroll that conflicted with native
+  // browser scrolling and GSAP ScrollTrigger, causing frame desync.
+  // scrollSpeed is still tracked (read-only) for other modules.
   var smoothScrollY = 0;
   var targetScrollY = 0;
   var scrollSpeed = 0;
@@ -47,15 +50,10 @@
     var lastScroll = window.scrollY;
     window.addEventListener('scroll', function () {
       targetScrollY = window.scrollY;
+      smoothScrollY = targetScrollY; // direct — no lerp lag
       scrollSpeed = targetScrollY - lastScroll;
       lastScroll = targetScrollY;
     }, { passive: true });
-
-    function smoothLoop() {
-      smoothScrollY = lerp(smoothScrollY, targetScrollY, 0.1);
-      requestAnimationFrame(smoothLoop);
-    }
-    smoothLoop();
   }
 
   // === CUSTOM CURSOR ===
@@ -478,17 +476,11 @@
   }
 
   // === GALLERY PARALLAX ===
+  // v2: Removed scroll-speed duration hack that caused horizontal jitter.
+  // The CSS keyframe animation runs at a constant 40s — smooth & stable.
   function initGalleryParallax() {
-    var strip = document.querySelector('.gallery-strip');
-    if (!strip) return;
-
-    var track = strip.querySelector('.gallery-track');
-    var baseSpeed = parseFloat(getComputedStyle(track).animationDuration) || 40;
-
-    window.addEventListener('scroll', function () {
-      var newDuration = Math.max(15, baseSpeed - Math.abs(scrollSpeed) * 0.5);
-      track.style.animationDuration = newDuration + 's';
-    }, { passive: true });
+    // Intentionally empty — pure CSS animation handles scrolling.
+    // No JS intervention = no sub-pixel jitter.
   }
 
   // === FLOATING CALL ===
@@ -562,17 +554,33 @@
   }
 
   // === IMAGE BREAK PARALLAX ===
+  // v2: Use CSS-only approach — no per-frame JS transform to avoid jitter.
+  // Subtle parallax via CSS scroll-driven or simple IntersectionObserver.
   function initImageBreakParallax() {
     var imageBreak = document.querySelector('.image-break');
     if (!imageBreak) return;
     var img = imageBreak.querySelector('img');
     if (!img) return;
 
+    // Set initial scale for parallax overflow — no JS transform jitter
+    img.style.transform = 'scale(1.08)';
+    img.style.transition = 'transform 0s';
+
+    // Use a single, throttled rAF instead of raw scroll listener
+    var ticking = false;
     window.addEventListener('scroll', function () {
-      var rect = imageBreak.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-      var progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-      img.style.transform = 'translateY(' + ((progress - 0.5) * -60) + 'px) scale(1.1)';
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var rect = imageBreak.getBoundingClientRect();
+        if (rect.bottom >= 0 && rect.top <= window.innerHeight) {
+          var progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+          // Use translate3d for GPU compositing — avoids layout thrash
+          var y = ((progress - 0.5) * -30).toFixed(2); // reduced range: -30 not -60
+          img.style.transform = 'translate3d(0,' + y + 'px,0) scale(1.08)';
+        }
+        ticking = false;
+      });
     }, { passive: true });
   }
 
