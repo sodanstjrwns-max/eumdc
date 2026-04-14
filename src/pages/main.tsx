@@ -121,6 +121,11 @@ export function mainPage() {
           CINEMATIC: 각 챕터마다 무드 라이팅 변화
           앰비언트 글로우, 포커스 빔, 타이포 블러 효과
       ═══════════════════════════════════════════════════ */}
+      {/* ═══ CINEMATIC BLACKOUT OVERLAY — Dark-to-Light Transition ═══ */}
+      <div class="blackout-overlay" id="blackoutOverlay" aria-hidden="true">
+        <div class="blackout-particles" aria-hidden="true"></div>
+      </div>
+
       <section class="story-narrative" id="storyNarrative" aria-label="이음치과 이야기">
         {/* Cinematic ambient glow — dual layer follows scroll */}
         <div class="story-ambient-glow" id="storyGlow" aria-hidden="true"></div>

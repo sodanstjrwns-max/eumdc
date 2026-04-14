@@ -48,6 +48,7 @@
     initHeroCanvasParticles();
     initHeroParallaxDepth();
     initStoryNarrative();
+    initCinematicBlackout();   // ★ Dark → Light transition
     initGenericReveals();
     initHorizontalScroll();
     initCardAnimations();
@@ -553,6 +554,94 @@
         ease: 'none'
       });
     }
+  }
+
+  // ═══════════════════════════════════════════════════
+  // CINEMATIC BLACKOUT — Dark → Light Transition
+  // "보이지 않죠" → screen goes BLACK → "보여드립니다" → LIGHT EXPLODES
+  // Movie-trailer level dramatic reveal
+  // ═══════════════════════════════════════════════════
+  function initCinematicBlackout() {
+    var overlay = document.getElementById('blackoutOverlay');
+    var ch3 = document.getElementById('storyChapter3');
+    var ch4 = document.getElementById('storyChapter4');
+    if (!overlay || !ch3 || !ch4) return;
+
+    // ── Phase 1: Progressive darkening during Chapter 3 ──
+    // As user scrolls through "보이지 않죠", the world fades to black
+    gsap.fromTo(overlay,
+      { opacity: 0 },
+      {
+        opacity: 1,
+        ease: 'power2.in',
+        scrollTrigger: {
+          trigger: ch3,
+          start: 'top 60%',      // Start darkening when ch3 enters
+          end: 'bottom 30%',     // Fully black by end of ch3
+          scrub: 1.2,            // Smooth scroll-synced
+          onLeave: function() {
+            // Ensure fully black when leaving ch3
+            gsap.set(overlay, { opacity: 1 });
+          },
+          onEnterBack: function() {
+            // Re-engage darkening on scroll back
+            gsap.set(overlay, { opacity: 1 });
+          }
+        }
+      }
+    );
+
+    // ── Phase 2: Light explosion when entering Chapter 4 ──
+    // "반대로," — the light breaks through dramatically
+    ScrollTrigger.create({
+      trigger: ch4,
+      start: 'top 70%',
+      end: 'top 20%',
+      scrub: false,             // Triggered once, not scrubbed
+      once: false,
+      onEnter: function() {
+        // Add light burst flash effect
+        overlay.classList.add('light-burst');
+
+        // Dramatic fade-out: black → transparent with light wash
+        gsap.to(overlay, {
+          opacity: 0,
+          duration: 2.0,
+          ease: 'power3.out',
+          delay: 0.15,
+          onComplete: function() {
+            overlay.classList.remove('light-burst');
+          }
+        });
+      },
+      onEnterBack: function() {
+        // When scrolling back UP into ch4 from below, bring back overlay
+        gsap.to(overlay, {
+          opacity: 1,
+          duration: 1.5,
+          ease: 'power2.inOut'
+        });
+      },
+      onLeaveBack: function() {
+        // Scrolling back up out of ch4 into ch3 — keep dark
+        gsap.set(overlay, { opacity: 1 });
+      }
+    });
+
+    // ── Phase 3: Ensure overlay is gone during ch5+ ──
+    // Safety: if user scrolls past ch4, overlay stays invisible
+    ScrollTrigger.create({
+      trigger: ch4,
+      start: 'center center',
+      onEnter: function() {
+        gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true });
+      },
+      onLeaveBack: function() {
+        // Going back above ch4 center — re-engage
+      }
+    });
+
+    console.log('[EUM] Cinematic Blackout system initialized');
   }
 
   // ═══════════════════════════════════════════════════
