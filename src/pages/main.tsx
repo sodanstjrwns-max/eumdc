@@ -54,9 +54,11 @@ export function mainPage() {
       {/* ═══════════════════════════════════════════════════
           ACT 1 — THE QUESTION (치과가 두려운 이유)
           Opening hook: 누구나 공감하는 질문으로 시작
+          CINEMATIC: 파티클 필드 + 앰비언트 라이트 + 보케
       ═══════════════════════════════════════════════════ */}
       <section class="section story-hero" id="section-hero" aria-label="이음치과의원 소개">
         <div class="hero-bg">
+          {/* Layer 0: Mesh blobs (deepest) */}
           <div class="hero-mesh" id="heroMesh" aria-hidden="true">
             <div class="mesh-blob mesh-blob-1"></div>
             <div class="mesh-blob mesh-blob-2"></div>
@@ -64,7 +66,21 @@ export function mainPage() {
             <div class="mesh-blob mesh-blob-4"></div>
             <div class="mesh-blob mesh-blob-5"></div>
           </div>
+          {/* Layer 1: Depth-of-field blur */}
+          <div class="hero-depth-blur" aria-hidden="true"></div>
+          {/* Layer 2: Canvas particle field (created by JS) */}
+          <canvas id="heroCanvas" aria-hidden="true"></canvas>
+          {/* Layer 2b: CSS particle fallback */}
+          <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
+          {/* Layer 3: Volumetric light leaks */}
+          <div class="hero-light-leak hero-light-leak-1" aria-hidden="true"></div>
+          <div class="hero-light-leak hero-light-leak-2" aria-hidden="true"></div>
+          {/* Layer 4: Film grain */}
           <div class="grain" aria-hidden="true"></div>
+          {/* Layer 5: Cinematic vignette */}
+          <div class="hero-vignette" aria-hidden="true"></div>
+          {/* Layer 6: Anamorphic flare */}
+          <div class="hero-anamorphic" aria-hidden="true"></div>
         </div>
         <div class="hero-scan-line" id="heroScanLine" aria-hidden="true"></div>
 
@@ -91,29 +107,44 @@ export function mainPage() {
 
       {/* ═══════════════════════════════════════════════════
           ACT 2 — THE NARRATIVE (스크롤 스토리텔링)
-          한 문장씩 나타나는 몰입형 스토리
+          CINEMATIC: 각 챕터마다 무드 라이팅 변화
+          앰비언트 글로우, 포커스 빔, 타이포 블러 효과
       ═══════════════════════════════════════════════════ */}
       <section class="story-narrative" id="storyNarrative" aria-label="이음치과 이야기">
+        {/* Cinematic ambient glow — dual layer follows scroll */}
+        <div class="story-ambient-glow" id="storyGlow" aria-hidden="true"></div>
+        <div class="story-ambient-pulse" id="storyPulse" aria-hidden="true"></div>
 
         {/* Chapter 1: 질문 — 공포의 원인 */}
         <div class="story-chapter" id="storyChapter1">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-orb chapter-orb-1"></div>
+          </div>
           <div class="story-line" data-story="1">
+            <span class="story-chapter-num" aria-hidden="true">01</span>
             <p class="story-text story-question">치과가 그렇게도 두려운 장소인 이유는<br/>무엇일까요?</p>
           </div>
         </div>
 
         {/* Chapter 2: 인사이트 — 보이지 않기 때문 */}
         <div class="story-chapter" id="storyChapter2">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-orb chapter-orb-2"></div>
+          </div>
           <div class="story-line" data-story="2">
-            <p class="story-text">바로</p>
+            <p class="story-text story-solo">바로</p>
           </div>
           <div class="story-line" data-story="3">
             <p class="story-text story-emphasis">내 입안에서 일어나는 일이기 때문입니다.</p>
           </div>
         </div>
 
-        {/* Chapter 3: 공감 — 보이지 않는 것의 공포 */}
-        <div class="story-chapter" id="storyChapter3">
+        {/* Chapter 3: 공감 — 보이지 않는 것의 공포 (VOLUMETRIC FOG) */}
+        <div class="story-chapter story-chapter-dark" id="storyChapter3">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-fog" id="chapterFog"></div>
+            <div class="chapter-fog-2" aria-hidden="true"></div>
+          </div>
           <div class="story-line" data-story="4">
             <p class="story-text story-small">입 안은 보이지 않죠.</p>
           </div>
@@ -128,8 +159,12 @@ export function mainPage() {
           </div>
         </div>
 
-        {/* Chapter 4: 전환 — 그렇다면 반대로 */}
+        {/* Chapter 4: 전환 — 반대로 (어둠 → 빛) VOLUMETRIC LIGHT */}
         <div class="story-chapter story-chapter-turn" id="storyChapter4">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-light-cone" id="chapterLightCone" aria-hidden="true"></div>
+            <div class="chapter-light-burst" id="chapterLightBurst"></div>
+          </div>
           <div class="story-line" data-story="8">
             <p class="story-text story-turn">반대로,</p>
           </div>
@@ -141,8 +176,12 @@ export function mainPage() {
           </div>
         </div>
 
-        {/* Chapter 5: 결론 — 그래서 이음치과는 */}
+        {/* Chapter 5: 결론 — 그래서 이음치과는 (GOD RAYS) */}
         <div class="story-chapter story-chapter-resolve" id="storyChapter5">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-rays" id="chapterRays"></div>
+            <div class="chapter-rays-2" aria-hidden="true"></div>
+          </div>
           <div class="story-line" data-story="11">
             <p class="story-text story-bridge">그래서 이음치과는</p>
           </div>
@@ -154,13 +193,22 @@ export function mainPage() {
           </div>
         </div>
 
-        {/* Chapter 6: 약속 — 신뢰를 잇습니다 */}
+        {/* Chapter 6: 약속 — 신뢰를 잇습니다 (CLIMAX — AVATAR BIOLUMINESCENCE) */}
         <div class="story-chapter story-chapter-climax" id="storyChapter6">
+          <div class="chapter-bg-fx" aria-hidden="true">
+            <div class="chapter-nebula" id="chapterNebula" aria-hidden="true"></div>
+            <div class="chapter-aurora" id="chapterAurora"></div>
+            <div class="chapter-aurora-2" aria-hidden="true"></div>
+            <div class="chapter-stars" id="chapterStars"></div>
+            <div class="chapter-stars-deep" aria-hidden="true"></div>
+          </div>
           <div class="story-line" data-story="14">
             <p class="story-text story-bridge">그렇게 이음치과는</p>
           </div>
-          <div class="story-line" data-story="15">
+          <div class="story-line story-line-finale" data-story="15">
             <p class="story-text story-finale">신뢰를,<br/>잇습니다.</p>
+            <div class="finale-glow" aria-hidden="true"></div>
+            <div class="finale-ring" aria-hidden="true"></div>
           </div>
         </div>
       </section>
