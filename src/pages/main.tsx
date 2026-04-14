@@ -294,25 +294,44 @@ export function mainPage() {
           <div class="pillars-header">
             <span class="section-label">01 — HOW WE PROVE IT</span>
             <h2 class="pillars-title">우리가 신뢰를<br/><em>증명</em>하는 방법</h2>
+            <p class="pillars-subtitle">이음치과는 말이 아닌 행동으로, 약속이 아닌 결과로 증명합니다.<br/>세 가지 원칙이 모든 진료의 출발점입니다.</p>
           </div>
           <div class="pillars-grid">
             <div class="pillar-card" data-reveal>
               <div class="pillar-num">01</div>
               <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
               <h3>보여드립니다</h3>
-              <p>말로만 설명하지 않습니다. 디지털 장비로 환자의 상태를 직접 보여드리고, 납득하실 때 치료를 시작합니다.</p>
+              <p class="pillar-lead">말로만 설명하지 않습니다.</p>
+              <p class="pillar-desc">CBCT와 구강스캐너로 촬영한 3D 영상을 모니터로 직접 보여드립니다. 어디가 어떻게 아프고, 왜 치료가 필요한지 — 환자분이 눈으로 확인하고 납득하실 때 비로소 치료를 시작합니다. "뭔지도 모르고 치료받았다"는 경험, 이음에서는 없습니다.</p>
+              <ul class="pillar-details">
+                <li>진료 전 3D 영상으로 상태 설명</li>
+                <li>치료 계획을 환자와 함께 수립</li>
+                <li>치료 과정마다 경과 사진 공유</li>
+              </ul>
             </div>
             <div class="pillar-card" data-reveal>
               <div class="pillar-num">02</div>
               <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
               <h3>살립니다</h3>
-              <p>임플란트보다 좋은 건 내 치아입니다. 발치는 더 이상 방법이 없을 때 권하는 마지막 선택이어야 합니다.</p>
+              <p class="pillar-lead">임플란트보다 좋은 건 내 치아입니다.</p>
+              <p class="pillar-desc">발치는 정말 방법이 없을 때의 마지막 선택이어야 합니다. 이음치과는 근관치료, 레진, 보철 등 가능한 모든 보존 치료를 먼저 검토하고, 자연치아를 최대한 살리는 방향으로 계획을 세웁니다. 당장은 느리더라도, 10년 후에도 후회 없는 치료를 약속합니다.</p>
+              <ul class="pillar-details">
+                <li>보존 치료 우선 — 발치는 최후 수단</li>
+                <li>장기적 예후를 고려한 치료 설계</li>
+                <li>과잉 진료 제로 원칙</li>
+              </ul>
             </div>
             <div class="pillar-card" data-reveal>
               <div class="pillar-num">03</div>
               <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
               <h3>편안하게</h3>
-              <p>치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 공포가 아닌 안심을 느끼도록 돕겠습니다.</p>
+              <p class="pillar-lead">두려움은 우리가 먼저 느낍니다.</p>
+              <p class="pillar-desc">치과가 무서운 건 당연합니다. 그래서 이음치과는 모든 진료에 무통 마취를 기본으로 적용하고, 치료 중 통증이 느껴지면 즉시 멈춥니다. 진료실 입장부터 퇴원까지 — 불안하지 않도록 매 순간 세심하게 배려합니다.</p>
+              <ul class="pillar-details">
+                <li>무통 마취 기본 적용</li>
+                <li>치료 중 통증 시 즉시 중단</li>
+                <li>편안한 진료 환경 (음악, 조명, 쿠션)</li>
+              </ul>
             </div>
           </div>
         </div>
@@ -334,16 +353,17 @@ export function mainPage() {
           <div class="services-header">
             <span class="section-label">02 — SERVICES</span>
             <h2 class="services-title">진료 안내</h2>
+            <p class="services-subtitle">충분한 설명과 확실한 결과. 이음치과가 자신 있는 진료 영역입니다.<br/>카드를 드래그하여 살펴보세요.</p>
           </div>
         </div>
         <div class="horizontal-wrap">
           <div class="horizontal-track" id="horizontalTrack">
-            <div class="h-card h-card-intro"><div class="h-card-inner"><p class="h-intro-text">충분한 설명,<br/>확실한 결과로<br/><em>최선의 선택</em>을<br/>함께합니다.</p></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">원내 3D 프린터로 가이드를 직접 제작. CBCT와 구강스캐너 기반 정밀 진단.</p><div class="h-card-features"><span><a href="/dictionary/digital-guide" class="term-link">원내 가이드</a> 제작</span><span><a href="/dictionary/cbct" class="term-link">CBCT</a> 정밀 진단</span><span><a href="/dictionary/digital-impression" class="term-link">디지털 인상</a></span><span>최고 수준 기공소</span></div><div class="h-card-arrow">→</div><a href="/dictionary?service=implant" class="h-card-dict-link">임플란트 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">자연치아와 구별 불가한 정밀 보철로 아름다운 미소를 되찾아 드립니다.</p><div class="h-card-features"><span><a href="/dictionary/laminate" class="term-link">라미네이트</a></span><span><a href="/dictionary/all-ceramic" class="term-link">올세라믹</a></span><span>정밀 색조 매칭</span></div><div class="h-card-arrow">→</div><a href="/dictionary?service=aesthetic" class="h-card-dict-link">심미보철 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">자연치아 색상에 완벽히 맞춘 레진. 최소 삭제, 당일 치료.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span></div><div class="h-card-arrow">→</div><a href="/dictionary?service=resin" class="h-card-dict-link">레진 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱관절 통증, 소리, 개구제한을 정밀 진단. 물리치료와 체계적 프로토콜.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span></div><div class="h-card-arrow">→</div><a href="/dictionary?service=tmj" class="h-card-dict-link">턱관절 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링. 기본에 충실하게.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span></div><div class="h-card-arrow">→</div><a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a></div></div>
+            <div class="h-card h-card-intro"><div class="h-card-inner"><p class="h-intro-text">충분한 설명,<br/>확실한 결과로<br/><em>최선의 선택</em>을<br/>함께합니다.</p><p class="h-intro-sub">각 진료마다 디지털 장비 기반의<br/>정밀 진단을 기본으로 합니다.</p></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">CBCT 3D 영상으로 뼈의 양·밀도·신경 위치를 정밀 분석하고, 원내 3D 프린터로 환자 맞춤 수술 가이드를 직접 제작합니다. 절개를 최소화하여 통증과 회복 기간을 단축합니다.</p><div class="h-card-features"><span><a href="/dictionary/digital-guide" class="term-link">원내 가이드</a> 제작</span><span><a href="/dictionary/cbct" class="term-link">CBCT</a> 정밀 진단</span><span><a href="/dictionary/digital-impression" class="term-link">디지털 인상</a></span><span>최고 수준 기공소</span></div><p class="h-card-patient-note">환자분 후기: "절개 없이 한 임플란트, 당일에 밥을 먹었어요."</p><div class="h-card-arrow">→</div><a href="/dictionary?service=implant" class="h-card-dict-link">임플란트 관련 용어 보기 →</a></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">구강스캐너로 정밀 스캔 후, 자연치아와 구별이 불가능한 보철물을 맞춤 제작합니다. 라미네이트, 올세라믹 등 환자분의 얼굴형과 미소 라인에 맞는 최적의 솔루션을 제안합니다.</p><div class="h-card-features"><span><a href="/dictionary/laminate" class="term-link">라미네이트</a></span><span><a href="/dictionary/all-ceramic" class="term-link">올세라믹</a></span><span>정밀 색조 매칭</span><span>미소 라인 분석</span></div><p class="h-card-patient-note">자연치아 같은 투명도와 색감 — 주변에서 보철인 줄 몰라요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=aesthetic" class="h-card-dict-link">심미보철 관련 용어 보기 →</a></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">치아 색상에 완벽히 맞춘 고급 레진으로 치아 삭제를 최소화하면서 당일에 치료를 마칩니다. 앞니 틈, 깨진 치아, 변색 부위 등을 자연스럽게 복원합니다.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span><span>앞니 심미 복원</span></div><p class="h-card-patient-note">가성비 최고 — 자연스러우면서 당일에 끝나는 치료.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=resin" class="h-card-dict-link">레진 관련 용어 보기 →</a></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱 소리, 통증, 입 벌림 제한을 CBCT와 교합 분석으로 정밀 진단합니다. 물리치료와 맞춤 스플린트, 체계적 프로토콜로 근본 원인부터 해결합니다.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span><span>체계적 프로토콜</span></div><p class="h-card-patient-note">턱 통증으로 잠을 못 잤는데, 치료 후 확실히 달라졌어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=tmj" class="h-card-dict-link">턱관절 관련 용어 보기 →</a></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링 — 기본 진료에 가장 충실합니다. 아쿠아케어(드릴 없는 치료)와 니트람 근관치료 시스템으로 통증과 불안을 줄입니다.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span><span>무통 마취</span></div><p class="h-card-patient-note">기본을 잘하는 치과가 진짜 좋은 치과라는 걸 느꼈어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a></div></div>
           </div>
         </div>
       </section>
@@ -364,7 +384,9 @@ export function mainPage() {
             </div>
             <div class="director-info">
               <span class="section-label">03 — DIRECTOR</span>
+              <h2 class="director-name-title" data-reveal>대표원장 <em>최효영</em></h2>
               <blockquote class="director-quote" data-reveal>"다른 사람들이 치과 이야기를 할 때<br/>정직하게 치료를 잘하는 병원이라며<br/>추천하는 곳을 만들고 싶습니다."</blockquote>
+              <p class="director-philosophy" data-reveal>환자가 아파서 찾아오는 곳이 아니라, 건강할 때도 생각나는 치과. 이음치과가 지향하는 병원의 모습입니다. 모든 환자분을 가족처럼 대하고, 과잉 진료 없이 정직하게 — 그것이 이음의 철학입니다.</p>
               <div class="credentials-grid">
                 <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 졸업</li></ul></div>
                 <div class="cred-block" data-reveal><h4>Experience</h4><ul><li>전 사상연세비앤이치과병원 원장</li><li>전 다대치과의원 원장</li></ul></div>
@@ -383,6 +405,7 @@ export function mainPage() {
           <div class="promise-header">
             <span class="section-label">04 — PROMISE</span>
             <h2 class="promise-main-title">이음의<br/><em>약속</em></h2>
+            <p class="promise-subtitle">환자분께 드리는 네 가지 약속입니다.<br/>진료실에서 벌어지는 모든 순간에 이 약속을 지킵니다.</p>
           </div>
           <div class="promise-grid">
             <div class="promise-item" data-reveal data-num="01">
@@ -427,14 +450,51 @@ export function mainPage() {
           <div class="equip-header">
             <span class="section-label">05 — EQUIPMENT</span>
             <h2 class="equip-title">Digital<br/>Dentistry</h2>
+            <p class="equip-subtitle">이음치과는 '최신 장비가 있다'는 것에 만족하지 않습니다.<br/>각 장비가 <em>환자에게 어떤 이점</em>을 주는지가 더 중요합니다.</p>
           </div>
           <div class="equip-grid">
-            <div class="equip-item" data-reveal><span class="equip-num">01</span><h4>CBCT</h4><p>3차원 입체 영상 정밀 진단</p></div>
-            <div class="equip-item" data-reveal><span class="equip-num">02</span><h4>구강스캐너</h4><p>디지털 인상 채득</p></div>
-            <div class="equip-item" data-reveal><span class="equip-num">03</span><h4>3D 프린터</h4><p>원내 가이드 직접 제작</p></div>
-            <div class="equip-item" data-reveal><span class="equip-num">04</span><h4>플라즈마 소독기</h4><p>최첨단 감염관리</p></div>
-            <div class="equip-item" data-reveal><span class="equip-num">05</span><h4>아쿠아케어</h4><p>미세분말 최소침습 치료</p></div>
-            <div class="equip-item" data-reveal><span class="equip-num">06</span><h4>니트람</h4><p>정밀 근관치료 시스템</p></div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">01</span>
+              <h4>CBCT</h4>
+              <p class="equip-name-en">Cone Beam CT</p>
+              <p class="equip-desc">일반 X-ray로는 보이지 않는 구조를 3차원 입체 영상으로 진단합니다. 뼈의 양과 밀도, 신경 위치까지 정밀하게 파악하여 임플란트 수술의 안전성과 정확도를 높입니다.</p>
+              <span class="equip-benefit">환자 이점: 정확한 진단 → 불필요한 절개 최소화</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">02</span>
+              <h4>구강스캐너</h4>
+              <p class="equip-name-en">Intraoral Scanner</p>
+              <p class="equip-desc">기존의 불쾌한 본뜨기(인상재) 없이 디지털로 구강 내부를 정밀 스캔합니다. 보철물 제작 정확도가 올라가고, 환자분의 구역질과 불편함이 사라집니다.</p>
+              <span class="equip-benefit">환자 이점: 본뜨기 불편 제거 + 보철 정밀도 향상</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">03</span>
+              <h4>3D 프린터</h4>
+              <p class="equip-name-en">3D Surgical Guide</p>
+              <p class="equip-desc">환자 맞춤 임플란트 수술 가이드를 원내에서 직접 출력합니다. 외부 기공소에 의뢰하지 않아 시간이 단축되고, 가이드 수술로 절개를 최소화해 회복이 빨라집니다.</p>
+              <span class="equip-benefit">환자 이점: 맞춤 가이드 → 빠른 회복 + 시간 단축</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">04</span>
+              <h4>플라즈마 소독기</h4>
+              <p class="equip-name-en">Plasma Sterilizer</p>
+              <p class="equip-desc">과산화수소 플라즈마를 이용해 기구를 멸균합니다. 대학병원급 감염관리 시스템으로 교차감염 위험을 원천 차단하며, 열에 약한 기구까지 완벽하게 소독합니다.</p>
+              <span class="equip-benefit">환자 이점: 대학병원급 위생 → 안심 진료</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">05</span>
+              <h4>아쿠아케어</h4>
+              <p class="equip-name-en">Aquacare</p>
+              <p class="equip-desc">미세분말을 고압으로 분사하여 충치만 정밀하게 제거합니다. 드릴 없이 치료하므로 진동과 소음이 거의 없고, 건강한 치아 조직을 최대한 보존할 수 있습니다.</p>
+              <span class="equip-benefit">환자 이점: 드릴 없는 치료 → 불안감 해소</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">06</span>
+              <h4>니트람</h4>
+              <p class="equip-name-en">NiTram Endo System</p>
+              <p class="equip-desc">니켈-티타늄 합금 파일을 이용한 정밀 근관치료(신경치료) 시스템입니다. 복잡한 치아 뿌리 형태에도 안전하게 적용되어 치료 성공률을 높이고 재치료를 줄입니다.</p>
+              <span class="equip-benefit">환자 이점: 신경치료 성공률 향상 → 재치료 감소</span>
+            </div>
           </div>
         </div>
       </section>

@@ -1780,6 +1780,54 @@ body::after {
 .pillar-card h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--navy); }
 .pillar-card p { font-size: 0.95rem; line-height: 1.8; color: var(--white-dim); }
 
+/* Pillar card — enhanced content styles */
+.pillars-subtitle {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--white-muted);
+  margin-top: 1.5rem;
+  max-width: 580px;
+}
+.pillar-lead {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+.pillar-desc {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--white-dim);
+  margin-bottom: 1.5rem;
+}
+.pillar-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid rgba(15,27,45,0.06);
+  padding-top: 1.2rem;
+}
+.pillar-details li {
+  position: relative;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  line-height: 2;
+  color: var(--white-muted);
+  font-weight: 400;
+}
+.pillar-details li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 5px;
+  height: 5px;
+  background: var(--gold);
+  border-radius: 50%;
+}
+
 /* Pillar card stagger */
 .pillar-card:nth-child(2) { transition-delay: 0.12s; }
 .pillar-card:nth-child(3) { transition-delay: 0.24s; }
@@ -2088,6 +2136,14 @@ body::after {
   font-weight: 600;
 }
 
+.h-intro-sub {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--white-muted);
+  margin-top: 1.5rem;
+  line-height: 1.8;
+}
+
 .h-card-inner {
   padding: 2.5rem 2rem;
   height: 100%;
@@ -2199,6 +2255,30 @@ body::after {
 .h-card:hover .h-card-arrow {
   opacity: 1;
   transform: translateX(0);
+}
+
+/* Service card — patient note */
+.h-card-patient-note {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--gold);
+  font-style: italic;
+  line-height: 1.6;
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(27,58,92,0.03);
+  border-left: 2px solid var(--gold-dim);
+  border-radius: 0 6px 6px 0;
+}
+
+/* Services subtitle */
+.services-subtitle {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--white-muted);
+  margin-top: 1rem;
+  max-width: 560px;
 }
 
 /* === DIRECTOR — Cinematic dark section === */
@@ -2328,18 +2408,48 @@ body::after {
   color: var(--dark-text-dim);
 }
 
+/* Director — name title */
+.director-name-title {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 700;
+  color: var(--dark-text);
+  margin-bottom: 2rem;
+  line-height: 1.4;
+}
+.director-name-title em {
+  font-style: normal;
+  color: var(--cta-bright);
+}
+
 .director-quote {
   font-size: clamp(1.3rem, 2.5vw, 1.8rem);
   font-weight: 300;
   line-height: 1.7;
   color: var(--dark-text-dim);
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
   padding-left: 2rem;
   border-left: 2px solid var(--cta-bright);
   opacity: 0;
   transform: translateY(30px);
   transition: all 0.8s var(--ease);
   font-style: italic;
+}
+
+/* Director — philosophy paragraph */
+.director-philosophy {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--dark-text-dim);
+  margin-bottom: 3rem;
+  max-width: 520px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.7s var(--ease);
+}
+.director-philosophy.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .director-quote.visible {
@@ -2497,6 +2607,48 @@ body::after {
   font-size: 0.82rem;
   color: var(--white-muted);
   font-weight: 300;
+}
+
+/* Equipment — enhanced content styles */
+.equip-subtitle {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--white-muted);
+  margin-top: 1.5rem;
+  max-width: 600px;
+}
+.equip-subtitle em {
+  font-style: italic;
+  color: var(--gold);
+  font-weight: 400;
+}
+.equip-name-en {
+  font-family: var(--font-en);
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 1rem;
+  display: block;
+}
+.equip-desc {
+  font-size: 0.85rem;
+  line-height: 1.85;
+  color: var(--white-dim);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+.equip-benefit {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--gold);
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(15,27,45,0.06);
+  margin-top: auto;
+  line-height: 1.6;
 }
 
 /* === CONTACT BIG — Final act === */
@@ -2784,6 +2936,15 @@ body::after {
   color: var(--gold);
   -webkit-text-stroke: none;
   position: relative;
+}
+
+.promise-subtitle {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--white-muted);
+  margin-top: 1.5rem;
+  max-width: 520px;
 }
 
 .promise-grid {
