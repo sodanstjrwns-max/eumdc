@@ -30,6 +30,20 @@
       toggleActions: 'play none none none'
     });
 
+    // Respect prefers-reduced-motion
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      // Show all elements immediately without animation
+      document.querySelectorAll('.story-text, [data-reveal]').forEach(function(el) {
+        el.classList.add('visible');
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+        el.style.filter = 'none';
+      });
+      console.log('[EUM] Reduced motion mode — animations disabled');
+      return;
+    }
+
     // ═══ SYSTEMS INIT ═══
     initHeroCanvasParticles();
     initHeroParallaxDepth();
@@ -45,7 +59,9 @@
     initFooterReveal();
     initPillarCardMouseTrack();
 
-    console.log('[EUM] Cinematic Engine v2 initialized');
+    initHeroCTA();
+
+    console.log('[EUM] Cinematic Engine v3 initialized');
   }
 
   // ═══════════════════════════════════════════════════
@@ -162,6 +178,27 @@
     // Hide CSS fallback when canvas works
     var cssParticles = document.getElementById('heroParticles');
     if (cssParticles) cssParticles.style.display = 'none';
+  }
+
+  // ═════════════════════════════════════════════════
+  // HERO CTA — Entrance animation
+  // ═════════════════════════════════════════════════
+  function initHeroCTA() {
+    var cta = document.querySelector('.hero-cta-btn');
+    if (!cta) return;
+
+    // Subtle pulse attention after 4 seconds
+    gsap.fromTo(cta, 
+      { boxShadow: '0 0 0 0 rgba(42,90,143,0)' },
+      { 
+        boxShadow: '0 0 0 8px rgba(42,90,143,0.15)',
+        duration: 1.5,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: 2,
+        delay: 5
+      }
+    );
   }
 
   // ═══════════════════════════════════════════════════
@@ -715,44 +752,33 @@
   // ═══════════════════════════════════════════════════
   // MENU ANIMATION — Cinematic open/close
   // ═══════════════════════════════════════════════════
+  // Menu animation is handled via CSS transitions + app.js
+  // GSAP enhances the menu link stagger on MutationObserver
   function initMenuAnimation() {
-    var menuBtn = document.getElementById('menuBtn');
     var fullMenu = document.getElementById('fullMenu');
-    if (!menuBtn || !fullMenu) return;
+    if (!fullMenu) return;
 
     var menuLinks = fullMenu.querySelectorAll('.menu-link');
     var menuFooter = fullMenu.querySelectorAll('.menu-footer-col');
 
-    menuBtn.addEventListener('click', function () {
-      if (fullMenu.classList.contains('active')) {
-        // Close
-        gsap.to(menuLinks, {
-          y: -30,
-          opacity: 0,
-          filter: 'blur(4px)',
-          stagger: 0.03,
-          duration: 0.3,
-          ease: 'power2.in'
-        });
-        gsap.to(menuFooter, {
-          y: -15, opacity: 0,
-          duration: 0.2,
-          delay: 0.1,
-          onComplete: function () { fullMenu.classList.remove('active'); }
-        });
-      } else {
-        // Open
-        fullMenu.classList.add('active');
-        gsap.fromTo(menuLinks,
-          { y: 50, opacity: 0, filter: 'blur(6px)' },
-          { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.06, duration: 0.6, ease: 'power3.out', delay: 0.25 }
-        );
-        gsap.fromTo(menuFooter,
-          { y: 20, opacity: 0 },
-          { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, ease: 'power2.out', delay: 0.5 }
-        );
-      }
+    // Observe class changes on fullMenu to trigger GSAP enhancements
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        if (m.attributeName === 'class') {
+          if (fullMenu.classList.contains('open')) {
+            gsap.fromTo(menuLinks,
+              { y: 50, opacity: 0, filter: 'blur(6px)' },
+              { y: 0, opacity: 1, filter: 'blur(0px)', stagger: 0.06, duration: 0.6, ease: 'power3.out', delay: 0.2 }
+            );
+            gsap.fromTo(menuFooter,
+              { y: 20, opacity: 0 },
+              { y: 0, opacity: 1, stagger: 0.08, duration: 0.5, ease: 'power2.out', delay: 0.45 }
+            );
+          }
+        }
+      });
     });
+    observer.observe(fullMenu, { attributes: true });
   }
 
   // ═══════════════════════════════════════════════════

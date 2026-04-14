@@ -5,6 +5,9 @@
 export function mainPage() {
   return (
     <div id="app">
+      {/* Skip to main content — Accessibility */}
+      <a href="#section-hero" class="skip-link">본문 바로가기</a>
+
       {/* Custom Cursor */}
       <div class="cursor" id="cursor"></div>
       <div class="cursor-follower" id="cursorFollower"></div>
@@ -94,6 +97,14 @@ export function mainPage() {
             <span class="title-line"><span class="title-word" data-split>그렇게도</span></span>
             <span class="title-line accent"><span class="title-word" data-split>두려운 이유</span></span>
           </h1>
+          {/* Hero CTA */}
+          <div class="hero-cta-wrap">
+            <a href="tel:051-206-5888" class="hero-cta-btn" data-hover>
+              <span>지금 상담하기</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+
           <div class="hero-bottom">
             <div class="hero-scroll-hint">
               <div class="scroll-line-wrap">
@@ -496,7 +507,7 @@ export function mainPage() {
             <p>부산광역시 강서구 명지국제8로 265 2층 | TEL: 051-206-5888 | E-mail: hyogunim@gmail.com</p>
           </div>
           <div class="footer-bottom-bar">
-            <span>&copy; 2025 이음치과의원. All rights reserved.</span>
+            <span>&copy; <span id="footerYear">2025</span> 이음치과의원. All rights reserved.</span>
             <div class="footer-legal-links">
               <a href="/about">개인정보처리방침</a>
               <a href="/about">이용약관</a>
@@ -512,6 +523,9 @@ export function mainPage() {
 
       <script src="/static/app.js"></script>
       <script src="/static/gsap-init.js"></script>
+      <script>{
+        `document.getElementById('footerYear').textContent = new Date().getFullYear();`
+      }</script>
     </div>
   )
 }

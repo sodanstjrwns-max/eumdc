@@ -146,12 +146,21 @@
     if (!btn || !menu) return;
     var isOpen = false;
 
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-controls', 'fullMenu');
+    menu.setAttribute('aria-hidden', 'true');
+
     btn.addEventListener('click', function () {
       isOpen = !isOpen;
       if (isOpen) {
         menu.classList.add('open');
+        menu.setAttribute('aria-hidden', 'false');
         btn.querySelector('span').textContent = 'CLOSE';
+        btn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
+        // Focus first link for keyboard navigation
+        var firstLink = menu.querySelector('.menu-link');
+        if (firstLink) setTimeout(function() { firstLink.focus(); }, 400);
       } else {
         closeMenu();
       }
@@ -164,8 +173,11 @@
     function closeMenu() {
       isOpen = false;
       menu.classList.remove('open');
+      menu.setAttribute('aria-hidden', 'true');
       btn.querySelector('span').textContent = 'MENU';
+      btn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
+      btn.focus();
     }
 
     document.addEventListener('keydown', function (e) {
