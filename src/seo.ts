@@ -4,7 +4,7 @@
 // Naver 웹마스터, Speakable, HowTo, 리뷰, Service 스키마
 // =============================================
 
-export const SITE_URL = 'https://eum-dental.pages.dev'
+export const SITE_URL = 'https://eumdc.pages.dev'
 export const SITE_NAME = '이음치과의원'
 export const SITE_NAME_EN = 'Eum Dental Clinic'
 const DEFAULT_IMAGE = `${SITE_URL}/static/og-image.png`

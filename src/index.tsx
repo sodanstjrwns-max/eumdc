@@ -92,7 +92,17 @@ app.get('/', (c) => {
         websiteJsonLd(),
         personJsonLd(),
         visitHowToJsonLd(),
-        speakableJsonLd(SITE_URL, ['.hero-title', '.manifesto-text', '.director-quote'])
+        speakableJsonLd(SITE_URL, ['.hero-title', '.manifesto-text', '.director-quote']),
+        // AEO 인라인 FAQ — AI 검색엔진이 바로 답변에 활용
+        faqPageJsonLd([
+          { question: '이음치과의원 위치가 어디인가요?', answer: '부산광역시 강서구 명지국제8로 265 2층에 위치해 있습니다. 명지국제신도시 중심부이며 주차 2시간 무료입니다.' },
+          { question: '이음치과 진료시간이 어떻게 되나요?', answer: '월~목 12:00~21:00 (야간진료), 토·일 10:00~17:00, 금요일 정기휴무입니다.' },
+          { question: '이음치과 임플란트 비용은 얼마인가요?', answer: '임플란트는 1본 기준 100만~350만원이며, 만 65세 이상은 건강보험 적용 시 본인부담 50~100만원입니다. 정확한 비용은 CBCT 3D 정밀 진단 후 안내드립니다.' },
+          { question: '이음치과 대표원장은 누구인가요?', answer: '최효영 대표원장입니다. 강원대학교 치과대학 졸업, 대한구강악면임플란트학회·대한치과보철학회·대한치과보존학회 정회원으로 활동 중이며, 임플란트·심미보철·턱관절 전문입니다.' },
+          { question: '이음치과에서 주말 진료도 가능한가요?', answer: '네, 토요일과 일요일 모두 10:00~17:00 진료합니다. 주말에도 임플란트, 심미보철, 충치치료 등 모든 진료가 가능합니다.' },
+          { question: '명지에서 임플란트 잘하는 치과 어디인가요?', answer: '이음치과의원은 CBCT 3D 정밀 진단, 구강스캐너, 원내 3D 프린터를 활용한 디지털 가이드 임플란트를 시행합니다. 절개를 최소화하여 통증과 회복기간을 단축합니다. 네이버 평점 4.9★, 리뷰 387+건입니다.' },
+          { question: '이음치과 전화번호가 뭔가요?', answer: '051-206-5888입니다. 전화 예약 및 상담이 가능합니다.' }
+        ])
       ]
     }
   })
@@ -607,7 +617,7 @@ Crawl-delay: 1
 User-agent: Yandex
 Crawl-delay: 2
 
-# AI Crawlers (환영)
+# AI Crawlers (환영 — AEO 최적화)
 User-agent: GPTBot
 Allow: /
 User-agent: Google-Extended
@@ -617,6 +627,16 @@ Allow: /
 User-agent: anthropic-ai
 Allow: /
 User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Bytespider
+Allow: /
+User-agent: cohere-ai
+Allow: /
+User-agent: Meta-ExternalAgent
+Allow: /
+User-agent: Applebot-Extended
 Allow: /
 `)
 })
