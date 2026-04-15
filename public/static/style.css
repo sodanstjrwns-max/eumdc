@@ -872,7 +872,7 @@ body::after {
 
 .hero-stat-num {
   font-family: var(--font-en);
-  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
   font-weight: 400;
   color: var(--navy);
   letter-spacing: -0.03em;
@@ -888,12 +888,12 @@ body::after {
 
 .hero-stat-label {
   display: block;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 400;
   color: var(--white-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
   font-family: var(--font-ui);
 }
 
@@ -1705,7 +1705,7 @@ body::after {
 
 /* ═══ STORY STATS — Cinematic breathing room ═══ */
 .story-stats {
-  padding: clamp(4rem, 10vw, 8rem) 0;
+  padding: clamp(4rem, 8vw, 7rem) 0;
   background: var(--bg-2);
   border-top: none;
   border-bottom: none;
@@ -1761,12 +1761,12 @@ body::after {
 .pillar-card:hover::before { transform: scaleX(1); }
 .pillar-card:hover::after { opacity: 1; }
 .pillar-card:hover {
-  border-color: rgba(27,58,92,0.18);
+  border-color: rgba(27,58,92,0.15);
   box-shadow:
-    0 25px 70px rgba(15,27,45,0.1),
-    0 0 50px rgba(27,58,92,0.06),
+    0 20px 60px rgba(15,27,45,0.08),
+    0 0 30px rgba(27,58,92,0.04),
     inset 0 1px 0 rgba(255,255,255,0.5);
-  transform: translateY(-8px);
+  transform: translateY(-6px);
 }
 .pillar-num {
   font-family: var(--font-en); font-size: 0.75rem;
@@ -2114,10 +2114,10 @@ body::after {
 }
 
 .h-card:hover {
-  border-color: var(--gold-dim);
+  border-color: rgba(27,58,92,0.15);
   background: var(--surface);
   box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
+  transform: translateY(-6px);
 }
 
 .h-card-intro {
@@ -2508,9 +2508,9 @@ body::after {
 
 .equip-title {
   font-family: var(--font-en);
-  font-size: clamp(3rem, 8vw, 7rem);
+  font-size: clamp(3rem, 8vw, 6rem);
   font-weight: 400;
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--white);
   font-style: italic;
@@ -2586,11 +2586,12 @@ body::after {
 }
 
 .equip-item h4 {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
   transition: color 0.3s;
   color: var(--navy);
+  letter-spacing: -0.01em;
 }
 
 .equip-item:hover h4 {
@@ -2910,9 +2911,9 @@ body::after {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(27, 58, 92, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(27, 58, 92, 0.035) 0%, transparent 70%),
     radial-gradient(ellipse 40% 40% at 80% 60%, rgba(27, 58, 92, 0.02) 0%, transparent 70%),
-    var(--bg);
+    var(--bg-2);
 }
 
 .promise-header {
@@ -3036,7 +3037,7 @@ body::after {
 }
 
 .promise-content h3 {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
@@ -3049,12 +3050,12 @@ body::after {
 }
 
 .promise-quote {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--gold);
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   padding-left: 1rem;
-  border-left: 2px solid var(--gold-dim);
+  border-left: 2px solid rgba(27,58,92,0.15);
   font-style: italic;
   line-height: 1.6;
 }
