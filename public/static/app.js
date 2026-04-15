@@ -30,7 +30,6 @@
     initTextMask();
     initGalleryParallax();
     initFloatingCall();
-    initNavTime();
     initNavScrollProgress();
     initSmoothLinks();
     initImageBreakParallax();
@@ -504,22 +503,6 @@
         btn.classList.remove('visible');
       }
     }, { passive: true });
-  }
-
-  // === NAV TIME ===
-  function initNavTime() {
-    var el = document.getElementById('navTime');
-    if (!el) return;
-
-    function update() {
-      var now = new Date();
-      var h = String(now.getHours()).padStart(2, '0');
-      var m = String(now.getMinutes()).padStart(2, '0');
-      var s = String(now.getSeconds()).padStart(2, '0');
-      el.textContent = 'BUSAN ' + h + ':' + m + ':' + s;
-    }
-    update();
-    setInterval(update, 1000);
   }
 
   // === NAV SCROLL PROGRESS ===

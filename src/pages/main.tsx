@@ -15,7 +15,10 @@ export function mainPage() {
       {/* === NAVIGATION === */}
       <nav id="nav">
         <a href="/" class="nav-brand" data-hover>이음</a>
-        <div class="nav-center" id="navTime"></div>
+        <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" class="nav-booking" data-hover>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <span>네이버 예약</span>
+        </a>
         <button class="nav-menu-btn" id="menuBtn" data-hover>
           <span>MENU</span>
         </button>

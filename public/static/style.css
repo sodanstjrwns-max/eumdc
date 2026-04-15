@@ -272,7 +272,7 @@ body::after {
   background: transparent;
 }
 #nav:not(.scrolled) .nav-brand,
-#nav:not(.scrolled) .nav-center,
+#nav:not(.scrolled) .nav-booking,
 #nav:not(.scrolled) .nav-menu-btn {
   color: rgba(245, 247, 250, 0.9);
 }
@@ -290,7 +290,7 @@ body::after {
 }
 
 #nav.scrolled .nav-brand,
-#nav.scrolled .nav-center,
+#nav.scrolled .nav-booking,
 #nav.scrolled .nav-menu-btn {
   color: var(--white);
 }
@@ -308,12 +308,43 @@ body::after {
   font-style: italic;
 }
 
-.nav-center {
+.nav-booking {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--font-ui);
-  font-size: 0.7rem;
-  color: var(--white-muted);
-  letter-spacing: 0.2em;
+  font-size: 0.65rem;
+  color: var(--white);
+  letter-spacing: 0.15em;
   text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid rgba(248,249,252,0.25);
+  padding: 0.45rem 1.2rem;
+  border-radius: 100px;
+  transition: all 0.4s var(--ease);
+  white-space: nowrap;
+}
+.nav-booking:hover {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+.nav-booking svg {
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+.nav-booking:hover svg {
+  opacity: 1;
+}
+#nav.scrolled .nav-booking {
+  color: var(--navy);
+  border-color: rgba(15, 27, 45, 0.15);
+}
+#nav.scrolled .nav-booking:hover {
+  background: var(--gold);
+  color: var(--navy);
+  border-color: var(--gold);
 }
 
 .nav-menu-btn {
@@ -3460,8 +3491,11 @@ body.gsap-active [data-reveal] {
     border-radius: 8px;
   }
 
-  .nav-center {
+  .nav-booking span {
     display: none;
+  }
+  .nav-booking {
+    padding: 0.4rem 0.7rem;
   }
 
   .hero-cta-btn {
