@@ -613,65 +613,122 @@
   // ═══════════════════════════════════════════════════
   function initGenericReveals() {
     gsap.utils.toArray('[data-reveal]').forEach(function (el) {
-      gsap.set(el, { opacity: 0, y: 40, filter: 'blur(4px)' });
-
-      ScrollTrigger.create({
-        trigger: el,
-        start: 'top 88%',
-        once: true,
-        onEnter: function() {
-          gsap.to(el, {
-            opacity: 1, y: 0, filter: 'blur(0px)',
-            duration: 1.0, ease: 'power3.out'
-          });
-        }
-      });
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.9) {
+        // Already in viewport — animate immediately without hiding first
+        gsap.fromTo(el,
+          { y: 20, opacity: 0, filter: 'blur(2px)' },
+          { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.6, ease: 'power3.out' }
+        );
+      } else {
+        gsap.set(el, { opacity: 0, y: 40, filter: 'blur(4px)' });
+        ScrollTrigger.create({
+          trigger: el,
+          start: 'top 88%',
+          once: true,
+          onEnter: function() {
+            gsap.to(el, {
+              opacity: 1, y: 0, filter: 'blur(0px)',
+              duration: 1.0, ease: 'power3.out'
+            });
+          }
+        });
+      }
     });
 
-    // Staggered grid reveals
+    // Staggered grid reveals — CSS-first approach for dynamic content
+    // Uses CSS classes instead of GSAP fromTo to prevent flash-of-invisible-content
     var grids = ['.treat-grid', '.doctors-grid', '.cases-grid', '.regions-grid',
-      '.region-treat-grid', '.region-case-grid'];
+      '.region-treat-grid', '.region-case-grid', '.regionsGrid'];
     grids.forEach(function (sel) {
-      var grid = document.querySelector(sel);
-      if (!grid) return;
-      var observer = new MutationObserver(function () {
-        var children = grid.children;
-        if (children.length > 0) {
-          observer.disconnect();
-          gsap.from(children, {
-            scrollTrigger: { trigger: grid, start: 'top 80%', once: true },
-            y: 50, opacity: 0, filter: 'blur(3px)',
-            duration: 0.8, stagger: 0.12, ease: 'power3.out'
-          });
-        }
+      var allGrids = document.querySelectorAll(sel);
+      allGrids.forEach(function(grid) {
+        var observer = new MutationObserver(function () {
+          var children = Array.from(grid.children);
+          if (children.length > 0) {
+            observer.disconnect();
+            // Safe approach: set children visible immediately, then animate with class
+            children.forEach(function(child, i) {
+              child.style.opacity = '0';
+              child.style.transform = 'translateY(24px)';
+              child.style.transition = 'none';
+            });
+            // Force reflow
+            void grid.offsetHeight;
+            // Now animate each child with stagger delay
+            children.forEach(function(child, i) {
+              child.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+              child.style.transitionDelay = (i * 0.07) + 's';
+              // Use rAF to ensure the transition fires properly
+              requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                  child.style.opacity = '1';
+                  child.style.transform = 'translateY(0)';
+                });
+              });
+            });
+            // Cleanup inline styles after animation completes
+            setTimeout(function() {
+              children.forEach(function(child) {
+                child.style.transition = '';
+                child.style.transitionDelay = '';
+                child.style.opacity = '';
+                child.style.transform = '';
+              });
+            }, 800 + children.length * 70);
+          }
+        });
+        observer.observe(grid, { childList: true });
       });
-      observer.observe(grid, { childList: true });
     });
 
-    // Title reveals with enhanced motion
+    // Title reveals — skip if already visible in viewport
     gsap.utils.toArray('.page-title, .hero-title').forEach(function (title) {
-      gsap.from(title, {
-        scrollTrigger: { trigger: title, start: 'top 90%', once: true },
-        y: 60, opacity: 0, filter: 'blur(8px)', scale: 0.95,
-        duration: 1.2, ease: 'power3.out'
-      });
+      var rect = title.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        // Already visible — animate immediately
+        gsap.fromTo(title,
+          { y: 30, opacity: 0, filter: 'blur(4px)' },
+          { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.8, ease: 'power3.out' }
+        );
+      } else {
+        gsap.from(title, {
+          scrollTrigger: { trigger: title, start: 'top 90%', once: true },
+          y: 60, opacity: 0, filter: 'blur(8px)', scale: 0.95,
+          duration: 1.2, ease: 'power3.out'
+        });
+      }
     });
 
-    // Section labels — slide with line expand
+    // Section labels — immediate if visible
     gsap.utils.toArray('.section-label').forEach(function (label) {
-      gsap.from(label, {
-        scrollTrigger: { trigger: label, start: 'top 90%', once: true },
-        x: -40, opacity: 0, duration: 0.9, ease: 'power3.out'
-      });
+      var rect = label.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        gsap.fromTo(label,
+          { x: -20, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.6, ease: 'power3.out' }
+        );
+      } else {
+        gsap.from(label, {
+          scrollTrigger: { trigger: label, start: 'top 90%', once: true },
+          x: -40, opacity: 0, duration: 0.9, ease: 'power3.out'
+        });
+      }
     });
 
-    // Section headings — word by word feeling
+    // Section headings — immediate if visible (no blur on static elements)
     gsap.utils.toArray('.section-heading, h2.treat-cat-title').forEach(function (h) {
-      gsap.from(h, {
-        scrollTrigger: { trigger: h, start: 'top 85%', once: true },
-        y: 40, opacity: 0, filter: 'blur(5px)',
-        duration: 1.0, ease: 'power3.out'
-      });
+      var rect = h.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        // Already visible — just ensure it's fully shown, no flash
+        gsap.set(h, { opacity: 1, y: 0, filter: 'none' });
+      } else {
+        gsap.from(h, {
+          scrollTrigger: { trigger: h, start: 'top 85%', once: true },
+          y: 30, opacity: 0,
+          duration: 0.8, ease: 'power3.out'
+        });
+      }
     });
 
     // Counter — elastic snap
