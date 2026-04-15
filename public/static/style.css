@@ -2412,13 +2412,18 @@ body::after {
 /* === DIRECTOR — Cinematic dark section === */
 .director-full {
   padding: var(--section-rhythm) 0;
-  background: var(--dark-bg);
+  background:
+    radial-gradient(ellipse 50% 40% at 15% 30%, rgba(42, 90, 143, 0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 70%, rgba(58, 122, 170, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 30% at 50% 90%, rgba(100, 80, 160, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 60% 20%, rgba(30, 60, 100, 0.15) 0%, transparent 60%),
+    var(--dark-bg);
   color: var(--dark-text);
   position: relative;
   overflow: hidden;
 }
 
-/* Decorative circle */
+/* Decorative circle — glass ring */
 .director-full::before {
   content: '';
   position: absolute;
@@ -2428,11 +2433,13 @@ body::after {
   height: 50vw;
   max-width: 700px;
   max-height: 700px;
-  border: 1px solid var(--dark-border);
+  border: 1px solid rgba(245, 247, 250, 0.08);
   border-radius: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 1;
+  background: radial-gradient(circle, rgba(42, 90, 143, 0.06) 0%, transparent 70%);
+  box-shadow: 0 0 80px rgba(42, 90, 143, 0.08);
 }
 
 .director-layout {
@@ -2450,13 +2457,23 @@ body::after {
 
 .director-frame {
   aspect-ratio: 3/4;
-  border: 1px solid var(--dark-border);
+  border: 1px solid var(--glass-dark-border);
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: flex-end;
-  background: var(--dark-surface);
-  border-radius: 4px;
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-radius: 16px;
+  box-shadow: var(--glass-dark-shadow);
+  transition: all 0.6s var(--ease);
+}
+.director-frame:hover {
+  border-color: var(--glass-dark-border-hover);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 /* Frame corner accents */
@@ -2512,7 +2529,9 @@ body::after {
   width: 100%;
   position: relative;
   z-index: 2;
-  background: linear-gradient(transparent, rgba(15, 27, 45, 0.85));
+  background: linear-gradient(transparent 0%, rgba(15, 27, 45, 0.4) 40%, rgba(15, 27, 45, 0.7) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .frame-label {
@@ -2558,9 +2577,16 @@ body::after {
   line-height: 1.8;
   color: var(--dark-text-dim);
   margin-bottom: 2.5rem;
-  padding-left: 1.5rem;
+  padding: 2rem 2rem 2rem 2.5rem;
   border-left: 3px solid var(--cta-bright);
   font-style: italic;
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-dark-border);
+  border-left: 3px solid var(--cta-bright);
+  border-radius: 0 16px 16px 0;
+  box-shadow: var(--glass-dark-shadow);
   /* opacity/transform handled by [data-reveal] system */
 }
 
@@ -2572,24 +2598,43 @@ body::after {
   color: var(--dark-text-dim);
   margin-bottom: 3rem;
   max-width: 540px;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 247, 250, 0.06);
+  border-radius: 12px;
   /* opacity/transform handled by [data-reveal] system */
 }
 
 .credentials-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .cred-block {
   /* opacity/transform handled by [data-reveal] system */
   transition: all 0.6s var(--ease);
-  background: var(--glass-dark-bg);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.05) 100%),
+    var(--glass-dark-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-dark-border);
-  border-radius: 14px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: var(--glass-dark-shadow);
+}
+.cred-block:hover {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 50%, rgba(255,255,255,0.08) 100%),
+    var(--glass-dark-bg-hover);
+  border-color: var(--glass-dark-border-hover);
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  transform: translateY(-3px);
 }
 
 .cred-block h4 {
@@ -2599,7 +2644,7 @@ body::after {
   color: var(--cta-bright);
   margin-bottom: 0.8rem;
   padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--dark-border);
+  border-bottom: 1px solid rgba(245, 247, 250, 0.1);
   text-transform: uppercase;
 }
 
