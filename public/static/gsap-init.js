@@ -1,12 +1,13 @@
 /* ============================================
-   이음치과 — CINEMATIC MOTION ENGINE v2
+   이음치과 — CINEMATIC MOTION ENGINE v4
    ============================================
-   AVATAR-LEVEL VISUAL DESIGN
+   IMMERSIVE SCROLL EXPERIENCE
    ─────────────────────────────────────────
-   Canvas Particle System · Scroll-synced Depth
-   Volumetric Light · Parallax Layers
-   Per-chapter Mood Lighting · Text Split Reveals
-   Scrub-based Camera · Bioluminescent FX
+   Canvas Particle System · Multi-layer Parallax
+   Volumetric Light · Text Split Reveals
+   Scroll-Velocity Effects · Section Morphing
+   Smooth Counters · Stagger Orchestration
+   Glass Shimmer · Card Choreography
    ============================================ */
 (function () {
   'use strict';
@@ -26,7 +27,6 @@
   function initCinematicEngine() {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Mark body so CSS knows GSAP is handling reveals (not app.js fallback)
     document.body.classList.add('gsap-active');
 
     ScrollTrigger.defaults({
@@ -36,7 +36,6 @@
     // Respect prefers-reduced-motion
     var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReduced) {
-      // Show all elements immediately without animation
       document.querySelectorAll('.story-text, [data-reveal]').forEach(function(el) {
         el.classList.add('visible');
         el.style.opacity = '1';
@@ -47,11 +46,12 @@
       return;
     }
 
-    // ═══ SYSTEMS INIT ═══
+    // ═══ CORE SYSTEMS ═══
     initHeroCanvasParticles();
+    initHeroCTA();
     initHeroParallaxDepth();
     initStoryNarrative();
-    initCinematicBlackout();   // ★ Dark → Light transition
+    initCinematicBlackout();
     initGenericReveals();
     initHorizontalScroll();
     initCardAnimations();
@@ -63,14 +63,22 @@
     initFooterReveal();
     initPillarCardMouseTrack();
 
-    initHeroCTA();
+    // ═══ ★ NEW v4 SYSTEMS ═══
+    initSectionColorMorph();
+    initScrollVelocityBlur();
+    initSplitTextReveal();
+    initCardChoreography();
+    initGlassShimmerOnScroll();
+    initParallaxDepthCards();
+    initNavMicroInteraction();
+    initStatsBounce();
+    initSectionDividers();
 
-    console.log('[EUM] Cinematic Engine v3 initialized');
+    console.log('[EUM] Cinematic Engine v4 initialized');
   }
 
   // ═══════════════════════════════════════════════════
   // HERO — CANVAS PARTICLE SYSTEM
-  // 50+ floating particles with depth, glow, and drift
   // ═══════════════════════════════════════════════════
   function initHeroCanvasParticles() {
     var canvas = document.getElementById('heroCanvas');
@@ -81,6 +89,17 @@
     var particles = [];
     var PARTICLE_COUNT = 60;
     var animId;
+    var mouseX = 0.5, mouseY = 0.5;
+
+    // Mouse interaction with particles
+    var hero = canvas.parentElement;
+    if (hero && window.innerWidth > 768) {
+      hero.addEventListener('mousemove', function(e) {
+        var rect = hero.getBoundingClientRect();
+        mouseX = (e.clientX - rect.left) / rect.width;
+        mouseY = (e.clientY - rect.top) / rect.height;
+      });
+    }
 
     function resize() {
       var rect = canvas.parentElement.getBoundingClientRect();
@@ -100,14 +119,14 @@
         particles.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          radius: 0.5 + depth * 2,
+          radius: 0.5 + depth * 2.5,
           depth: depth,
-          alpha: 0.1 + depth * 0.4,
+          alpha: 0.1 + depth * 0.5,
           vx: (Math.random() - 0.5) * 0.3,
           vy: -0.1 - Math.random() * 0.3,
           pulse: Math.random() * Math.PI * 2,
           pulseSpeed: 0.005 + Math.random() * 0.015,
-          hue: 200 + Math.random() * 30 // blue range
+          hue: 200 + Math.random() * 30
         });
       }
     }
@@ -119,11 +138,15 @@
 
       for (var i = 0; i < particles.length; i++) {
         var p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+
+        // Mouse attraction — particles drift toward cursor
+        var attractX = (mouseX * w - p.x) * 0.0003 * p.depth;
+        var attractY = (mouseY * h - p.y) * 0.0003 * p.depth;
+
+        p.x += p.vx + attractX;
+        p.y += p.vy + attractY;
         p.pulse += p.pulseSpeed;
 
-        // Wrap around
         if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
         if (p.x < -10) p.x = w + 10;
         if (p.x > w + 10) p.x = -10;
@@ -131,9 +154,9 @@
         var pulseAlpha = p.alpha * (0.6 + 0.4 * Math.sin(p.pulse));
 
         // Glow layer
-        var glowRadius = p.radius * (3 + p.depth * 4);
+        var glowRadius = p.radius * (3 + p.depth * 5);
         var glow = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowRadius);
-        glow.addColorStop(0, 'hsla(' + p.hue + ', 50%, 75%, ' + (pulseAlpha * 0.3) + ')');
+        glow.addColorStop(0, 'hsla(' + p.hue + ', 50%, 75%, ' + (pulseAlpha * 0.35) + ')');
         glow.addColorStop(1, 'hsla(' + p.hue + ', 50%, 75%, 0)');
         ctx.fillStyle = glow;
         ctx.beginPath();
@@ -150,7 +173,6 @@
       animId = requestAnimationFrame(draw);
     }
 
-    // Only run when hero is visible
     var heroSection = document.getElementById('section-hero');
     if (heroSection) {
       resize();
@@ -166,7 +188,6 @@
         onLeaveBack: function() { cancelAnimationFrame(animId); }
       });
 
-      // Start immediately if hero is visible
       draw();
 
       var resizeTimer;
@@ -179,35 +200,33 @@
       });
     }
 
-    // Hide CSS fallback when canvas works
     var cssParticles = document.getElementById('heroParticles');
     if (cssParticles) cssParticles.style.display = 'none';
   }
 
-  // ═════════════════════════════════════════════════
-  // HERO CTA — Entrance animation
-  // ═════════════════════════════════════════════════
+  // ═══════════════════════════════════════════════════
+  // HERO CTA — Enhanced pulse + glow
+  // ═══════════════════════════════════════════════════
   function initHeroCTA() {
     var cta = document.querySelector('.hero-cta-btn');
     if (!cta) return;
 
-    // Subtle pulse attention after 4 seconds
-    gsap.fromTo(cta, 
+    // Breathing glow
+    gsap.fromTo(cta,
       { boxShadow: '0 0 0 0 rgba(42,90,143,0)' },
-      { 
-        boxShadow: '0 0 0 8px rgba(42,90,143,0.15)',
-        duration: 1.5,
-        ease: 'power2.inOut',
+      {
+        boxShadow: '0 0 0 12px rgba(42,90,143,0.12), 0 0 30px rgba(42,90,143,0.08)',
+        duration: 2,
+        ease: 'sine.inOut',
         yoyo: true,
-        repeat: 2,
-        delay: 5
+        repeat: -1,
+        delay: 4
       }
     );
   }
 
   // ═══════════════════════════════════════════════════
   // HERO — PARALLAX DEPTH LAYERS
-  // Multi-speed parallax on hero elements
   // ═══════════════════════════════════════════════════
   function initHeroParallaxDepth() {
     var hero = document.getElementById('section-hero');
@@ -218,7 +237,6 @@
     var leaks = hero.querySelectorAll('.hero-light-leak');
     var scan = document.getElementById('heroScanLine');
 
-    // Content moves up faster for parallax depth
     if (heroContent) {
       gsap.to(heroContent, {
         y: -120,
@@ -234,7 +252,6 @@
       });
     }
 
-    // Mesh moves slowly for depth
     if (heroMesh) {
       gsap.to(heroMesh, {
         y: 60,
@@ -249,7 +266,6 @@
       });
     }
 
-    // Light leaks move at different speeds
     leaks.forEach(function(leak, i) {
       gsap.to(leak, {
         y: 40 + i * 20,
@@ -263,7 +279,6 @@
       });
     });
 
-    // Scan line fades on scroll
     if (scan) {
       gsap.to(scan, {
         opacity: 0,
@@ -286,7 +301,6 @@
     var storyNarrative = document.getElementById('storyNarrative');
     if (!storyLines.length || !storyNarrative) return;
 
-    // --- Narrative in-view toggle ---
     ScrollTrigger.create({
       trigger: storyNarrative,
       start: 'top 80%',
@@ -297,7 +311,6 @@
       onLeaveBack: function() { storyNarrative.classList.remove('in-view'); }
     });
 
-    // --- Chapter in-view toggles ---
     document.querySelectorAll('.story-chapter').forEach(function(ch) {
       ScrollTrigger.create({
         trigger: ch,
@@ -310,12 +323,11 @@
       });
     });
 
-    // --- Per-line cinematic reveals (AVATAR LEVEL) ---
+    // Per-line cinematic reveals
     storyLines.forEach(function (line) {
       var text = line.querySelector('.story-text');
       if (!text) return;
 
-      // Enhanced motion config per mood
       var cfg = { dur: 1.2, y: 60, start: 'top 68%', ease: 'power3.out', blur: 10, scale: 1 };
 
       if (text.classList.contains('story-question')) {
@@ -351,14 +363,11 @@
       var toVars = {
         y: 0, opacity: cfg.opacity || 1, filter: 'blur(0px)', scale: 1,
         duration: cfg.dur, ease: cfg.ease,
-        onStart: function() {
-          text.classList.add('visible');
-        }
+        onStart: function() { text.classList.add('visible'); }
       };
 
       if (cfg.rotX) { fromVars.rotationX = cfg.rotX; toVars.rotationX = 0; }
 
-      // Snap-back: overshoot then settle (for "맞습니다" pause effect)
       if (cfg.snapBack) {
         toVars.ease = 'back.out(2)';
         toVars.onComplete = function() {
@@ -366,23 +375,14 @@
         };
       }
 
-      // Finale: ultra-cinematic with breathing glow
       if (cfg.finale) {
         toVars.onComplete = function() {
-          // Breathing bioluminescent pulse
           gsap.to(text, {
             textShadow: '0 0 50px rgba(42,90,143,0.7), 0 0 100px rgba(42,90,143,0.4), 0 0 200px rgba(42,90,143,0.2), 0 0 400px rgba(27,58,92,0.1)',
-            duration: 3,
-            ease: 'sine.inOut',
-            yoyo: true,
-            repeat: -1
+            duration: 3, ease: 'sine.inOut', yoyo: true, repeat: -1
           });
           gsap.to(text, {
-            scale: 1.02,
-            duration: 4,
-            ease: 'sine.inOut',
-            yoyo: true,
-            repeat: -1
+            scale: 1.02, duration: 4, ease: 'sine.inOut', yoyo: true, repeat: -1
           });
         };
       }
@@ -391,13 +391,11 @@
         trigger: line,
         start: cfg.start,
         once: true,
-        onEnter: function () {
-          gsap.fromTo(text, fromVars, toVars);
-        }
+        onEnter: function () { gsap.fromTo(text, fromVars, toVars); }
       });
     });
 
-    // --- Chapter number parallax (giant watermark) ---
+    // Chapter number parallax
     document.querySelectorAll('.story-chapter-num').forEach(function(num) {
       var chapter = num.closest('.story-chapter');
       if (!chapter) return;
@@ -405,16 +403,13 @@
         { y: 80, opacity: 0 },
         {
           y: -80, opacity: 1,
-          scrollTrigger: {
-            trigger: chapter,
-            start: 'top bottom', end: 'bottom top', scrub: 3
-          },
+          scrollTrigger: { trigger: chapter, start: 'top bottom', end: 'bottom top', scrub: 3 },
           ease: 'none'
         }
       );
     });
 
-    // --- Dark chapter (ch3) — progressive darkening + fog depth ---
+    // Dark chapter (ch3)
     var ch3 = document.getElementById('storyChapter3');
     if (ch3) {
       gsap.fromTo(ch3,
@@ -426,7 +421,6 @@
         }
       );
 
-      // Multi-layer fog parallax — depth illusion
       var fog = document.getElementById('chapterFog');
       if (fog) {
         gsap.to(fog, {
@@ -445,7 +439,7 @@
       }
     }
 
-    // --- Turn chapter (ch4) — volumetric light beam + cone + glow ---
+    // Turn chapter (ch4) — volumetric light
     var ch4El = document.getElementById('storyChapter4');
     var lightBurst = document.getElementById('chapterLightBurst');
     var lightCone = document.getElementById('chapterLightCone');
@@ -454,10 +448,7 @@
         { height: '0%', opacity: 0, filter: 'blur(8px)' },
         {
           height: '100%', opacity: 0.85, filter: 'blur(0px)',
-          scrollTrigger: {
-            trigger: ch4El,
-            start: 'top 60%', end: 'center center', scrub: 1.5
-          },
+          scrollTrigger: { trigger: ch4El, start: 'top 60%', end: 'center center', scrub: 1.5 },
           ease: 'none'
         }
       );
@@ -467,65 +458,50 @@
         { width: '0%', opacity: 0 },
         {
           width: '100%', opacity: 0.9,
-          scrollTrigger: {
-            trigger: ch4El,
-            start: 'top 50%', end: '60% center', scrub: 2
-          },
+          scrollTrigger: { trigger: ch4El, start: 'top 50%', end: '60% center', scrub: 2 },
           ease: 'none'
         }
       );
     }
 
-    // --- Resolve chapter (ch5) — god rays rotation scrub ---
+    // Resolve (ch5) — god rays
     var rays = document.getElementById('chapterRays');
     if (rays) {
       gsap.fromTo(rays,
         { opacity: 0, rotation: -5 },
         {
           opacity: 1, rotation: 5,
-          scrollTrigger: {
-            trigger: document.getElementById('storyChapter5'),
-            start: 'top 70%', end: 'bottom 30%', scrub: 2
-          },
+          scrollTrigger: { trigger: document.getElementById('storyChapter5'), start: 'top 70%', end: 'bottom 30%', scrub: 2 },
           ease: 'none'
         }
       );
     }
 
-    // --- Climax (ch6) — full cinematic treatment ---
+    // Climax (ch6)
     var ch6 = document.getElementById('storyChapter6');
     if (ch6) {
-      // Aurora intensity ramp with movement
       var aurora = document.getElementById('chapterAurora');
       if (aurora) {
         gsap.fromTo(aurora,
           { opacity: 0.15, scale: 0.9 },
           {
             opacity: 1, scale: 1.1,
-            scrollTrigger: {
-              trigger: ch6, start: 'top 60%', end: 'bottom 40%', scrub: 2
-            },
+            scrollTrigger: { trigger: ch6, start: 'top 60%', end: 'bottom 40%', scrub: 2 },
             ease: 'none'
           }
         );
       }
-
-      // Nebula pulse
       var nebula = document.getElementById('chapterNebula');
       if (nebula) {
         gsap.fromTo(nebula,
           { opacity: 0, scale: 0.8 },
           {
             opacity: 0.8, scale: 1.1,
-            scrollTrigger: {
-              trigger: ch6, start: 'top 70%', end: 'center center', scrub: 2
-            },
+            scrollTrigger: { trigger: ch6, start: 'top 70%', end: 'center center', scrub: 2 },
             ease: 'none'
           }
         );
       }
-
-      // Stars parallax (different depth layers)
       var stars = document.getElementById('chapterStars');
       if (stars) {
         gsap.to(stars, {
@@ -536,40 +512,29 @@
       }
     }
 
-    // --- Parallax depth on chapter orbs ---
+    // Chapter orbs parallax
     document.querySelectorAll('.chapter-orb').forEach(function(orb) {
       gsap.to(orb, {
         y: -100,
-        scrollTrigger: {
-          trigger: orb.closest('.story-chapter'),
-          start: 'top bottom', end: 'bottom top', scrub: 2.5
-        },
+        scrollTrigger: { trigger: orb.closest('.story-chapter'), start: 'top bottom', end: 'bottom top', scrub: 2.5 },
         ease: 'none'
       });
     });
 
-    // --- Ambient glow position tracking ---
+    // Ambient glow
     var ambientGlow = document.getElementById('storyGlow');
     if (ambientGlow) {
       gsap.to(ambientGlow, {
         y: function() { return -storyNarrative.offsetHeight * 0.3; },
-        scrollTrigger: {
-          trigger: storyNarrative,
-          start: 'top bottom', end: 'bottom top', scrub: 3
-        },
+        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 3 },
         ease: 'none'
       });
     }
-
-    // --- Ambient pulse secondary layer ---
     var ambientPulse = document.getElementById('storyPulse');
     if (ambientPulse) {
       gsap.to(ambientPulse, {
         y: function() { return -storyNarrative.offsetHeight * 0.2; },
-        scrollTrigger: {
-          trigger: storyNarrative,
-          start: 'top bottom', end: 'bottom top', scrub: 4
-        },
+        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 4 },
         ease: 'none'
       });
     }
@@ -577,8 +542,6 @@
 
   // ═══════════════════════════════════════════════════
   // CINEMATIC BLACKOUT — Dark → Light Transition v2
-  // "보이지 않죠" → screen goes BLACK → "보여드립니다" → LIGHT EXPLODES
-  // Movie-trailer level dramatic reveal — refined timing
   // ═══════════════════════════════════════════════════
   function initCinematicBlackout() {
     var overlay = document.getElementById('blackoutOverlay');
@@ -588,51 +551,33 @@
 
     var particles = overlay.querySelector('.blackout-particles');
 
-    // ── Phase 1: Progressive darkening during Chapter 3 ──
-    // Multi-stage darkness: subtle → deep → total
     var blackoutTL = gsap.timeline({
       scrollTrigger: {
         trigger: ch3,
         start: 'top 65%',
         end: 'bottom 25%',
         scrub: 1.5,
-        onLeave: function() {
-          gsap.set(overlay, { opacity: 1 });
-        },
-        onEnterBack: function() {
-          gsap.set(overlay, { opacity: 1 });
-        }
+        onLeave: function() { gsap.set(overlay, { opacity: 1 }); },
+        onEnterBack: function() { gsap.set(overlay, { opacity: 1 }); }
       }
     });
 
     blackoutTL
-      .fromTo(overlay,
-        { opacity: 0 },
-        { opacity: 0.4, ease: 'power1.in', duration: 0.4 }
-      )
+      .fromTo(overlay, { opacity: 0 }, { opacity: 0.4, ease: 'power1.in', duration: 0.4 })
       .to(overlay, { opacity: 0.75, ease: 'power2.in', duration: 0.3 })
       .to(overlay, { opacity: 1, ease: 'power3.in', duration: 0.3 });
 
-    // Particles intensify during darkness
     if (particles) {
       gsap.fromTo(particles,
         { opacity: 0.3 },
         {
-          opacity: 0.9,
-          scale: 1.05,
-          scrollTrigger: {
-            trigger: ch3,
-            start: 'top 50%',
-            end: 'bottom 30%',
-            scrub: 2
-          },
+          opacity: 0.9, scale: 1.05,
+          scrollTrigger: { trigger: ch3, start: 'top 50%', end: 'bottom 30%', scrub: 2 },
           ease: 'none'
         }
       );
     }
 
-    // ── Phase 2: Light explosion when entering Chapter 4 ──
-    // Layered reveal: ring → burst → fade — trailer-grade
     ScrollTrigger.create({
       trigger: ch4,
       start: 'top 70%',
@@ -641,58 +586,33 @@
       once: false,
       onEnter: function() {
         overlay.classList.add('light-burst');
-
-        // Layered dramatic fade-out
         gsap.to(overlay, {
-          opacity: 0,
-          duration: 2.5,
-          ease: 'power2.out',
-          delay: 0.1,
-          onComplete: function() {
-            overlay.classList.remove('light-burst');
-          }
+          opacity: 0, duration: 2.5, ease: 'power2.out', delay: 0.1,
+          onComplete: function() { overlay.classList.remove('light-burst'); }
         });
-
-        // Particles fade quickly
-        if (particles) {
-          gsap.to(particles, { opacity: 0, duration: 0.8, ease: 'power3.in' });
-        }
+        if (particles) gsap.to(particles, { opacity: 0, duration: 0.8, ease: 'power3.in' });
       },
       onEnterBack: function() {
-        gsap.to(overlay, {
-          opacity: 1,
-          duration: 1.8,
-          ease: 'power2.inOut'
-        });
-        if (particles) {
-          gsap.to(particles, { opacity: 0.7, duration: 1.2 });
-        }
+        gsap.to(overlay, { opacity: 1, duration: 1.8, ease: 'power2.inOut' });
+        if (particles) gsap.to(particles, { opacity: 0.7, duration: 1.2 });
       },
-      onLeaveBack: function() {
-        gsap.set(overlay, { opacity: 1 });
-      }
+      onLeaveBack: function() { gsap.set(overlay, { opacity: 1 }); }
     });
 
-    // ── Phase 3: Safety — ensure overlay is gone during ch5+ ──
     ScrollTrigger.create({
       trigger: ch4,
       start: 'center center',
-      onEnter: function() {
-        gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true });
-      }
+      onEnter: function() { gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true }); }
     });
 
     console.log('[EUM] Cinematic Blackout v2 initialized');
   }
 
   // ═══════════════════════════════════════════════════
-  // GENERIC REVEALS — Enhanced with stagger + blur
+  // GENERIC REVEALS — Enhanced orchestration
   // ═══════════════════════════════════════════════════
   function initGenericReveals() {
-    // Data-reveal elements — GSAP takes full control
-    // Set initial hidden state immediately, then animate on scroll
     gsap.utils.toArray('[data-reveal]').forEach(function (el) {
-      // Force initial hidden state via GSAP (overrides any CSS)
       gsap.set(el, { opacity: 0, y: 40, filter: 'blur(4px)' });
 
       ScrollTrigger.create({
@@ -701,11 +621,8 @@
         once: true,
         onEnter: function() {
           gsap.to(el, {
-            opacity: 1,
-            y: 0,
-            filter: 'blur(0px)',
-            duration: 1.0,
-            ease: 'power3.out'
+            opacity: 1, y: 0, filter: 'blur(0px)',
+            duration: 1.0, ease: 'power3.out'
           });
         }
       });
@@ -723,54 +640,41 @@
           observer.disconnect();
           gsap.from(children, {
             scrollTrigger: { trigger: grid, start: 'top 80%', once: true },
-            y: 50,
-            opacity: 0,
-            filter: 'blur(3px)',
-            duration: 0.8,
-            stagger: 0.12,
-            ease: 'power3.out'
+            y: 50, opacity: 0, filter: 'blur(3px)',
+            duration: 0.8, stagger: 0.12, ease: 'power3.out'
           });
         }
       });
       observer.observe(grid, { childList: true });
     });
 
-    // Hero title
+    // Title reveals with enhanced motion
     gsap.utils.toArray('.page-title, .hero-title').forEach(function (title) {
       gsap.from(title, {
         scrollTrigger: { trigger: title, start: 'top 90%', once: true },
-        y: 40,
-        opacity: 0,
-        filter: 'blur(5px)',
-        duration: 1.0,
-        ease: 'power3.out'
+        y: 60, opacity: 0, filter: 'blur(8px)', scale: 0.95,
+        duration: 1.2, ease: 'power3.out'
       });
     });
 
-    // Section labels — slide in with line
+    // Section labels — slide with line expand
     gsap.utils.toArray('.section-label').forEach(function (label) {
       gsap.from(label, {
         scrollTrigger: { trigger: label, start: 'top 90%', once: true },
-        x: -30,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out'
+        x: -40, opacity: 0, duration: 0.9, ease: 'power3.out'
       });
     });
 
-    // Section headings
-    gsap.utils.toArray('.section-heading, h2.treat-cat-title, .services-title, .equip-title, .promise-main-title, .pillars-title').forEach(function (h) {
+    // Section headings — word by word feeling
+    gsap.utils.toArray('.section-heading, h2.treat-cat-title').forEach(function (h) {
       gsap.from(h, {
         scrollTrigger: { trigger: h, start: 'top 85%', once: true },
-        y: 30,
-        opacity: 0,
-        filter: 'blur(3px)',
-        duration: 0.9,
-        ease: 'power3.out'
+        y: 40, opacity: 0, filter: 'blur(5px)',
+        duration: 1.0, ease: 'power3.out'
       });
     });
 
-    // Counter animations
+    // Counter — elastic snap
     gsap.utils.toArray('.hero-stat-num').forEach(function (el) {
       var target = parseFloat(el.dataset.count || el.textContent);
       if (isNaN(target)) return;
@@ -778,18 +682,20 @@
       var obj = { val: 0 };
       gsap.to(obj, {
         scrollTrigger: { trigger: el, start: 'top 85%', once: true },
-        val: target,
-        duration: 2.5,
-        ease: 'power2.out',
+        val: target, duration: 2.5, ease: 'power2.out',
         onUpdate: function () {
           el.textContent = isFloat ? obj.val.toFixed(1) : Math.round(obj.val).toLocaleString();
+        },
+        onComplete: function() {
+          // Pop scale on complete
+          gsap.fromTo(el, { scale: 1.12 }, { scale: 1, duration: 0.4, ease: 'back.out(2)' });
         }
       });
     });
   }
 
   // ═══════════════════════════════════════════════════
-  // HORIZONTAL SCROLL SECTIONS
+  // HORIZONTAL SCROLL — GSAP pin
   // ═══════════════════════════════════════════════════
   function initHorizontalScroll() {
     var hTrack = document.getElementById('horizontalTrack');
@@ -811,41 +717,33 @@
       });
     }
 
-    // Stagger cards as they enter viewport
+    // Stagger cards
     var cards = hTrack.querySelectorAll('.h-card');
     cards.forEach(function(card, i) {
       gsap.from(card, {
         scrollTrigger: {
           trigger: card,
-          start: 'left 90%',
-          end: 'left 50%',
-          scrub: 1,
+          start: 'left 90%', end: 'left 50%', scrub: 1,
           containerAnimation: gsap.getById && gsap.getById('hScroll') || undefined
         },
-        opacity: 0.5,
-        y: 20,
-        duration: 0.5
+        opacity: 0.5, y: 20, duration: 0.5
       });
     });
   }
 
   // ═══════════════════════════════════════════════════
-  // CARD ANIMATIONS — Cinematic fade-up
+  // CARD ANIMATIONS — Choreographed
   // ═══════════════════════════════════════════════════
   function initCardAnimations() {
     var cardSelectors = ['.case-card', '.blog-card', '.notice-row', '.faq-item',
-      '.treat-cta-inner', '.region-info-card', '.value-card', '.equip-item',
-      '.promise-item', '.cred-block'];
+      '.treat-cta-inner', '.region-info-card', '.value-card'];
 
     cardSelectors.forEach(function (sel) {
       gsap.utils.toArray(sel).forEach(function (card, i) {
         gsap.from(card, {
           scrollTrigger: { trigger: card, start: 'top 88%', once: true },
-          y: 40,
-          opacity: 0,
-          filter: 'blur(2px)',
-          duration: 0.7,
-          delay: Math.min(i * 0.06, 0.3),
+          y: 50, opacity: 0, filter: 'blur(3px)', scale: 0.96,
+          duration: 0.8, delay: Math.min(i * 0.08, 0.4),
           ease: 'power3.out'
         });
       });
@@ -853,7 +751,7 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // MAGNETIC HOVER — Enhanced with 3D tilt
+  // MAGNETIC HOVER — Scale with tilt
   // ═══════════════════════════════════════════════════
   function initMagneticHover() {
     if (window.innerWidth <= 1024) return;
@@ -869,7 +767,7 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // PILLAR CARD MOUSE TRACKING (spotlight follow)
+  // PILLAR CARD MOUSE TRACKING
   // ═══════════════════════════════════════════════════
   function initPillarCardMouseTrack() {
     if (window.innerWidth <= 1024) return;
@@ -886,10 +784,8 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // MENU ANIMATION — Cinematic open/close
+  // MENU ANIMATION
   // ═══════════════════════════════════════════════════
-  // Menu animation is handled via CSS transitions + app.js
-  // GSAP enhances the menu link stagger on MutationObserver
   function initMenuAnimation() {
     var fullMenu = document.getElementById('fullMenu');
     if (!fullMenu) return;
@@ -897,7 +793,6 @@
     var menuLinks = fullMenu.querySelectorAll('.menu-link');
     var menuFooter = fullMenu.querySelectorAll('.menu-footer-col');
 
-    // Observe class changes on fullMenu to trigger GSAP enhancements
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(m) {
         if (m.attributeName === 'class') {
@@ -918,14 +813,14 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // SCROLL PROGRESS BAR — Gradient
+  // SCROLL PROGRESS BAR
   // ═══════════════════════════════════════════════════
   function initScrollProgress() {
     var progressBar = document.getElementById('scrollProgress');
     if (!progressBar) {
       progressBar = document.createElement('div');
       progressBar.id = 'scrollProgress';
-      progressBar.style.cssText = 'position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--cta-bright));z-index:10000;transform-origin:left;transform:scaleX(0);will-change:transform;';
+      progressBar.style.cssText = 'position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--cta-bright),var(--gold));z-index:10000;transform-origin:left;transform:scaleX(0);will-change:transform;transition:opacity 0.5s ease;';
       document.body.appendChild(progressBar);
     }
     gsap.to(progressBar, {
@@ -941,7 +836,7 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // MARQUEE — Smooth infinite scroll
+  // MARQUEE
   // ═══════════════════════════════════════════════════
   function initMarquee() {
     gsap.utils.toArray('.marquee-track').forEach(function (track) {
@@ -957,7 +852,7 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // IMAGE REVEAL — Cinematic clip-path
+  // IMAGE REVEAL — Clip-path
   // ═══════════════════════════════════════════════════
   function initImageReveal() {
     gsap.utils.toArray('.gallery-item img, .blog-inline-figure img').forEach(function (img) {
@@ -971,7 +866,7 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // FOOTER — Staggered reveal
+  // FOOTER REVEAL
   // ═══════════════════════════════════════════════════
   function initFooterReveal() {
     var footer = document.querySelector('.footer-full');
@@ -981,13 +876,364 @@
     if (cols.length > 0) {
       gsap.from(cols, {
         scrollTrigger: { trigger: footer, start: 'top 90%', once: true },
-        y: 40,
-        opacity: 0,
-        filter: 'blur(3px)',
-        stagger: 0.12,
-        duration: 0.8,
-        ease: 'power3.out'
+        y: 40, opacity: 0, filter: 'blur(3px)',
+        stagger: 0.12, duration: 0.8, ease: 'power3.out'
       });
     }
   }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: SECTION COLOR MORPH
+  // Nav background shifts subtly based on section theme
+  // ═══════════════════════════════════════════════════════
+  function initSectionColorMorph() {
+    var nav = document.getElementById('nav');
+    if (!nav) return;
+
+    // Dark sections get special nav treatment
+    document.querySelectorAll('.dark-section, .story-section').forEach(function(section) {
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 80px',
+        end: 'bottom 80px',
+        onEnter: function() { nav.classList.add('nav-dark-zone'); },
+        onLeave: function() { nav.classList.remove('nav-dark-zone'); },
+        onEnterBack: function() { nav.classList.add('nav-dark-zone'); },
+        onLeaveBack: function() { nav.classList.remove('nav-dark-zone'); }
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: SCROLL VELOCITY BLUR
+  // Fast scrolling = subtle motion blur on elements
+  // ═══════════════════════════════════════════════════════
+  function initScrollVelocityBlur() {
+    if (window.innerWidth < 1025) return;
+
+    var blurElements = document.querySelectorAll('.section-heading, .pillars-title, .services-title, .equip-title, .promise-main-title');
+    var currentBlur = 0;
+    var ticking = false;
+    var lastScroll = window.scrollY;
+
+    window.addEventListener('scroll', function() {
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(function() {
+        var velocity = Math.abs(window.scrollY - lastScroll);
+        lastScroll = window.scrollY;
+        var targetBlur = Math.min(velocity * 0.06, 3);
+        currentBlur += (targetBlur - currentBlur) * 0.15;
+
+        if (currentBlur > 0.1) {
+          blurElements.forEach(function(el) {
+            el.style.filter = 'blur(' + currentBlur.toFixed(1) + 'px)';
+          });
+        } else {
+          blurElements.forEach(function(el) {
+            el.style.filter = '';
+          });
+        }
+        ticking = false;
+      });
+    }, { passive: true });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: SPLIT TEXT REVEAL (GSAP-powered)
+  // Section titles reveal word by word with spring ease
+  // ═══════════════════════════════════════════════════════
+  function initSplitTextReveal() {
+    var titles = document.querySelectorAll('.services-title, .equip-title, .promise-main-title');
+
+    titles.forEach(function(title) {
+      if (title.dataset.gsapSplit) return;
+      title.dataset.gsapSplit = 'true';
+
+      // Skip if has child elements
+      if (title.children.length > 0) return;
+
+      var text = title.textContent;
+      title.textContent = '';
+      title.setAttribute('aria-label', text);
+
+      var words = text.split(/(\s+)/);
+      words.forEach(function(word) {
+        if (/^\s+$/.test(word)) {
+          title.appendChild(document.createTextNode(' '));
+          return;
+        }
+        var span = document.createElement('span');
+        span.textContent = word;
+        span.className = 'gsap-word';
+        span.style.cssText = 'display:inline-block;will-change:transform,opacity;';
+        title.appendChild(span);
+      });
+
+      var wordSpans = title.querySelectorAll('.gsap-word');
+      gsap.set(wordSpans, { opacity: 0, y: 50, rotationX: -30, filter: 'blur(6px)' });
+
+      ScrollTrigger.create({
+        trigger: title,
+        start: 'top 80%',
+        once: true,
+        onEnter: function() {
+          gsap.to(wordSpans, {
+            opacity: 1, y: 0, rotationX: 0, filter: 'blur(0px)',
+            duration: 0.8, stagger: 0.06,
+            ease: 'back.out(1.5)'
+          });
+        }
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: CARD CHOREOGRAPHY
+  // Cards enter with orchestrated multi-property animation
+  // ═══════════════════════════════════════════════════════
+  function initCardChoreography() {
+    // Pillar cards — cascade from left
+    var pillarGrid = document.querySelector('.pillars-grid');
+    if (pillarGrid) {
+      var pillars = pillarGrid.querySelectorAll('.pillar-card');
+      gsap.set(pillars, { opacity: 0, x: -60, y: 40, rotationY: -15, scale: 0.9, filter: 'blur(6px)' });
+
+      ScrollTrigger.create({
+        trigger: pillarGrid,
+        start: 'top 75%',
+        once: true,
+        onEnter: function() {
+          gsap.to(pillars, {
+            opacity: 1, x: 0, y: 0, rotationY: 0, scale: 1, filter: 'blur(0px)',
+            duration: 1.0, stagger: 0.15,
+            ease: 'power3.out'
+          });
+        }
+      });
+    }
+
+    // Equipment cards — stagger from bottom with rotation
+    var equipGrid = document.querySelector('.equip-grid');
+    if (equipGrid) {
+      var equips = equipGrid.querySelectorAll('.equip-item');
+      gsap.set(equips, { opacity: 0, y: 80, scale: 0.85, filter: 'blur(5px)' });
+
+      ScrollTrigger.create({
+        trigger: equipGrid,
+        start: 'top 75%',
+        once: true,
+        onEnter: function() {
+          gsap.to(equips, {
+            opacity: 1, y: 0, scale: 1, filter: 'blur(0px)',
+            duration: 0.9, stagger: { each: 0.1, from: 'start' },
+            ease: 'back.out(1.2)'
+          });
+        }
+      });
+    }
+
+    // Promise cards — expand from center
+    var promiseGrid = document.querySelector('.promise-grid');
+    if (promiseGrid) {
+      var promises = promiseGrid.querySelectorAll('.promise-item');
+      gsap.set(promises, { opacity: 0, scale: 0.7, y: 50, filter: 'blur(8px)' });
+
+      ScrollTrigger.create({
+        trigger: promiseGrid,
+        start: 'top 75%',
+        once: true,
+        onEnter: function() {
+          gsap.to(promises, {
+            opacity: 1, scale: 1, y: 0, filter: 'blur(0px)',
+            duration: 1.0, stagger: { each: 0.12, from: 'center' },
+            ease: 'back.out(1.4)'
+          });
+        }
+      });
+    }
+
+    // Credential blocks — slide from right
+    var credBlocks = document.querySelectorAll('.cred-block');
+    if (credBlocks.length) {
+      gsap.set(credBlocks, { opacity: 0, x: 50, filter: 'blur(4px)' });
+      credBlocks.forEach(function(block, i) {
+        ScrollTrigger.create({
+          trigger: block,
+          start: 'top 85%',
+          once: true,
+          onEnter: function() {
+            gsap.to(block, {
+              opacity: 1, x: 0, filter: 'blur(0px)',
+              duration: 0.8, delay: i * 0.1,
+              ease: 'power3.out'
+            });
+          }
+        });
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: GLASS SHIMMER ON SCROLL
+  // Glassmorphism elements get a traveling light shimmer
+  // as user scrolls past them
+  // ═══════════════════════════════════════════════════════
+  function initGlassShimmerOnScroll() {
+    var glassElements = document.querySelectorAll('.pillar-card, .h-card, .equip-item, .promise-item');
+
+    glassElements.forEach(function(el) {
+      // Create shimmer overlay
+      var shimmer = document.createElement('div');
+      shimmer.className = 'glass-shimmer';
+      shimmer.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;z-index:2;';
+
+      var shimmerLine = document.createElement('div');
+      shimmerLine.style.cssText = 'position:absolute;top:0;left:-100%;width:60%;height:100%;' +
+        'background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),rgba(255,255,255,0.25),rgba(255,255,255,0.15),transparent);' +
+        'transform:skewX(-20deg);transition:none;pointer-events:none;';
+      shimmer.appendChild(shimmerLine);
+      el.style.position = el.style.position || 'relative';
+      el.appendChild(shimmer);
+
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 80%',
+        end: 'bottom 20%',
+        once: true,
+        onEnter: function() {
+          // Animate shimmer across on enter
+          gsap.fromTo(shimmerLine,
+            { left: '-100%' },
+            { left: '200%', duration: 1.2, ease: 'power2.inOut', delay: 0.2 }
+          );
+        }
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: PARALLAX DEPTH CARDS
+  // Cards at different depths move at different scroll speeds
+  // ═══════════════════════════════════════════════════════
+  function initParallaxDepthCards() {
+    // Section backgrounds move at slower speed = depth
+    var sectionBgs = [
+      { sel: '.story-pillars', speed: 0.03 },
+      { sel: '.equipment-minimal', speed: 0.04 },
+      { sel: '.promise-section', speed: 0.03 }
+    ];
+
+    sectionBgs.forEach(function(cfg) {
+      var section = document.querySelector(cfg.sel);
+      if (!section) return;
+
+      // Find decorative bg elements
+      var bgEl = section.querySelector('::before') || section;
+      gsap.to(section, {
+        backgroundPositionY: function() { return '30%'; },
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 2
+        },
+        ease: 'none'
+      });
+    });
+
+    // Director photo parallax
+    var directorPhoto = document.querySelector('.director-photo');
+    if (directorPhoto) {
+      gsap.to(directorPhoto, {
+        y: -30,
+        scrollTrigger: {
+          trigger: directorPhoto.closest('.director-full'),
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 2
+        },
+        ease: 'none'
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: NAV MICRO-INTERACTION
+  // Nav items have smooth hover underline animation
+  // ═══════════════════════════════════════════════════════
+  function initNavMicroInteraction() {
+    var nav = document.getElementById('nav');
+    if (!nav) return;
+
+    // Scroll-based nav transparency/blur
+    var lastScroll = 0;
+    var navHidden = false;
+
+    window.addEventListener('scroll', function() {
+      var current = window.scrollY;
+      var direction = current > lastScroll ? 'down' : 'up';
+
+      // Hide nav when scrolling down fast, show on scroll up
+      if (direction === 'down' && current > 300 && !navHidden) {
+        gsap.to(nav, { y: -10, duration: 0.3, ease: 'power2.out' });
+        navHidden = true;
+      } else if (direction === 'up' && navHidden) {
+        gsap.to(nav, { y: 0, duration: 0.3, ease: 'power2.out' });
+        navHidden = false;
+      }
+
+      lastScroll = current;
+    }, { passive: true });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: STATS BOUNCE
+  // Numbers in stats bounce on scroll-in with elastic ease
+  // ═══════════════════════════════════════════════════════
+  function initStatsBounce() {
+    var statLabels = document.querySelectorAll('.hero-stat-label, .hero-stat-suffix');
+    if (!statLabels.length) return;
+
+    statLabels.forEach(function(label, i) {
+      gsap.from(label, {
+        scrollTrigger: { trigger: label, start: 'top 85%', once: true },
+        y: 20, opacity: 0,
+        duration: 0.6, delay: 0.3 + i * 0.1,
+        ease: 'back.out(2)'
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ★ NEW: SECTION DIVIDERS
+  // Animated horizontal lines between sections
+  // ═══════════════════════════════════════════════════════
+  function initSectionDividers() {
+    // Find all section boundaries and animate decorative elements
+    var sectionHeaders = document.querySelectorAll('.section-label');
+
+    sectionHeaders.forEach(function(label) {
+      var line = label.querySelector('.label-line');
+      if (line) {
+        gsap.from(line, {
+          scrollTrigger: { trigger: label, start: 'top 85%', once: true },
+          scaleX: 0, transformOrigin: 'left center',
+          duration: 0.8, ease: 'power3.out'
+        });
+      }
+    });
+
+    // Tag lines in hero
+    var tagLines = document.querySelectorAll('.tag-line');
+    tagLines.forEach(function(line) {
+      gsap.from(line, {
+        scrollTrigger: { trigger: line, start: 'top 90%', once: true },
+        scaleX: 0, transformOrigin: 'left center',
+        duration: 1.0, ease: 'power3.out'
+      });
+    });
+  }
+
 })();
