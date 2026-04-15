@@ -142,7 +142,7 @@ export function mainPage() {
           </div>
           <div class="story-line" data-story="1">
             <span class="story-chapter-num" aria-hidden="true">01</span>
-            <p class="story-text story-question">우리는 왜<br/>치과가 그토록 두려울까요?</p>
+            <p class="story-text story-question">우리는 왜<br/>치과 치료가 그토록 두려울까요?</p>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ export function mainPage() {
             <p class="story-text story-pause">맞습니다.</p>
           </div>
           <div class="story-line" data-story="6">
-            <p class="story-text">사람은<br/><em>보이지 않는 것</em>을 두려워합니다.</p>
+            <p class="story-text">우리는<br/><em>보이지 않는 것</em>을 두려워합니다.</p>
           </div>
           <div class="story-line" data-story="7">
             <p class="story-text story-whisper">귀신처럼요.</p>
@@ -189,7 +189,7 @@ export function mainPage() {
             <p class="story-text story-turn">반대로,</p>
           </div>
           <div class="story-line" data-story="9">
-            <p class="story-text">내 입 안에서<br/><em>무슨 일이 벌어지는지</em> 알 수 있다면</p>
+            <p class="story-text">우리 입 안에서<br/><em>무슨 일이 벌어지는지</em> 알 수 있다면</p>
           </div>
           <div class="story-line" data-story="10">
             <p class="story-text story-emphasis">두려움은 사라집니다.</p>
