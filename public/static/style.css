@@ -676,6 +676,10 @@ body::after {
   width: 100%;
   padding: 0 clamp(2rem, 8vw, 8rem);
   will-change: transform, opacity;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 /* ─── Hero Fine Line (top gold accent) ─── */
@@ -711,6 +715,7 @@ body::after {
 .hero-tag {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   margin-bottom: 3.5rem;
   opacity: 0;
@@ -740,6 +745,7 @@ body::after {
 
 .hero-title {
   margin-bottom: 4rem;
+  text-align: center;
   /* Cinematic text shadow for depth on dark bg */
   text-shadow: 0 2px 40px rgba(0,0,0,0.15);
 }
@@ -806,8 +812,8 @@ body::after {
 
 .hero-bottom {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
   animation: slideUpFade 0.8s var(--ease) 1s forwards;
 }
@@ -849,6 +855,7 @@ body::after {
   margin-top: 3.5rem;
   opacity: 0;
   animation: slideUpFade 0.8s var(--ease) 1.4s forwards;
+  text-align: center;
 }
 
 .hero-cta-btn {
