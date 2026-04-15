@@ -64,24 +64,36 @@
   --shadow-lg: 0 12px 40px rgba(15,27,45,0.10);
   --shadow-xl: 0 20px 60px rgba(15,27,45,0.14);
 
-  /* === GLASSMORPHISM TOKENS === */
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-hover: rgba(255, 255, 255, 0.72);
-  --glass-bg-strong: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --glass-border-hover: rgba(255, 255, 255, 0.65);
-  --glass-blur: blur(16px) saturate(1.6);
-  --glass-blur-strong: blur(24px) saturate(1.8);
-  --glass-shadow: 0 8px 32px rgba(15, 27, 45, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
-  --glass-shadow-hover: 0 16px 48px rgba(15, 27, 45, 0.12), inset 0 1px 0 rgba(255,255,255,0.8);
-  --glass-ring: 0 0 0 1px rgba(255, 255, 255, 0.3);
+  /* === GLASSMORPHISM TOKENS (BOLD) === */
+  --glass-bg: rgba(255, 255, 255, 0.35);
+  --glass-bg-hover: rgba(255, 255, 255, 0.52);
+  --glass-bg-strong: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.55);
+  --glass-border-hover: rgba(255, 255, 255, 0.8);
+  --glass-blur: blur(20px) saturate(1.8);
+  --glass-blur-strong: blur(32px) saturate(2.0);
+  --glass-shadow:
+    0 8px 32px rgba(15, 27, 45, 0.1),
+    0 2px 8px rgba(15, 27, 45, 0.06),
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    inset 0 -1px 0 rgba(255,255,255,0.15);
+  --glass-shadow-hover:
+    0 20px 60px rgba(15, 27, 45, 0.14),
+    0 4px 12px rgba(15, 27, 45, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(255,255,255,0.2);
+  --glass-ring: 0 0 0 1px rgba(255, 255, 255, 0.4);
+  --glass-highlight: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%);
 
   /* Dark glass for navy sections */
-  --glass-dark-bg: rgba(15, 27, 45, 0.45);
-  --glass-dark-bg-hover: rgba(15, 27, 45, 0.6);
-  --glass-dark-border: rgba(245, 247, 250, 0.12);
-  --glass-dark-border-hover: rgba(245, 247, 250, 0.22);
-  --glass-dark-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.06);
+  --glass-dark-bg: rgba(15, 27, 45, 0.35);
+  --glass-dark-bg-hover: rgba(15, 27, 45, 0.5);
+  --glass-dark-border: rgba(245, 247, 250, 0.18);
+  --glass-dark-border-hover: rgba(245, 247, 250, 0.3);
+  --glass-dark-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(255,255,255,0.03);
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -302,11 +314,11 @@ body::after {
 #nav.scrolled {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.4);
   backdrop-filter: var(--glass-blur-strong);
   -webkit-backdrop-filter: var(--glass-blur-strong);
   border-bottom: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), 0 1px 0 rgba(255,255,255,0.5) inset;
+  box-shadow: var(--glass-shadow);
 }
 
 #nav.scrolled .nav-brand,
@@ -1776,7 +1788,9 @@ body::after {
 /* ═══ STORY STATS — Cinematic breathing room ═══ */
 .story-stats {
   padding: clamp(4rem, 8vw, 7rem) 0;
-  background: var(--bg-2);
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(42, 90, 143, 0.06) 0%, transparent 60%),
+    linear-gradient(135deg, #eef2f7 0%, #e4ecf5 50%, #f0eef2 100%);
   border-top: none;
   border-bottom: none;
   position: relative;
@@ -1784,7 +1798,7 @@ body::after {
 }
 .story-stats::before {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(27,58,92,0.03) 0%, transparent 70%);
+  background: radial-gradient(ellipse 50% 80% at 50% 50%, rgba(42,90,143,0.04) 0%, transparent 70%);
   pointer-events: none;
 }
 .story-stats-inner {
@@ -1795,7 +1809,11 @@ body::after {
 /* ═══ STORY PILLARS ═══ */
 .story-pillars {
   padding: var(--section-rhythm) 0;
-  background: linear-gradient(135deg, #f0f4f8 0%, #e8edf5 30%, #f5f0eb 60%, #eef2f7 100%);
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(42, 90, 143, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 70%, rgba(58, 122, 170, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 50%, rgba(180, 140, 200, 0.04) 0%, transparent 50%),
+    linear-gradient(135deg, #e8edf5 0%, #dce4f0 25%, #f0e8e4 50%, #e4ecf5 75%, #eee8f2 100%);
   position: relative;
 }
 .pillars-header { margin-bottom: 4rem; }
@@ -1810,7 +1828,9 @@ body::after {
 
 .pillar-card {
   position: relative; padding: 2.8rem 2.5rem 2.5rem;
-  background: var(--glass-bg);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
@@ -1836,7 +1856,9 @@ body::after {
 .pillar-card:hover::before { transform: scaleX(1); }
 .pillar-card:hover::after { opacity: 1; }
 .pillar-card:hover {
-  background: var(--glass-bg-hover);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg-hover);
   border-color: var(--glass-border-hover);
   box-shadow: var(--glass-shadow-hover);
   transform: translateY(-8px);
@@ -2124,7 +2146,10 @@ body::after {
 /* === HORIZONTAL SCROLL SERVICES === */
 .services-horizontal {
   padding: var(--section-rhythm) 0 0;
-  background: linear-gradient(180deg, var(--bg) 0%, #f0f4f8 50%, var(--bg) 100%);
+  background:
+    radial-gradient(ellipse 70% 50% at 30% 60%, rgba(42, 90, 143, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 70% 30%, rgba(170, 130, 190, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, var(--bg) 0%, #e8edf5 35%, #f0e8eb 65%, var(--bg) 100%);
   overflow: hidden;
 }
 
@@ -2161,7 +2186,9 @@ body::after {
 .h-card {
   flex: 0 0 380px;
   min-height: 520px;
-  background: var(--glass-bg);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
@@ -2193,7 +2220,9 @@ body::after {
 }
 
 .h-card:hover {
-  background: var(--glass-bg-hover);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg-hover);
   border-color: var(--glass-border-hover);
   box-shadow: var(--glass-shadow-hover);
   transform: translateY(-8px);
@@ -2595,7 +2624,10 @@ body::after {
 /* === EQUIPMENT — Cinematic rhythm === */
 .equipment-minimal {
   padding: var(--section-rhythm) 0;
-  background: linear-gradient(135deg, #f5f0eb 0%, #eef2f7 40%, #f0f4f8 100%);
+  background:
+    radial-gradient(ellipse 60% 50% at 70% 40%, rgba(42, 90, 143, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 25% 65%, rgba(170, 140, 100, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #e8e4f0 0%, #e4ecf5 35%, #f0e8e4 65%, #e8edf5 100%);
   position: relative;
 }
 
@@ -2672,7 +2704,9 @@ body::after {
 }
 
 .equip-item:hover {
-  background: var(--glass-bg-hover);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg-hover);
   box-shadow: var(--glass-shadow-hover);
   z-index: 2;
 }
@@ -3016,9 +3050,10 @@ body::after {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(27, 58, 92, 0.035) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 40% at 80% 60%, rgba(27, 58, 92, 0.02) 0%, transparent 70%),
-    var(--bg-2);
+    radial-gradient(ellipse 70% 50% at 25% 40%, rgba(42, 90, 143, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 75% 65%, rgba(170, 130, 190, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 30% at 50% 20%, rgba(58, 122, 170, 0.04) 0%, transparent 50%),
+    linear-gradient(135deg, #e8edf5 0%, #dce4f0 30%, #f0e8e4 60%, #eee8f2 100%);
 }
 
 .promise-header {
@@ -3100,7 +3135,9 @@ body::after {
 }
 
 .promise-item:hover {
-  background: var(--glass-bg-hover);
+  background:
+    var(--glass-highlight),
+    var(--glass-bg-hover);
   box-shadow: var(--glass-shadow-hover);
   z-index: 2;
 }
