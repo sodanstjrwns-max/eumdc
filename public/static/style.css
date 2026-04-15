@@ -101,9 +101,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Cursor only on capable devices */
+/* Cursor — keep default visible, custom dot is decorative only */
 @media (hover: hover) and (pointer: fine) {
-  body { cursor: none; }
+  body { cursor: auto; }
 }
 
 a { text-decoration: none; color: inherit; }
