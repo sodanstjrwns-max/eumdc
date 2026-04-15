@@ -37,6 +37,29 @@ import {
 
 const app = new Hono<HonoEnv>()
 
+// === SEO: www → non-www 301 리다이렉트 ===
+app.use('*', async (c, next) => {
+  const url = new URL(c.req.url)
+  if (url.hostname === 'www.eumdc.kr') {
+    url.hostname = 'eumdc.kr'
+    return c.redirect(url.toString(), 301)
+  }
+  await next()
+})
+
+// === 보안 + SEO 응답 헤더 ===
+app.use('*', async (c, next) => {
+  await next()
+  // 보안 헤더
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Frame-Options', 'SAMEORIGIN')
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  // SEO: 검색엔진이 X-Robots-Tag도 읽음
+  if (!c.req.path.startsWith('/admin') && !c.req.path.startsWith('/api/')) {
+    c.header('X-Robots-Tag', 'index, follow')
+  }
+})
+
 app.use(renderer)
 app.use('/api/*', cors())
 

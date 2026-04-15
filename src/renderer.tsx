@@ -21,6 +21,8 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <meta name="theme-color" content="#0F1B2D" />
         <meta name="color-scheme" content="light dark" />
         <meta name="format-detection" content="telephone=no" />
+        <meta name="author" content="이음치과의원" />
+        <meta name="publisher" content="이음치과의원" />
 
         {/* 파비콘 */}
         <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />

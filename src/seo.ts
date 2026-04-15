@@ -93,7 +93,8 @@ export function localBusinessJsonLd() {
     openingHoursSpecification: [
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '12:00', closes: '21:00' },
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday', 'Sunday'], opens: '10:00', closes: '17:00' },
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '00:00', closes: '00:00', description: '정기휴무' }
+      // 금요일 정기휴무: Google은 opens/closes 00:00을 비정상으로 인식하므로 제외
+      // 대신 specialOpeningHoursSpecification으로 처리하거나 휴무일은 생략
     ],
     // 대표원장 (Person)
     founder: personJsonLd(),
@@ -149,6 +150,7 @@ export function localBusinessJsonLd() {
 /** Person 스키마 (대표원장) */
 export function personJsonLd() {
   return {
+    '@context': 'https://schema.org',
     '@type': 'Person',
     '@id': `${SITE_URL}/#director`,
     name: '최효영',
@@ -507,7 +509,8 @@ export function renderSeoHead(meta: SeoMeta): string {
   html += `<meta name="twitter:image" content="${ogImage}" />\n`
 
   // --- 한국 검색엔진 최적화 ---
-  html += `<meta name="naver-site-verification" content="" />\n`
+  // naver-site-verification: 네이버 서치어드바이저에서 발급받은 인증 코드 필요
+  // html += `<meta name="naver-site-verification" content="발급받은코드" />\n`
   html += `<meta http-equiv="Content-Language" content="ko" />\n`
   html += `<meta name="geo.region" content="KR-26" />\n`
   html += `<meta name="geo.placename" content="부산광역시 강서구" />\n`
