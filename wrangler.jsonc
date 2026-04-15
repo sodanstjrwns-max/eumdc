@@ -1,14 +1,14 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "eum-dental",
+  "name": "eumdc",
   "compatibility_date": "2026-04-02",
   "pages_build_output_dir": "./dist",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "eum-dental-db",
-      "database_id": "local-dev"
+      "database_name": "eumdc-production",
+      "database_id": "22d53cd8-935e-48f7-827f-2d239c151843"
     }
   ],
   "r2_buckets": [
