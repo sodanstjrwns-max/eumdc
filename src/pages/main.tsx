@@ -592,9 +592,7 @@ export function mainPage() {
 
       <script src="/static/app.js"></script>
       <script src="/static/gsap-init.js"></script>
-      <script>{
-        `document.getElementById('footerYear').textContent = new Date().getFullYear();`
-      }</script>
+      <script dangerouslySetInnerHTML={{__html: "document.getElementById('footerYear').textContent = new Date().getFullYear();"}} />
     </div>
   )
 }
