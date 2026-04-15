@@ -418,7 +418,9 @@ body::after {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 6rem clamp(2rem, 8vw, 8rem);
+  padding: 5rem clamp(2rem, 8vw, 8rem) 3rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .menu-links {
@@ -429,10 +431,10 @@ body::after {
 
 .menu-link {
   font-family: var(--font-kr);
-  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-size: clamp(1.8rem, 4.5vw, 3.8rem);
   font-weight: 200;
   color: var(--dark-text);
-  padding: 0.3rem 0;
+  padding: 0.2rem 0;
   display: block;
   overflow: hidden;
   transform: translateY(100%);
@@ -485,10 +487,8 @@ body::after {
 }
 
 .menu-footer {
-  position: absolute;
-  bottom: 3rem;
-  left: clamp(2rem, 8vw, 8rem);
-  right: clamp(2rem, 8vw, 8rem);
+  margin-top: auto;
+  flex-shrink: 0;
   display: flex;
   gap: 4rem;
   border-top: 1px solid var(--dark-border);
