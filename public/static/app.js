@@ -31,33 +31,36 @@
     if (_inited) return;
     _inited = true;
 
+    var isMobile = window.innerWidth <= 768;
+    var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
     initScrollTracker();
-    initCursor();
+    if (!isTouch) initCursor(); // No custom cursor on touch devices
     initMenu();
-    initParallaxHero();
+    if (!isMobile) initParallaxHero(); // Skip parallax on mobile
     initScrollReveals();
     initManifesto();
     initHorizontalScroll();
-    init3DCards();
-    initMagneticElements();
+    if (!isMobile) init3DCards(); // 3D transforms heavy on mobile
+    if (!isTouch) initMagneticElements(); // Mouse-only
     initTextMask();
     initFloatingCall();
     initNavScrollProgress();
     initSmoothLinks();
-    initImageBreakParallax();
-    initSectionIndicator();
+    if (!isMobile) initImageBreakParallax(); // Skip parallax
+    if (!isMobile) initSectionIndicator(); // Hidden on mobile via CSS
     initCounterAnimation();
 
     /* ★ NEW v4 SYSTEMS ★ */
     initButtonRipple();
-    initGlassLightTracker();
-    initScrollVelocitySkew();
+    if (!isTouch) initGlassLightTracker(); // Mouse tracking
+    if (!isMobile) initScrollVelocitySkew(); // Desktop visual effect
     initSectionTransitions();
-    initHoverSpring();
+    if (!isTouch) initHoverSpring(); // Hover = mouse only
     initClickFeedback();
     initTextRevealOnScroll();
-    initParallaxLayers();
-    initScrollDirectionIndicator();
+    if (!isMobile) initParallaxLayers(); // Heavy on mobile
+    if (!isMobile) initScrollDirectionIndicator();
     initCardEntrance();
   }
 

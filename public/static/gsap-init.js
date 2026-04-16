@@ -46,35 +46,51 @@
       return;
     }
 
+    // ═══ MOBILE DETECTION ═══
+    var isMobile = window.innerWidth <= 768;
+    var isTablet = window.innerWidth <= 1024 && !isMobile;
+
     // ═══ CORE SYSTEMS ═══
-    initHeroCanvasParticles();
+    if (!isMobile) {
+      initHeroCanvasParticles(); // Skip canvas particles on mobile (GPU heavy)
+    }
     initHeroCTA();
-    initHeroParallaxDepth();
+    if (!isMobile) {
+      initHeroParallaxDepth(); // Skip parallax on mobile (scroll jank)
+    }
     initStoryNarrative();
     initCinematicBlackout();
     initGenericReveals();
     initHorizontalScroll();
     initCardAnimations();
-    initMagneticHover();
+    if (!isMobile) {
+      initMagneticHover(); // No hover on touch devices
+    }
     initMenuAnimation();
     initScrollProgress();
     initMarquee();
     initImageReveal();
     initFooterReveal();
-    initPillarCardMouseTrack();
+    if (!isMobile) {
+      initPillarCardMouseTrack(); // Mouse-only feature
+    }
 
     // ═══ ★ NEW v4 SYSTEMS ═══
-    initSectionColorMorph();
-    initScrollVelocityBlur();
+    if (!isMobile) {
+      initSectionColorMorph(); // Expensive GPU operation
+      initScrollVelocityBlur(); // Desktop-only visual
+      initGlassShimmerOnScroll(); // Glass effects desktop
+      initParallaxDepthCards(); // Heavy transforms
+    }
     initSplitTextReveal();
     initCardChoreography();
-    initGlassShimmerOnScroll();
-    initParallaxDepthCards();
     initNavMicroInteraction();
     initStatsBounce();
-    initSectionDividers();
+    if (!isMobile) {
+      initSectionDividers();
+    }
 
-    console.log('[EUM] Cinematic Engine v4 initialized');
+    console.log('[EUM] Cinematic Engine v4 initialized' + (isMobile ? ' (mobile-lite)' : ''));
   }
 
   // ═══════════════════════════════════════════════════

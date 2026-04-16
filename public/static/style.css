@@ -7148,3 +7148,1354 @@ body.gsap-active [data-reveal] {
     transform: none !important;
   }
 }
+
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  COMPREHENSIVE MOBILE OPTIMIZATION — 2026-04-16            ║
+   ║  Touch-first, performance-aware, accessibility-enhanced     ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
+/* ─── SAFE AREA (iPhone notch / Dynamic Island) ─── */
+@supports (padding: max(0px)) {
+  #nav {
+    padding-left: max(clamp(1.5rem, 4vw, 3rem), env(safe-area-inset-left));
+    padding-right: max(clamp(1.5rem, 4vw, 3rem), env(safe-area-inset-right));
+  }
+  .floating-call {
+    bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
+    right: max(2rem, calc(env(safe-area-inset-right) + 1rem));
+  }
+  .site-footer {
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+  }
+  .full-menu .menu-content {
+    padding-bottom: max(3rem, calc(env(safe-area-inset-bottom) + 2rem));
+  }
+}
+
+/* ─── TOUCH TARGET MINIMUM (48px per WCAG 2.2) ─── */
+@media (pointer: coarse) {
+  .nav-menu-btn,
+  .nav-booking,
+  .filter-btn,
+  .btn-load-more,
+  .faq-search-clear,
+  .chosung-btn,
+  .dict-cat-btn,
+  .btn-submit,
+  .floating-call,
+  .back-link,
+  .consent-view-btn,
+  a.treat-card,
+  .menu-link {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Larger tap targets for small buttons */
+  .filter-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+  }
+
+  .chosung-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* Disable hover-only effects */
+  .case-card:hover,
+  .blog-card:hover,
+  .treat-card:hover {
+    transform: none;
+  }
+
+  /* Remove custom cursor references */
+  body, * { cursor: auto !important; }
+}
+
+/* ─── TABLET (769px – 1024px) ─── */
+@media (max-width: 1024px) {
+  /* Hero title sizing */
+  .hero-title {
+    font-size: clamp(2.5rem, 7vw, 4.5rem);
+  }
+
+  /* Section padding tighter */
+  :root {
+    --section-rhythm: clamp(4rem, 10vw, 10rem);
+    --chapter-rhythm: clamp(3rem, 6vw, 6rem);
+  }
+
+  /* Container max widths */
+  .container, [class*="-inner"] {
+    padding-left: clamp(1.5rem, 4vw, 3rem);
+    padding-right: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  /* Horizontal scroll cards - better sizing */
+  .h-scroll-track {
+    gap: 1rem;
+    padding: 0 1.5rem;
+  }
+}
+
+/* ─── MOBILE PRIMARY (max-width: 768px) — COMPREHENSIVE ─── */
+@media (max-width: 768px) {
+
+  /* === GLOBAL MOBILE TYPOGRAPHY === */
+  html { font-size: 15px; }
+
+  h1 { font-size: clamp(1.6rem, 6vw, 2.4rem) !important; }
+  h2 { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+  h3 { font-size: clamp(1.1rem, 4vw, 1.4rem); }
+
+  /* Tighter section spacing */
+  :root {
+    --section-rhythm: clamp(3rem, 8vw, 6rem);
+    --chapter-rhythm: clamp(2rem, 5vw, 4rem);
+  }
+
+  /* === NAV MOBILE === */
+  #nav {
+    padding: 1rem clamp(1rem, 3vw, 1.5rem);
+  }
+  #nav.scrolled {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+  .nav-brand {
+    font-size: 1.2rem;
+  }
+  .nav-menu-btn {
+    padding: 0.5rem 1.2rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+  }
+  .nav-booking span { display: none; }
+  .nav-booking {
+    padding: 0.5rem 0.8rem;
+    border-radius: 50%;
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-booking svg { width: 18px; height: 18px; }
+
+  /* === FULL MENU MOBILE === */
+  .full-menu {
+    clip-path: circle(0% at calc(100% - 2rem) 1.5rem);
+  }
+  .full-menu.open {
+    clip-path: circle(150% at calc(100% - 2rem) 1.5rem);
+  }
+  .menu-content {
+    padding: 5rem 1.5rem 2rem;
+    justify-content: flex-start;
+    padding-top: 6rem;
+  }
+  .menu-link {
+    font-size: clamp(1.5rem, 6vw, 2.2rem);
+    padding: 0.6rem 0;
+    font-weight: 300;
+  }
+  .menu-link:hover span {
+    transform: translateX(0.5rem);
+  }
+  .menu-footer {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-top: 2rem;
+    margin-top: 2rem;
+  }
+
+  /* === HERO MOBILE === */
+  .hero {
+    min-height: 100svh;
+  }
+  .hero-content {
+    padding: 0 1.5rem;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3.5rem) !important;
+  }
+  .hero-title .title-line {
+    line-height: 1.2;
+  }
+  .hero-subtitle {
+    font-size: clamp(0.85rem, 3vw, 1.1rem);
+  }
+  .hero-cta-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .hero-cta-btn {
+    width: 100%;
+    text-align: center;
+    padding: 1rem 2rem;
+    font-size: 0.75rem;
+  }
+  .hero-bottom {
+    padding: 0 1.5rem;
+  }
+  .hero-stats {
+    width: 100%;
+  }
+  .hero-stat-num {
+    font-size: clamp(1.6rem, 6vw, 2.5rem);
+  }
+  .hero-stat-label {
+    font-size: 0.7rem;
+  }
+
+  /* === STORY / NARRATIVE MOBILE === */
+  .story-line {
+    min-height: 70vh;
+    min-height: 70dvh;
+    padding: 3rem 1.5rem;
+  }
+
+  /* === PILLARS / CARDS MOBILE === */
+  .pillars-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 100%;
+  }
+  .pillar-card {
+    padding: 1.5rem;
+  }
+
+  /* === HORIZONTAL SCROLL MOBILE === */
+  .h-scroll-track {
+    gap: 1rem;
+    padding: 0 1.5rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .h-card {
+    flex: 0 0 85vw;
+    min-height: 380px;
+    scroll-snap-align: center;
+  }
+
+  /* === PROMISE SECTION MOBILE === */
+  .promise-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .promise-item {
+    padding: 1.5rem;
+  }
+
+  /* === EQUIPMENT GRID MOBILE === */
+  .equip-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+  .equip-item {
+    padding: 1.25rem;
+  }
+
+  /* === DIRECTOR SECTION MOBILE === */
+  .director-layout {
+    gap: 2rem;
+  }
+  .director-visual {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+
+  /* === CONTACT SECTION MOBILE === */
+  .contact-layout {
+    gap: 2.5rem;
+  }
+
+  /* === IMAGE GALLERY MOBILE === */
+  .gallery-item {
+    flex: 0 0 260px;
+    height: 160px;
+  }
+
+  /* === FLOATING CTA — BIGGER ON MOBILE === */
+  .floating-call {
+    width: 52px;
+    height: 52px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  .floating-call svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* === FOOTER MOBILE === */
+  .footer-top-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .footer-brand-col {
+    text-align: center;
+  }
+  .footer-brand-col .footer-logo {
+    justify-content: center;
+  }
+  .footer-sns {
+    justify-content: center;
+  }
+  .footer-nav-col {
+    text-align: center;
+  }
+  .footer-bottom-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  .footer-legal-links {
+    justify-content: center;
+  }
+  .footer-biz-info {
+    text-align: center;
+  }
+
+  /* === SUB-PAGE HERO MOBILE === */
+  .sub-page .sub-page-content {
+    padding-top: 70px;
+  }
+  .page-hero-mini {
+    padding: 3rem 0 1.5rem;
+  }
+  .page-title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+  }
+
+  /* === CASE/BLOG/NOTICE GRIDS MOBILE === */
+  .cases-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  .case-card-body {
+    padding: 0.75rem;
+  }
+  .case-card-body h3 {
+    font-size: 0.85rem;
+  }
+  .case-meta {
+    font-size: 0.7rem;
+    gap: 0.5rem;
+  }
+
+  .blogs-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .blog-card-body {
+    padding: 1rem;
+  }
+
+  .notice-row {
+    padding: 1rem 1.25rem;
+  }
+  .notice-row-left h3 {
+    font-size: 0.9rem;
+  }
+
+  /* === DETAIL PAGES MOBILE === */
+  .case-detail-header h1,
+  .blog-detail-header h1,
+  .notice-detail-header h1 {
+    font-size: 1.4rem !important;
+  }
+  .case-detail-desc,
+  .blog-detail-content,
+  .notice-detail-content {
+    font-size: 0.9rem;
+    line-height: 1.85;
+  }
+
+  /* === FAQ MOBILE === */
+  .faq-search-box {
+    padding: 0.75rem 1rem;
+  }
+  .faq-item-header {
+    padding: 1rem 1.25rem;
+    min-height: 56px;
+  }
+  .faq-item-body {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  /* === SIGNUP/LOGIN MOBILE === */
+  .signup-card, .login-page-card {
+    padding: 1.5rem;
+    margin: 0 0.75rem;
+    border-radius: 12px;
+  }
+  .signup-section, .login-section {
+    padding: 2rem 0 4rem;
+  }
+  .signup-form input[type="text"],
+  .signup-form input[type="tel"],
+  .signup-form input[type="email"],
+  .signup-form input[type="password"],
+  .signup-form input[type="date"],
+  .login-page-form input[type="tel"],
+  .login-page-form input[type="password"] {
+    padding: 0.85rem 1rem;
+    font-size: 16px; /* Prevent iOS zoom on focus */
+  }
+  .btn-submit, .btn-login {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.95rem;
+    min-height: 52px;
+  }
+  .form-section-title {
+    font-size: 1rem;
+  }
+
+  /* === TREATMENTS MOBILE === */
+  .treat-detail-hero {
+    padding: 90px 0 20px;
+  }
+  .treat-hero-title {
+    font-size: clamp(1.4rem, 5vw, 2rem) !important;
+  }
+  .treat-section {
+    padding: 28px 0;
+  }
+  .treat-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  .treat-card-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .treat-grid.core,
+  .treat-grid.standard {
+    grid-template-columns: 1fr;
+  }
+  .treat-cta-inner {
+    padding: 24px;
+  }
+  .treat-cta-actions {
+    flex-direction: column;
+  }
+  .treat-cta-actions .btn-primary,
+  .treat-cta-actions .btn-outline {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* === DOCTORS MOBILE === */
+  .doctors-grid {
+    grid-template-columns: 1fr;
+  }
+  .doctor-card-photo {
+    height: 200px;
+  }
+  .doctor-profile-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .doctor-profile-photo img {
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+  }
+  .doctor-profile-name {
+    font-size: 1.6rem;
+  }
+
+  /* === DICTIONARY MOBILE === */
+  .dict-layout {
+    grid-template-columns: 1fr;
+  }
+  .dict-sidebar {
+    position: static;
+    order: -1;
+  }
+  .dict-category-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .dict-cat-btn {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  .dict-sidebar-title { display: none; }
+  .dict-hero {
+    padding: 100px 0 32px;
+  }
+  .dict-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* === VISIT PAGE MOBILE === */
+  .visit-location-grid {
+    grid-template-columns: 1fr;
+  }
+  .visit-map-wrap {
+    height: 250px;
+  }
+  .visit-tab {
+    padding: 10px 14px;
+    font-size: 0.82rem;
+  }
+
+  /* === ABOUT PAGE MOBILE === */
+  .values-grid {
+    grid-template-columns: 1fr;
+  }
+  .mission-big-text {
+    font-size: 1.05rem;
+  }
+
+  /* === REGION SEO PAGES MOBILE === */
+  .region-hero {
+    padding: 90px 0 28px;
+  }
+
+  /* === IMAGE BREAK MOBILE === */
+  .image-break img {
+    height: 40vh;
+  }
+
+  /* === MANIFESTO MOBILE === */
+  .manifesto-text .reveal-text {
+    font-size: clamp(1.1rem, 3.5vw, 1.8rem);
+  }
+
+  /* === HOURS TABLE MOBILE === */
+  .hours-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  .hours-note {
+    padding-left: 0;
+    grid-column: span 1;
+  }
+
+  /* === CREDENTIALS MOBILE === */
+  .credentials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* === MARQUEE MOBILE === */
+  .marquee-track span {
+    font-size: 0.55rem;
+  }
+
+  /* === DISABLE HEAVY DECORATIONS MOBILE === */
+  .hero-depth-blur,
+  .hero-anamorphic,
+  .hero-light-leak,
+  .chapter-orb,
+  .chapter-aurora,
+  .chapter-aurora-2,
+  .chapter-stars,
+  .chapter-stars-deep,
+  .chapter-fog,
+  .chapter-fog-2,
+  .chapter-nebula,
+  .chapter-light-cone,
+  .chapter-rays-2,
+  .story-ambient-glow,
+  .story-ambient-pulse,
+  .section-indicator,
+  .cursor,
+  .cursor-follower {
+    display: none !important;
+  }
+}
+
+/* ─── SMALL MOBILE (max-width: 480px) — COMPACT ─── */
+@media (max-width: 480px) {
+
+  /* === Tighter everything === */
+  html { font-size: 14px; }
+
+  #nav {
+    padding: 0.75rem 1rem;
+  }
+  .nav-brand {
+    font-size: 1.1rem;
+  }
+  .nav-menu-btn {
+    padding: 0.45rem 1rem;
+    font-size: 0.55rem;
+  }
+
+  /* Hero compact */
+  .hero-title {
+    font-size: clamp(1.8rem, 8vw, 2.8rem) !important;
+  }
+  .hero-subtitle {
+    font-size: 0.82rem;
+  }
+  .hero-cta-btn {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.72rem;
+  }
+
+  /* Full menu compact */
+  .menu-content {
+    padding: 5rem 1.25rem 1.5rem;
+  }
+  .menu-link {
+    font-size: clamp(1.3rem, 5.5vw, 1.8rem);
+    padding: 0.5rem 0;
+  }
+
+  /* Cards single column */
+  .cases-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .case-card-body h3 {
+    font-size: 0.9rem;
+    white-space: normal;
+  }
+
+  /* Horizontal scroll tighter */
+  .h-card {
+    flex: 0 0 90vw;
+    min-height: 340px;
+  }
+  .h-scroll-track {
+    padding: 0 1rem;
+    gap: 0.75rem;
+  }
+
+  /* Equipment single column */
+  .equip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Promise tighter */
+  .promise-item {
+    padding: 1.25rem;
+  }
+
+  /* Filter bar */
+  .filter-bar {
+    gap: 0.3rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    flex-shrink: 0;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.78rem;
+  }
+
+  /* Signup/Login compact */
+  .signup-card, .login-page-card {
+    padding: 1.25rem;
+    margin: 0 0.5rem;
+  }
+
+  /* Footer compact */
+  .footer-top-grid {
+    gap: 1.25rem;
+  }
+
+  /* Dictionary compact */
+  .dict-hero {
+    padding: 90px 0 24px;
+  }
+  .dict-search-bar input {
+    font-size: 0.9rem;
+    padding: 12px 10px;
+  }
+  .dict-card {
+    padding: 14px;
+  }
+  .dict-card-term {
+    font-size: 0.92rem;
+  }
+
+  /* Page titles compact */
+  .page-title {
+    font-size: clamp(1.5rem, 5vw, 2rem) !important;
+  }
+
+  /* Sub page padding */
+  .sub-page .sub-page-content {
+    padding-top: 60px;
+  }
+  .page-hero-mini {
+    padding: 2.5rem 0 1rem;
+  }
+
+  /* Story compact */
+  .story-line {
+    min-height: 60vh;
+    padding: 2rem 1.25rem;
+  }
+
+  /* Detail pages compact */
+  .case-detail-header h1,
+  .blog-detail-header h1,
+  .notice-detail-header h1 {
+    font-size: 1.25rem !important;
+  }
+
+  /* Floating call */
+  .floating-call {
+    width: 48px;
+    height: 48px;
+    bottom: 1rem;
+    right: 1rem;
+  }
+}
+
+/* ─── VERY SMALL MOBILE (max-width: 360px) ─── */
+@media (max-width: 360px) {
+  html { font-size: 13px; }
+
+  #nav {
+    padding: 0.7rem 0.75rem;
+  }
+  .nav-brand {
+    font-size: 1rem;
+  }
+  .nav-menu-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.5rem;
+  }
+  .nav-booking {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.5rem, 7vw, 2.2rem) !important;
+  }
+
+  .menu-link {
+    font-size: 1.2rem;
+  }
+
+  .h-card {
+    flex: 0 0 92vw;
+    min-height: 300px;
+  }
+
+  .signup-card, .login-page-card {
+    padding: 1rem;
+    margin: 0 0.25rem;
+  }
+
+  .case-card-images {
+    aspect-ratio: 4/3;
+  }
+}
+
+/* ─── LANDSCAPE MOBILE ─── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero {
+    min-height: 100vw;
+    min-height: auto;
+    padding: 4rem 0;
+  }
+  .story-line {
+    min-height: 60vh;
+  }
+  .menu-content {
+    padding-top: 4rem;
+  }
+  .menu-link {
+    font-size: 1.2rem;
+    padding: 0.3rem 0;
+  }
+}
+
+/* ─── iOS INPUT ZOOM PREVENTION ─── */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  select,
+  textarea,
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="password"],
+  input[type="date"],
+  input[type="search"],
+  input[type="number"] {
+    font-size: 16px;
+  }
+}
+
+/* ─── SMOOTH SCROLLING MOBILE PERFORMANCE ─── */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Optimized scrolling */
+  .h-scroll-track,
+  .filter-bar,
+  .dict-category-list,
+  .menu-content {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Prevent content overflow */
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Image optimization */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Table overflow */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  MOBILE OPTIMIZATION PHASE 2 — 2026-04-16                  ║
+   ║  Gaps & Edge-case fixes, Performance, Accessibility         ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+
+/* ─── FOCUS VISIBLE — Keyboard users only ─── */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ─── PHILOSOPHY SPLIT — Missing mobile fix ─── */
+@media (max-width: 768px) {
+  .philosophy-split {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .split-left {
+    padding: 3rem 1.5rem 1rem;
+  }
+  .split-right {
+    padding: 2rem 1.5rem 4rem;
+    border-left: none;
+    border-top: 1px solid var(--white-ghost);
+  }
+  .split-sticky {
+    position: relative;
+    top: 0;
+  }
+  .split-title {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .philosophy-card {
+    padding: 2rem 0;
+  }
+  .philosophy-card h3 {
+    font-size: 1.3rem;
+  }
+  .philosophy-card::before {
+    left: 0;
+  }
+}
+
+/* ─── DIRECTOR MOBILE — Comprehensive fixes ─── */
+@media (max-width: 768px) {
+  .director-full {
+    padding: clamp(3rem, 8vw, 6rem) 0;
+  }
+  .director-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .director-visual {
+    position: relative;
+    top: 0;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+  .frame-name {
+    font-size: clamp(2rem, 6vw, 3rem);
+  }
+  .director-name-title {
+    font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  }
+  .director-quote {
+    font-size: clamp(1rem, 2.5vw, 1.3rem);
+    padding: 1.5rem;
+  }
+  .director-philosophy {
+    padding: 1.2rem;
+    font-size: 0.88rem;
+  }
+  .credentials-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .cred-block {
+    padding: 1.2rem;
+  }
+}
+
+/* ─── CONTACT SECTION — Missing mobile grid ─── */
+@media (max-width: 768px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .phone-number {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+  }
+  .hours-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 1rem 0;
+  }
+  .hours-note {
+    padding-left: 0;
+    grid-column: span 1;
+  }
+  .transport-minimal {
+    gap: 1rem;
+  }
+}
+
+/* ─── HORIZONTAL SCROLL — Swipe-friendly ─── */
+@media (max-width: 768px) {
+  .horizontal-wrap {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 3rem;
+  }
+  .horizontal-wrap::-webkit-scrollbar { display: none; }
+  .horizontal-track {
+    padding: 0 1.5rem;
+    gap: 1rem;
+    cursor: auto;
+  }
+  .h-card {
+    flex: 0 0 85vw;
+    min-height: 380px;
+    scroll-snap-align: center;
+  }
+  .h-card-intro {
+    flex: 0 0 75vw;
+  }
+  .h-intro-text {
+    font-size: 1.2rem;
+  }
+  .h-card-inner {
+    padding: 1.5rem;
+  }
+  .h-card-title {
+    font-size: 1.5rem;
+  }
+  .h-card-features span {
+    font-size: 0.68rem;
+    padding: 0.3rem 0.6rem;
+  }
+  /* Arrow always visible on mobile */
+  .h-card .h-card-arrow {
+    opacity: 0.6;
+    transform: translateX(0);
+  }
+}
+
+/* ─── SERVICE CARDS — Swipe indicator hint ─── */
+@media (max-width: 768px) {
+  .services-horizontal::after {
+    content: '';
+    display: block;
+    text-align: center;
+    padding: 0.5rem 0;
+    font-size: 0;
+  }
+  .horizontal-wrap {
+    position: relative;
+  }
+  /* Fade hint at right edge */
+  .horizontal-wrap::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background: linear-gradient(90deg, transparent, var(--bg));
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 2;
+  }
+}
+
+/* ─── GALLERY STRIP — Smaller on mobile ─── */
+@media (max-width: 480px) {
+  .gallery-item {
+    flex: 0 0 220px;
+    height: 140px;
+  }
+  .gallery-caption {
+    font-size: 0.55rem;
+    padding: 1.5rem 0.8rem 0.8rem;
+  }
+}
+
+/* ─── BLOG ARTICLE — Better readability ─── */
+@media (max-width: 768px) {
+  .blog-article {
+    padding: 1.5rem 0 3rem;
+  }
+  .blog-article-body {
+    font-size: 0.95rem;
+    line-height: 1.9;
+  }
+  .blog-article-body h2 {
+    font-size: 1.15rem;
+    margin: 2rem 0 0.75rem;
+  }
+  .blog-article-body h3 {
+    font-size: 1rem;
+    margin: 1.5rem 0 0.5rem;
+  }
+  .blog-inline-figure {
+    margin: 1.5rem -0.5rem;
+  }
+  .blog-cta-box {
+    padding: 1.5rem;
+  }
+}
+
+/* ─── CASE DETAIL — Pairs mobile ─── */
+@media (max-width: 480px) {
+  .case-pair-images {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .case-pair-label {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.65rem;
+  }
+}
+
+/* ─── NOTICE DETAIL — Compact mobile ─── */
+@media (max-width: 768px) {
+  .notice-detail-header {
+    padding-bottom: 1rem;
+  }
+  .notice-detail-header h1 {
+    font-size: 1.3rem;
+  }
+  .notice-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+  }
+  .notice-detail-content {
+    font-size: 0.9rem;
+    line-height: 1.85;
+  }
+  .notice-detail-img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* ─── CONSENT MODAL — Full screen on mobile ─── */
+@media (max-width: 480px) {
+  .consent-modal-card {
+    max-height: 90vh;
+    border-radius: 12px 12px 0 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+  }
+  .consent-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+}
+
+/* ─── TREATMENT DETAIL — Mobile sections ─── */
+@media (max-width: 768px) {
+  .treat-steps {
+    gap: 16px;
+  }
+  .treat-step {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+  .treat-step-num {
+    font-size: 1.2rem;
+    min-width: auto;
+  }
+  .treat-benefits {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .treat-benefit {
+    padding: 16px;
+  }
+  .treat-price-table th,
+  .treat-price-table td {
+    padding: 10px 8px;
+    font-size: 0.82rem;
+  }
+  .treat-doctors {
+    grid-template-columns: 1fr;
+  }
+  .treat-faq-q {
+    padding: 14px 16px;
+    gap: 8px;
+    font-size: 0.88rem;
+  }
+  .treat-faq-a p {
+    padding: 0 16px 16px 40px;
+    font-size: 0.85rem;
+  }
+  .treat-dict-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .treat-cases-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+/* ─── DOCTOR DETAIL — Credentials mobile ─── */
+@media (max-width: 768px) {
+  .cred-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .doctor-treat-grid {
+    grid-template-columns: 1fr;
+  }
+  .doctor-cases-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+  .doctor-greeting {
+    font-size: 0.95rem;
+  }
+  .doctor-spec-tags {
+    gap: 6px;
+  }
+  .spec-tag {
+    padding: 4px 10px;
+    font-size: 0.78rem;
+  }
+}
+
+/* ─── REGION SEO — Mobile comprehensive ─── */
+@media (max-width: 768px) {
+  .region-hero {
+    padding: 90px 0 28px;
+  }
+  .region-content-body {
+    font-size: 0.95rem;
+  }
+  .region-content-body h2 {
+    font-size: 1.15rem;
+    margin: 24px 0 12px;
+  }
+  .region-treat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .region-treat-card {
+    padding: 16px;
+  }
+  .region-treat-card .treat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  .region-treat-card h4 {
+    font-size: 0.9rem;
+  }
+  .region-treat-card p {
+    font-size: 0.78rem;
+  }
+  .regions-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .region-list-card {
+    padding: 16px;
+  }
+  .section-heading {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+}
+
+/* ─── MANIFESTO — Better mobile ─── */
+@media (max-width: 480px) {
+  .about-manifesto {
+    min-height: auto;
+    padding: clamp(2rem, 6vw, 4rem) 0;
+  }
+  .manifesto-number {
+    font-size: clamp(4rem, 14vw, 8rem);
+    margin-bottom: -1rem;
+  }
+  .manifesto-text .reveal-text {
+    font-size: clamp(1rem, 3.5vw, 1.5rem);
+  }
+}
+
+/* ─── PRICE TABLES — Responsive ─── */
+@media (max-width: 600px) {
+  .price-table, .hours-table {
+    font-size: 0.82rem;
+  }
+  .price-table th, .price-table td,
+  .hours-table th, .hours-table td {
+    padding: 10px 8px;
+  }
+  .price-group-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* ─── LOGIN GATE — Better CTA mobile ─── */
+@media (max-width: 480px) {
+  .gate-content {
+    padding: 0.5rem;
+  }
+  .gate-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+  }
+  .gate-text h3 {
+    font-size: 0.9rem;
+  }
+  .gate-text p {
+    font-size: 0.78rem;
+  }
+  .gate-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .gate-btn-login, .gate-btn-signup {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+  .login-required-card {
+    padding: 2.5rem 1.5rem;
+    margin: 1.5rem auto;
+  }
+  .login-required-card h2 {
+    font-size: 1.2rem;
+  }
+  .login-req-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+/* ─── ACTIVE STATES — Touch feedback ─── */
+@media (pointer: coarse) {
+  .nav-menu-btn:active,
+  .nav-booking:active,
+  .filter-btn:active,
+  .faq-question:active,
+  .menu-link:active,
+  .hero-cta-btn:active,
+  .map-btn:active,
+  .faq-cta-btn:active,
+  .treat-cta-btn:active,
+  .btn-signup:active,
+  .btn-load-more:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.1s !important;
+  }
+
+  .case-card:active,
+  .blog-card:active,
+  .dict-card:active,
+  .treat-card:active,
+  .doctor-card:active,
+  .region-list-card:active {
+    transform: scale(0.98) !important;
+    box-shadow: var(--shadow-sm) !important;
+    transition: transform 0.1s !important;
+  }
+}
+
+/* ─── SCROLL-BEHAVIOR — Smooth for non-reduced ─── */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ─── DARK MODE — Media query system ─── */
+@media (prefers-color-scheme: dark) {
+  /* The site already uses dark sections — no override needed.
+     This is a placeholder for future theming support. */
+}
+
+/* ─── CONTENT OVERFLOW GUARD ─── */
+.container-wide,
+.dict-container,
+.blog-article,
+.case-detail-section,
+.notice-detail-section,
+.signup-section,
+.login-section {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+/* ─── IMAGE LAZY LOAD PLACEHOLDER ─── */
+img[loading="lazy"] {
+  background: var(--surface-2);
+  transition: opacity 0.3s ease;
+}
+
+/* ─── SELECTION STYLE ─── */
+::selection {
+  background: rgba(27, 58, 92, 0.25);
+  color: var(--navy);
+}
+
+/* ─── PRINT — Extended ─── */
+@media print {
+  .floating-call,
+  .full-menu,
+  #nav,
+  .section-indicator,
+  .login-gate-banner,
+  .consent-modal,
+  .blackout-overlay,
+  #scrollProgress {
+    display: none !important;
+  }
+  .sub-page .sub-page-content {
+    padding-top: 0;
+  }
+  a[href^="tel:"]::after {
+    content: " (" attr(href) ")";
+  }
+}
