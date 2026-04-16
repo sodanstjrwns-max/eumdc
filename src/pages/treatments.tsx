@@ -52,12 +52,14 @@ export function treatmentsPage() {
 }
 
 /** 진료과목 상세 페이지 */
-export function treatmentDetailPage(slug: string) {
+export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string) {
   return subPageLayout('TREATMENT', (
     <div class="page-treatment-detail">
       <section class="treat-detail-hero" id="treatHero">
         <div class="container-wide">
           <a href="/treatments" class="back-link" data-hover>← 전체 진료 보기</a>
+          {/* SSR H1 for SEO crawlers — JS replaces with full hero content */}
+          {treatmentName && <h1 class="treat-hero-title" id="ssrH1">{heroTitle || treatmentName}</h1>}
           <div class="treat-hero-content" id="treatHeroContent">
             <div class="loading-spinner">불러오는 중...</div>
           </div>

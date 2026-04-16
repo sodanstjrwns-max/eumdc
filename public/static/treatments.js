@@ -82,6 +82,10 @@
     var cases = data.cases || [];
     var prices = data.prices || [];
 
+    // Remove SSR H1 (prevents duplicate H1)
+    var ssrH1 = document.getElementById('ssrH1');
+    if (ssrH1) ssrH1.remove();
+
     // Hero
     var heroEl = document.getElementById('treatHeroContent');
     if (heroEl) {

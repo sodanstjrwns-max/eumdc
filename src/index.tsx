@@ -104,8 +104,8 @@ app.route('', regionsRoutes)
 app.get('/', (c) => {
   return c.render(mainPage(), {
     seo: {
-      title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문',
-      description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철·턱관절(TMJ) 전문. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888. 주차 2시간 무료.',
+      title: '이음치과의원 | 부산 명지 임플란트·심미보철',
+      description: '부산 강서구 명지 이음치과. 임플란트·심미보철·턱관절 전문. 월~목 야간 21시, 토·일 진료. ☎ 051-206-5888. 주차 무료.',
       keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
       canonical: SITE_URL,
       ogUrl: SITE_URL,
@@ -135,8 +135,8 @@ app.get('/', (c) => {
 app.get('/treatments', (c) => {
   return c.render(treatmentsPage(), {
     seo: {
-      title: '진료 안내 | 이음치과 임플란트·심미보철·턱관절',
-      description: '이음치과의원 진료과목 안내. 임플란트, 심미보철, 턱관절, 심미레진, 충치·신경치료, 잇몸치료, 소아치과 등 전문 진료를 제공합니다.',
+      title: '진료 안내 | 이음치과 전문 진료과목',
+      description: '이음치과 진료과목. 임플란트·심미보철·턱관절·심미레진·충치치료·잇몸치료 등 전문 진료. 투명한 설명, 확실한 결과.',
       keywords: '이음치과 진료, 임플란트, 심미보철, 턱관절, 심미레진, 충치치료, 신경치료, 잇몸치료, 소아치과, 부산치과 진료',
       canonical: `${SITE_URL}/treatments`,
       ogUrl: `${SITE_URL}/treatments`,
@@ -170,7 +170,7 @@ app.get('/treatments/:slug', async (c) => {
     }
   }
 
-  return c.render(treatmentDetailPage(slug), {
+  return c.render(treatmentDetailPage(slug, name, treatment?.hero_title || name), {
     seo: {
       title: metaTitle,
       description: desc,
@@ -243,7 +243,7 @@ app.get('/about', (c) => {
   return c.render(missionPage(), {
     seo: {
       title: '병원 소개 | 이음치과의원 미션과 가치',
-      description: '이음치과의원의 미션, 핵심 가치, 최첨단 디지털 장비, 병원 시설을 소개합니다. 투명성, 실력, 신뢰, 공감의 가치로 진료합니다.',
+      description: '이음치과 미션과 핵심 가치. 최첨단 디지털 장비와 병원 시설. 투명성·실력·신뢰·공감의 가치로 진료합니다.',
       keywords: '이음치과 소개, 병원미션, 치과 철학, 디지털 치과, CBCT, 구강스캐너, 3D프린터, 부산치과',
       canonical: `${SITE_URL}/about`,
       ogUrl: `${SITE_URL}/about`,
@@ -277,7 +277,7 @@ app.get('/cases', (c) => {
   return c.render(casesPage(), {
     seo: {
       title: '비포애프터 | 이음치과 실제 치료 전후 사진',
-      description: '이음치과의원의 임플란트·심미보철·레진·턱관절 치료 비포애프터 사진. 파노라마·구내 사진으로 치료 결과를 확인하세요.',
+      description: '이음치과 임플란트·심미보철·턱관절 치료 전후 사진. 실제 치료 결과를 확인하세요.',
       keywords: '치과 비포애프터, 임플란트 전후사진, 심미보철 결과, 라미네이트 전후, 치아 성형 전후, 부산치과 치료사례',
       canonical: `${SITE_URL}/cases`,
       ogUrl: `${SITE_URL}/cases`,
@@ -336,7 +336,7 @@ app.get('/blogs', (c) => {
   return c.render(blogsPage(), {
     seo: {
       title: '치과 건강 블로그 | 이음치과의원 구강관리 정보',
-      description: '이음치과의원 블로그. 임플란트·심미보철·충치예방·잇몸관리 전문 건강 정보. 최효영 원장이 직접 작성하는 치과 가이드.',
+      description: '이음치과 블로그. 임플란트·심미보철·구강관리 전문 건강 정보. 최효영 원장이 직접 작성합니다.',
       keywords: '치과 블로그, 임플란트 정보, 치아 건강, 치과 상식, 구강 관리, 이음치과 블로그, 부산치과 정보',
       canonical: `${SITE_URL}/blogs`,
       ogUrl: `${SITE_URL}/blogs`,
@@ -466,7 +466,7 @@ app.get('/faq', async (c) => {
 
   return c.render(faqPage(grouped), {
     seo: {
-      title: '자주 묻는 질문 (FAQ) | 이음치과 임플란트·보험·비용',
+      title: '자주 묻는 질문 (FAQ) | 이음치과',
       description: `이음치과의원 FAQ ${allFaqs.length}개 — 임플란트 비용, 시술 시간, 보험 적용, 턱관절 치료 등 자주 묻는 질문과 전문의 답변 총정리.`,
       keywords: '치과 FAQ, 임플란트 비용, 임플란트 시간, 치과 보험, 턱관절 치료, 부산치과 가격, 라미네이트 비용, 치과 주차, 야간진료치과, 이음치과 질문',
       canonical: `${SITE_URL}/faq`,
@@ -489,7 +489,7 @@ app.get('/dictionary', async (c) => {
   return c.render(dictionaryPage(), {
     seo: {
       title: `치과 용어 백과사전 (${total}개) | 이음치과 용어 사전`,
-      description: `이음치과 치과 용어 백과사전. ${total}개 전문 용어를 쉽게 설명합니다. 임플란트·보철·근관치료·잇몸·턱관절 카테고리별 정리.`,
+      description: `이음치과 치과 용어 ${total}개. 임플란트·보철·근관치료 등 전문 용어를 쉽게 설명합니다.`,
       keywords: '치과 용어, 치과 사전, 임플란트 용어, 치과 백과사전, 치과 상식, 치아 용어, 보철 용어, 근관치료, 이음치과, 부산치과',
       canonical: `${SITE_URL}/dictionary`,
       ogUrl: `${SITE_URL}/dictionary`,
@@ -597,7 +597,7 @@ app.get('/regions/:slug', async (c) => {
   const metaTitle = region?.meta_title || `${regionName} 치과 이음치과의원 | 임플란트·심미보철`
   const metaDesc = region?.meta_description || `${regionName} 근처 치과를 찾고 계신가요? 이음치과의원 임플란트·심미보철·턱관절 전문. ☎ 051-206-5888`
 
-  return c.render(seoRegionPage(slug), {
+  return c.render(seoRegionPage(slug, region?.h1_title || `${regionName} 치과 이음치과의원`), {
     seo: {
       title: metaTitle,
       description: metaDesc,

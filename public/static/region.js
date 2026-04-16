@@ -18,6 +18,10 @@
         return;
       }
 
+      // Remove SSR H1 (prevents duplicate H1)
+      var ssrH1 = document.getElementById('ssrH1');
+      if (ssrH1) ssrH1.remove();
+
       el.innerHTML =
         '<span class="section-label light">' + (region.region_name || '') + '</span>' +
         '<h1 class="page-title">' + (region.h1_title || region.region_name + ' 치과 이음치과의원') + '</h1>' +

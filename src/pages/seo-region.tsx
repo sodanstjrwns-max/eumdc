@@ -1,11 +1,13 @@
 import { subPageLayout } from './layout'
 
 /** 지역 SEO 랜딩 페이지 — 동적 */
-export function seoRegionPage(slug: string) {
+export function seoRegionPage(slug: string, h1Title?: string) {
   return subPageLayout('REGION', (
     <div class="page-seo-region">
       <section class="region-hero" id="regionHero">
         <div class="container-wide">
+          {/* SSR H1 for SEO crawlers — JS enriches with full content */}
+          {h1Title && <h1 class="page-title" id="ssrH1">{h1Title}</h1>}
           <div id="regionHeroContent" data-slug={slug}>
             <div class="loading-spinner">불러오는 중...</div>
           </div>
