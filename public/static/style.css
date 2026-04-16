@@ -3476,6 +3476,179 @@ body::after {
   100% { transform: scale(1.5); opacity: 0; }
 }
 
+/* === KAKAO PLUS FRIEND INTEGRATION === */
+
+/* Nav Kakao Button */
+.nav-kakao {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  background: #FEE500;
+  color: #3C1E1E;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: all 0.3s var(--ease);
+  white-space: nowrap;
+}
+.nav-kakao svg { fill: #3C1E1E; }
+.nav-kakao:hover {
+  background: #FFD600;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(254, 229, 0, 0.35);
+}
+#nav.scrolled .nav-kakao {
+  background: #FEE500;
+  color: #3C1E1E;
+}
+
+/* Menu Kakao Link */
+.menu-kakao-link {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: #FEE500;
+  color: #3C1E1E;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: all 0.3s var(--ease);
+}
+.menu-kakao-link:hover {
+  background: #FFD600;
+  transform: translateX(3px);
+}
+
+/* Hero CTA Kakao Button */
+.hero-cta-wrap {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.hero-cta-kakao {
+  background: #FEE500 !important;
+  color: #3C1E1E !important;
+  border-color: rgba(60, 30, 30, 0.1) !important;
+}
+.hero-cta-kakao svg { fill: #3C1E1E; }
+.hero-cta-kakao:hover {
+  background: #FFD600 !important;
+  box-shadow: 0 8px 32px rgba(254, 229, 0, 0.4) !important;
+}
+.hero-cta-kakao span {
+  color: #3C1E1E !important;
+}
+
+/* Contact Section Kakao */
+.contact-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+.kakao-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: #FEE500;
+  color: #3C1E1E;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: all 0.3s var(--ease);
+}
+.kakao-btn svg { fill: #3C1E1E; }
+.kakao-btn:hover {
+  background: #FFD600;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(254, 229, 0, 0.4);
+}
+
+/* Footer Kakao SNS */
+.footer-sns-kakao svg {
+  fill: var(--text-dim);
+  stroke: none;
+  transition: fill 0.3s var(--ease);
+}
+.footer-sns-kakao:hover svg {
+  fill: #FEE500;
+}
+
+/* Floating CTA Group */
+.floating-cta-group {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 900;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s var(--ease);
+}
+.floating-cta-group.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.floating-btn {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: all 0.3s var(--ease);
+  position: relative;
+}
+.floating-kakao {
+  background: #FEE500;
+  color: #3C1E1E;
+  box-shadow: 0 4px 20px rgba(254, 229, 0, 0.3);
+}
+.floating-kakao svg { fill: #3C1E1E; }
+.floating-kakao:hover {
+  background: #FFD600;
+  transform: scale(1.1);
+  box-shadow: 0 6px 28px rgba(254, 229, 0, 0.5);
+}
+.floating-cta-group .floating-call {
+  background: rgba(15, 27, 45, 0.55);
+  backdrop-filter: blur(16px) saturate(1.6);
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  color: var(--dark-text);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(15, 27, 45, 0.25), inset 0 1px 0 rgba(255,255,255,0.08);
+  opacity: 1;
+  transform: none;
+}
+.floating-cta-group .floating-call:hover {
+  background: rgba(42, 90, 143, 0.65);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 40px rgba(42, 90, 143, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+  transform: scale(1.1);
+}
+/* Pulse ring on phone button */
+.floating-cta-group .floating-call::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid var(--cta);
+  animation: pulse 2s ease infinite;
+}
+
 /* === SECTION INDICATOR (Side dots) === */
 .section-indicator {
   position: fixed;
@@ -3665,6 +3838,8 @@ body.gsap-active [data-reveal] {
   .nav-booking {
     padding: 0.4rem 0.7rem;
   }
+  .nav-kakao span { display: none; }
+  .nav-kakao { padding: 0.4rem 0.5rem; }
 
   .hero-cta-btn {
     padding: 0.85rem 1.8rem;
@@ -3715,7 +3890,7 @@ body.gsap-active [data-reveal] {
 /* === PRINT === */
 @media print {
   body { background: white; color: black; cursor: auto; }
-  .cursor, .cursor-follower, #nav, .full-menu, .floating-call, .grain, .marquee-band, .section-indicator, .hero-mesh, .hero-scan-line { display: none !important; }
+  .cursor, .cursor-follower, #nav, .full-menu, .floating-call, .floating-cta-group, .grain, .marquee-band, .section-indicator, .hero-mesh, .hero-scan-line { display: none !important; }
   .hero { min-height: auto; background: white; }
   .title-word { transform: none !important; color: black !important; -webkit-text-stroke: none !important; animation: none !important; }
 }
@@ -7162,7 +7337,8 @@ body.gsap-active [data-reveal] {
     padding-left: max(clamp(1.5rem, 4vw, 3rem), env(safe-area-inset-left));
     padding-right: max(clamp(1.5rem, 4vw, 3rem), env(safe-area-inset-right));
   }
-  .floating-call {
+  .floating-call,
+  .floating-cta-group {
     bottom: max(2rem, calc(env(safe-area-inset-bottom) + 1rem));
     right: max(2rem, calc(env(safe-area-inset-right) + 1rem));
   }
@@ -7178,6 +7354,7 @@ body.gsap-active [data-reveal] {
 @media (pointer: coarse) {
   .nav-menu-btn,
   .nav-booking,
+  .nav-kakao,
   .filter-btn,
   .btn-load-more,
   .faq-search-clear,
@@ -7185,6 +7362,7 @@ body.gsap-active [data-reveal] {
   .dict-cat-btn,
   .btn-submit,
   .floating-call,
+  .floating-btn,
   .back-link,
   .consent-view-btn,
   a.treat-card,
@@ -7281,6 +7459,44 @@ body.gsap-active [data-reveal] {
     display: flex; align-items: center; justify-content: center;
   }
   .nav-booking svg { width: 18px; height: 18px; }
+
+  /* Kakao nav button mobile */
+  .nav-kakao span { display: none; }
+  .nav-kakao {
+    padding: 0;
+    border-radius: 50%;
+    width: 42px; height: 42px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-kakao svg { width: 20px; height: 20px; }
+
+  /* Floating CTA group mobile */
+  .floating-cta-group {
+    bottom: 1.25rem;
+    right: 1.25rem;
+    gap: 0.6rem;
+  }
+  .floating-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Hero CTA wrap mobile */
+  .hero-cta-wrap {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .hero-cta-kakao {
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* Contact actions mobile */
+  .contact-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 
   /* === FULL MENU MOBILE === */
   .full-menu {
@@ -7425,6 +7641,18 @@ body.gsap-active [data-reveal] {
     right: 1.5rem;
   }
   .floating-call svg {
+    width: 22px;
+    height: 22px;
+  }
+  .floating-cta-group {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+  .floating-cta-group .floating-btn {
+    width: 52px;
+    height: 52px;
+  }
+  .floating-cta-group .floating-btn svg {
     width: 22px;
     height: 22px;
   }
@@ -7853,6 +8081,15 @@ body.gsap-active [data-reveal] {
     height: 48px;
     bottom: 1rem;
     right: 1rem;
+  }
+  .floating-cta-group {
+    bottom: 1rem;
+    right: 1rem;
+    gap: 0.5rem;
+  }
+  .floating-cta-group .floating-btn {
+    width: 48px;
+    height: 48px;
   }
 }
 

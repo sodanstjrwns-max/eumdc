@@ -13,6 +13,10 @@ export function subPageLayout(title: string, children: any) {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
           <span>네이버 예약</span>
         </a>
+        <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="nav-kakao" data-hover>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+          <span>카카오 상담</span>
+        </a>
         <div class="nav-right">
           {/* User auth state indicator */}
           <div class="nav-user" id="navUser" style="display:none">
@@ -52,6 +56,7 @@ export function subPageLayout(title: string, children: any) {
             <div class="menu-footer-col">
               <span class="menu-label">CONTACT</span>
               <p><a href="tel:051-206-5888">051-206-5888</a></p>
+              <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="menu-kakao-link">카카오톡 상담 →</a>
             </div>
             <div class="menu-footer-col">
               <span class="menu-label">HOURS</span>
@@ -80,6 +85,9 @@ export function subPageLayout(title: string, children: any) {
                 <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" aria-label="네이버 지도">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </a>
+                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" aria-label="카카오톡 상담" class="footer-sns-kakao">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+                </a>
               </div>
             </div>
             <div class="footer-nav-col">
@@ -99,6 +107,7 @@ export function subPageLayout(title: string, children: any) {
               <a href="/about">병원 소개</a>
               <a href="/visit">내원 안내</a>
               <a href="tel:051-206-5888">전화 상담</a>
+              <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener">카카오톡 상담</a>
             </div>
           </div>
           <div class="footer-biz-info">
@@ -110,10 +119,15 @@ export function subPageLayout(title: string, children: any) {
         </div>
       </footer>
 
-      {/* Floating CTA */}
-      <a href="tel:051-206-5888" class="floating-call visible" id="floatingCall" data-hover aria-label="이음치과 전화상담 051-206-5888">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </a>
+      {/* Floating CTA Group */}
+      <div class="floating-cta-group visible" id="floatingCtaGroup">
+        <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="floating-btn floating-kakao" data-hover aria-label="카카오톡 상담">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+        </a>
+        <a href="tel:051-206-5888" class="floating-btn floating-call visible" id="floatingCall" data-hover aria-label="전화 상담">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </a>
+      </div>
 
       <script src="/static/app.js"></script>
       <script src="/static/sub.js"></script>

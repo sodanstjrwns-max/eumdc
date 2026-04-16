@@ -588,13 +588,16 @@
      ═══════════════════════════════════════════ */
   function initFloatingCall() {
     var btn = document.getElementById('floatingCall');
-    if (!btn) return;
+    var group = document.getElementById('floatingCtaGroup');
+    if (!btn && !group) return;
 
     window.addEventListener('scroll', function () {
       if (window.scrollY > 500) {
-        btn.classList.add('visible');
+        if (group) group.classList.add('visible');
+        if (btn) btn.classList.add('visible');
       } else {
-        btn.classList.remove('visible');
+        if (group) group.classList.remove('visible');
+        if (btn) btn.classList.remove('visible');
       }
     }, { passive: true });
   }
