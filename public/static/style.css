@@ -1951,7 +1951,7 @@ body::after {
 @media (max-width: 768px) {
   .story-text { font-size: clamp(1.3rem, 4.5vw, 2.4rem); }
   .story-text.story-question { font-size: clamp(1.5rem, 5vw, 2.8rem); }
-  .story-text.story-emphasis { font-size: clamp(1.25rem, 4.2vw, 2rem); }
+  .story-text.story-emphasis { font-size: clamp(1rem, 3vw, 1.5rem) !important; font-weight: 600 !important; }
   .story-text.story-finale { font-size: clamp(2.4rem, 9vw, 5rem); }
   .story-text.story-turn { font-size: clamp(2rem, 6.5vw, 4rem); }
   .story-text.story-solo { font-size: clamp(1.8rem, 5vw, 3.5rem); }
@@ -1959,7 +1959,7 @@ body::after {
 }
 @media (max-width: 480px) {
   .story-line { min-height: 80vh; min-height: 80dvh; padding: 2rem 1.5rem; }
-  .story-text.story-emphasis { font-size: clamp(1.1rem, 4vw, 1.6rem); }
+  .story-text.story-emphasis { font-size: clamp(0.95rem, 2.8vw, 1.3rem) !important; font-weight: 600 !important; }
   .story-stats-inner { flex-direction: column; gap: 1.5rem; }
   .story-stats-inner .hero-stat-divider { display: none; }
   .story-chapter-num { display: none; }
@@ -8752,6 +8752,11 @@ img[loading="lazy"] {
     font-size: clamp(1rem, 3.2vw, 1.3rem) !important;
     line-height: 1.9 !important;
     letter-spacing: 0.01em;
+  }
+  .story-text.story-emphasis {
+    font-size: clamp(1rem, 3vw, 1.5rem) !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
   }
   /* Story hero content */
   .story-hero-content {
