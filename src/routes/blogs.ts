@@ -71,11 +71,25 @@ blogs.post('/api/admin/blogs', async (c) => {
   return c.json({ id: blogId }, 201)
 })
 
-// Update blog
+// Update blog (partial update supported)
 blogs.put('/api/admin/blogs/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, content, content_html, thumbnail, images, is_published, meta_title, meta_description, slug, author_name, doctor_id } = body
+
+  // Fetch existing record for partial update
+  const existing = await c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first() as any
+  if (!existing) return c.notFound()
+
+  const title = body.title ?? existing.title
+  const content = body.content ?? existing.content
+  const content_html = body.content_html ?? existing.content_html
+  const thumbnail = body.thumbnail ?? existing.thumbnail
+  const meta_title = body.meta_title ?? existing.meta_title
+  const meta_description = body.meta_description ?? existing.meta_description
+  const slug = body.slug ?? existing.slug
+  const author_name = body.author_name ?? existing.author_name ?? '최효영'
+  const doctor_id = body.doctor_id ?? existing.doctor_id
+  const is_published = body.is_published ?? existing.is_published
 
   await c.env.DB.prepare(
     `UPDATE blogs SET title=?, content=?, content_html=?, thumbnail=?,
@@ -88,13 +102,13 @@ blogs.put('/api/admin/blogs/:id', async (c) => {
     is_published ?? 1, id
   ).run()
 
-  // Replace images
-  if (images !== undefined) {
+  // Replace images if provided
+  if (body.images !== undefined) {
     await c.env.DB.prepare('DELETE FROM blog_images WHERE blog_id = ?').bind(id).run()
-    for (let i = 0; i < images.length; i++) {
+    for (let i = 0; i < body.images.length; i++) {
       await c.env.DB.prepare(
         'INSERT INTO blog_images (blog_id, image_url, sort_order) VALUES (?, ?, ?)'
-      ).bind(id, images[i], i).run()
+      ).bind(id, body.images[i], i).run()
     }
   }
 

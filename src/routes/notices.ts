@@ -47,7 +47,8 @@ notices.get('/api/admin/notices', async (c) => {
 // Create notice (with thumbnail + images)
 notices.post('/api/admin/notices', async (c) => {
   const body = await c.req.json()
-  const { title, content, is_pinned, thumbnail, images } = body
+  const { title, content, thumbnail, images } = body
+  const is_pinned = body.is_pinned ?? body.pinned ?? 0
 
   // Generate content_html from content
   const contentHtml = (content || '').split('\n').filter((l: string) => l.trim()).map((l: string) => `<p>${l}</p>`).join('\n')
@@ -70,11 +71,20 @@ notices.post('/api/admin/notices', async (c) => {
   return c.json({ id: noticeId }, 201)
 })
 
-// Update notice
+// Update notice (partial update supported)
 notices.put('/api/admin/notices/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, content, is_pinned, is_published, thumbnail, images } = body
+
+  // Fetch existing record for partial update
+  const existing = await c.env.DB.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first() as any
+  if (!existing) return c.notFound()
+
+  const title = body.title ?? existing.title
+  const content = body.content ?? existing.content
+  const is_pinned = body.is_pinned ?? body.pinned ?? existing.is_pinned
+  const is_published = body.is_published ?? existing.is_published
+  const thumbnail = body.thumbnail ?? existing.thumbnail
 
   const contentHtml = (content || '').split('\n').filter((l: string) => l.trim()).map((l: string) => `<p>${l}</p>`).join('\n')
 
@@ -83,12 +93,12 @@ notices.put('/api/admin/notices/:id', async (c) => {
   ).bind(title, content, contentHtml, thumbnail || null, is_pinned ? 1 : 0, is_published ?? 1, id).run()
 
   // Replace images if provided
-  if (images !== undefined) {
+  if (body.images !== undefined) {
     await c.env.DB.prepare('DELETE FROM notice_images WHERE notice_id = ?').bind(id).run()
-    for (let i = 0; i < images.length; i++) {
+    for (let i = 0; i < body.images.length; i++) {
       await c.env.DB.prepare(
         'INSERT INTO notice_images (notice_id, image_url, sort_order) VALUES (?, ?, ?)'
-      ).bind(id, images[i], i).run()
+      ).bind(id, body.images[i], i).run()
     }
   }
 

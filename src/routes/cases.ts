@@ -85,13 +85,33 @@ cases.post('/api/admin/cases', async (c) => {
   return c.json({ id: result.meta.last_row_id }, 201)
 })
 
-// Update case
+// Update case (partial update supported)
 cases.put('/api/admin/cases/:id', async (c) => {
   const id = c.req.param('id')
   const body = await c.req.json()
-  const { title, category, description, pano_before, pano_after, intra_before, intra_after, is_published,
-    patient_consent, patient_initials, treatment_date, tags,
-    patient_age_group, patient_gender, region_text, doctor_id, treatment_duration, treatment_id } = body
+
+  // Fetch existing record for partial update
+  const existing = await c.env.DB.prepare('SELECT * FROM cases WHERE id = ?').bind(id).first() as any
+  if (!existing) return c.notFound()
+
+  const title = body.title ?? existing.title
+  const category = body.category ?? existing.category
+  const description = body.description ?? existing.description
+  const pano_before = body.pano_before ?? existing.pano_before
+  const pano_after = body.pano_after ?? existing.pano_after
+  const intra_before = body.intra_before ?? existing.intra_before
+  const intra_after = body.intra_after ?? existing.intra_after
+  const patient_consent = body.patient_consent ?? existing.patient_consent
+  const patient_initials = body.patient_initials ?? existing.patient_initials
+  const treatment_date = body.treatment_date ?? existing.treatment_date
+  const tags = body.tags ?? (existing.tags ? JSON.parse(existing.tags) : [])
+  const patient_age_group = body.patient_age_group ?? existing.patient_age_group
+  const patient_gender = body.patient_gender ?? existing.patient_gender
+  const region_text = body.region_text ?? existing.region_text
+  const doctor_id = body.doctor_id ?? existing.doctor_id
+  const treatment_duration = body.treatment_duration ?? existing.treatment_duration
+  const treatment_id = body.treatment_id ?? existing.treatment_id
+  const is_published = body.is_published ?? existing.is_published
 
   await c.env.DB.prepare(
     `UPDATE cases SET title=?, category=?, description=?, pano_before=?, pano_after=?, intra_before=?, intra_after=?,
