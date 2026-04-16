@@ -29,8 +29,16 @@
 
     document.body.classList.add('gsap-active');
 
+    // Mobile: reduce ScrollTrigger overhead
+    var isMobileDevice = window.innerWidth <= 768;
+    ScrollTrigger.config({
+      limitCallbacks: true, // Reduce callback overhead
+      ignoreMobileResize: true // Don't recalculate on address bar show/hide
+    });
+
     ScrollTrigger.defaults({
-      toggleActions: 'play none none none'
+      toggleActions: 'play none none none',
+      fastScrollEnd: isMobileDevice ? true : false // Quick cleanup on fast scroll
     });
 
     // Respect prefers-reduced-motion
@@ -82,12 +90,29 @@
       initGlassShimmerOnScroll(); // Glass effects desktop
       initParallaxDepthCards(); // Heavy transforms
     }
-    initSplitTextReveal();
+    if (!isMobile) {
+      initSplitTextReveal(); // Character splitting expensive on mobile
+    }
     initCardChoreography();
     initNavMicroInteraction();
     initStatsBounce();
     if (!isMobile) {
       initSectionDividers();
+    }
+
+    // Mobile: Ensure all data-reveal elements are visible (no waiting for animations)
+    if (isMobile) {
+      setTimeout(function() {
+        document.querySelectorAll('[data-reveal]:not(.visible)').forEach(function(el) {
+          el.classList.add('visible');
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        });
+        document.querySelectorAll('.story-text:not(.visible)').forEach(function(el) {
+          el.classList.add('visible');
+          el.style.opacity = '1';
+        });
+      }, 500);
     }
 
     console.log('[EUM] Cinematic Engine v4 initialized' + (isMobile ? ' (mobile-lite)' : ''));

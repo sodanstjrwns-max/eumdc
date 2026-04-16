@@ -456,16 +456,34 @@
       }
     }, { passive: false });
 
-    // Touch
+    // Touch — Enhanced with velocity + snap
     var touchStartX = 0, touchScrollLeft = 0;
+    var touchLastX = 0, touchVelocity = 0, touchMomentum = null;
     wrap.addEventListener('touchstart', function (e) {
       touchStartX = e.touches[0].pageX;
+      touchLastX = touchStartX;
       touchScrollLeft = wrap.scrollLeft;
+      touchVelocity = 0;
+      if (touchMomentum) cancelAnimationFrame(touchMomentum);
     }, { passive: true });
 
     wrap.addEventListener('touchmove', function (e) {
-      var x = e.touches[0].pageX - touchStartX;
+      var curX = e.touches[0].pageX;
+      touchVelocity = curX - touchLastX;
+      touchLastX = curX;
+      var x = curX - touchStartX;
       wrap.scrollLeft = touchScrollLeft - x;
+    }, { passive: true });
+
+    wrap.addEventListener('touchend', function () {
+      // Momentum scroll after release
+      function decelerate() {
+        if (Math.abs(touchVelocity) < 0.5) return;
+        touchVelocity *= 0.92;
+        wrap.scrollLeft -= touchVelocity;
+        touchMomentum = requestAnimationFrame(decelerate);
+      }
+      decelerate();
     }, { passive: true });
   }
 
