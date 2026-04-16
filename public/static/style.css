@@ -1951,6 +1951,7 @@ body::after {
 @media (max-width: 768px) {
   .story-text { font-size: clamp(1.3rem, 4.5vw, 2.4rem); }
   .story-text.story-question { font-size: clamp(1.5rem, 5vw, 2.8rem); }
+  .story-text.story-emphasis { font-size: clamp(1.25rem, 4.2vw, 2rem); }
   .story-text.story-finale { font-size: clamp(2.4rem, 9vw, 5rem); }
   .story-text.story-turn { font-size: clamp(2rem, 6.5vw, 4rem); }
   .story-text.story-solo { font-size: clamp(1.8rem, 5vw, 3.5rem); }
@@ -1958,6 +1959,7 @@ body::after {
 }
 @media (max-width: 480px) {
   .story-line { min-height: 80vh; min-height: 80dvh; padding: 2rem 1.5rem; }
+  .story-text.story-emphasis { font-size: clamp(1.1rem, 4vw, 1.6rem); }
   .story-stats-inner { flex-direction: column; gap: 1.5rem; }
   .story-stats-inner .hero-stat-divider { display: none; }
   .story-chapter-num { display: none; }
