@@ -63,9 +63,8 @@ app.use('*', async (c, next) => {
 app.use(renderer)
 app.use('/api/*', cors())
 
-// === Auth routes ===
+// === Auth routes (public, before admin middleware) ===
 app.route('', authRoutes)
-app.route('', usersRoutes)
 app.route('', uploadRoutes)
 
 // === Admin auth middleware ===
@@ -85,7 +84,8 @@ app.use('/api/admin/reservations/*', requireAdmin())
 app.use('/api/admin/doctors', requireAdmin())
 app.use('/api/admin/doctors/*', requireAdmin())
 
-// === API routes ===
+// === API routes (after admin middleware) ===
+app.route('', usersRoutes)     // Contains /api/admin/users, /api/admin/stats (protected above)
 app.route('', casesRoutes)
 app.route('', blogsRoutes)
 app.route('', noticesRoutes)
