@@ -2325,17 +2325,34 @@ html body nav .nav-kakao {
   font-weight: 500 !important;
 }
 
-/* Story 섹션 밑줄·언더라인·hr */
+/* Story 섹션 밑줄·언더라인·hr (배경색 적용 — 진짜 선/바 요소만) */
 .story-underline,
 .story-divider,
 .underline-accent,
 .accent-line,
-section hr,
-.pillars-title em {
+section hr {
   background: #7EA8BE !important;
   background-color: #7EA8BE !important;
   border-color: #7EA8BE !important;
   color: #7EA8BE !important;
+}
+
+/* em 강조어는 배경 없이 텍스트만 Mist Blue */
+.pillars-title em,
+h1 em, h2 em, h3 em,
+.section-title em,
+.story-title em {
+  background: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #7EA8BE !important;
+  -webkit-text-fill-color: #7EA8BE !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  font-style: italic !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  display: inline !important;
 }
 
 /* Stats 섹션 — 네이비 배경에 Mist Blue 숫자 */
