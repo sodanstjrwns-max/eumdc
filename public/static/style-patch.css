@@ -2081,3 +2081,29 @@
 }
 
 /* End v7 ═══════════════════════════════════════ */
+
+/* ─── STATS GSAP BLUR OVERRIDE v8 — inline filter:blur 제거 ─── */
+.story-stats .hero-stat,
+.story-stats .hero-stat.visible,
+.story-stats [data-reveal],
+.story-stats [data-reveal].visible {
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  translate: none !important;
+  rotate: none !important;
+  scale: none !important;
+}
+
+.story-stats .hero-stat-num,
+.story-stats .hero-stat-unit,
+.story-stats .hero-stat-label,
+.story-stats .hero-stat span {
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+  translate: none !important;
+  visibility: visible !important;
+}
+
+/* End v8 ═════════════════════════════════════ */
