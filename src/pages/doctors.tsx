@@ -35,12 +35,20 @@ export function doctorsPage(doctors?: any[]) {
                       <h2 class="doctor-grid-name">
                         {d.name} <span class="doctor-grid-title">{d.title || '원장'}</span>
                       </h2>
-                      {d.specialty && <p class="doctor-grid-specialty">{d.specialty}</p>}
+                      {d.position && <p class="doctor-grid-specialty">{d.position}</p>}
                       {d.greeting && (
                         <p class="doctor-grid-greeting">
                           {d.greeting.substring(0, 100)}{d.greeting.length > 100 ? '…' : ''}
                         </p>
                       )}
+                      {(() => {
+                        const specs = parseList(d.specialties)
+                        return specs.length > 0 ? (
+                          <div class="doctor-grid-tags">
+                            {specs.slice(0, 4).map((s: string) => <span class="doctor-grid-tag">{s}</span>)}
+                          </div>
+                        ) : null
+                      })()}
                       <span class="doctor-grid-more">프로필 자세히 →</span>
                     </div>
                   </a>
@@ -72,10 +80,12 @@ export function doctorDetailPage(slug: string, doctor?: any) {
   }
 
   const greetingHtml = markdownToHtml(doctor.greeting || '')
-  // 경력/학력/자격 파싱 (JSON 배열 또는 줄바꿈 문자열)
+  const philosophyHtml = doctor.philosophy ? markdownToHtml(doctor.philosophy) : ''
+  // 경력/학력/자격/학회 파싱 (JSON 배열 또는 줄바꿈 문자열)
   const career = parseList(doctor.career)
   const education = parseList(doctor.education)
   const certifications = parseList(doctor.certifications)
+  const memberships = parseList(doctor.memberships)
   const specialties = parseList(doctor.specialty_list || doctor.specialties)
 
   return subPageLayout('DOCTOR', (
@@ -104,7 +114,8 @@ export function doctorDetailPage(slug: string, doctor?: any) {
                 {doctor.name}
                 <span class="doctor-profile-title">{doctor.title || '원장'}</span>
               </h1>
-              {doctor.specialty && <p class="doctor-profile-specialty">{doctor.specialty}</p>}
+              {doctor.position && <p class="doctor-profile-specialty">{doctor.position}</p>}
+              {doctor.name_en && <p class="doctor-profile-name-en">{doctor.name_en}</p>}
               {specialties.length > 0 && (
                 <div class="doctor-profile-tags">
                   {specialties.map((s: string) => <span class="doctor-tag">{s}</span>)}
@@ -113,12 +124,15 @@ export function doctorDetailPage(slug: string, doctor?: any) {
               {doctor.greeting && (
                 <div class="doctor-profile-greeting rich-content" dangerouslySetInnerHTML={{ __html: greetingHtml }} />
               )}
+              {philosophyHtml && (
+                <div class="doctor-profile-philosophy rich-content" dangerouslySetInnerHTML={{ __html: philosophyHtml }} />
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {(education.length > 0 || career.length > 0 || certifications.length > 0) && (
+      {(education.length > 0 || career.length > 0 || certifications.length > 0 || memberships.length > 0) && (
         <section class="doctor-profile-details">
           <div class="container-wide">
             <div class="doctor-details-grid">
@@ -143,6 +157,14 @@ export function doctorDetailPage(slug: string, doctor?: any) {
                   <h2 class="detail-heading">자격·면허</h2>
                   <ul class="detail-list">
                     {certifications.map((item: string) => <li>{item}</li>)}
+                  </ul>
+                </div>
+              )}
+              {memberships.length > 0 && (
+                <div class="doctor-detail-block">
+                  <h2 class="detail-heading">소속 학회</h2>
+                  <ul class="detail-list">
+                    {memberships.map((item: string) => <li>{item}</li>)}
                   </ul>
                 </div>
               )}

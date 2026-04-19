@@ -11823,3 +11823,40 @@ body.gsap-active .doctor-grid-item {
   .doctor-profile-name { font-size: 1.6rem; }
   .doctor-profile-photo { max-width: 280px; }
 }
+
+/* ---------- Doctor Extra Fields (v5.1) ---------- */
+.doctor-grid-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+.doctor-grid-tag {
+  background: rgba(184, 150, 90, 0.1);
+  border: 1px solid rgba(184, 150, 90, 0.25);
+  color: #8a6e3f;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+.doctor-profile-name-en {
+  font-size: 0.85rem;
+  color: rgba(15, 27, 45, 0.5);
+  font-style: italic;
+  letter-spacing: 0.04em;
+  margin: -4px 0 16px;
+  font-weight: 400;
+}
+.doctor-profile-philosophy.rich-content {
+  margin-top: 20px;
+  font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+  line-height: 1.85;
+  color: rgba(15, 27, 45, 0.75);
+  padding: 20px 24px;
+  background: rgba(184, 150, 90, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(184, 150, 90, 0.15);
+}
+.doctor-profile-philosophy.rich-content p { margin: 0 0 10px; }
+.doctor-profile-philosophy.rich-content p:last-child { margin-bottom: 0; }
