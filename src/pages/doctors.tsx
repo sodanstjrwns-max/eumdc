@@ -204,6 +204,61 @@ export function doctorDetailPage(slug: string, doctor?: any) {
           </div>
         </section>
       )}
+
+      {/* ── 저서 섹션 (choi-hyoyoung 원장 전용) ── */}
+      {doctor.slug === 'choi-hyoyoung' && (
+        <section class="doctor-book-section" aria-labelledby="book-heading">
+          <div class="container-wide">
+            <div class="doctor-book-wrap">
+              <div class="doctor-book-cover">
+                <img
+                  src="/static/book-cover.jpg"
+                  alt="최효영 원장 저서 '치과가 두렵지 않으면 좋겠습니다' 표지"
+                  loading="lazy"
+                  width="420"
+                  height="594"
+                />
+              </div>
+              <div class="doctor-book-meta">
+                <span class="section-label">PUBLISHED WORK</span>
+                <h2 id="book-heading" class="doctor-book-title">치과가 두렵지 않으면 좋겠습니다</h2>
+                <p class="doctor-book-subtitle">설명으로 안심하고, 실력으로 다시 찾는 치과의 기록</p>
+                <p class="doctor-book-author">최효영 지음 · 이음치과의원</p>
+
+                <div class="doctor-book-desc rich-content">
+                  <p>
+                    <em>"아프지 않으니까 괜찮겠지", "얼마 나올지 몰라서 불안해요", "설명을 잘 못 들었어요."</em>
+                  </p>
+                  <p>
+                    진료실에서 매일 듣는 말들입니다. 이 책은 그 말들에서 시작됐습니다.
+                  </p>
+                  <p>
+                    칫솔 하나 고르는 법부터 임플란트 수술 후 관리까지, 치과에 오시면
+                    한 번쯤 마주치게 되는 주제들을 최대한 쉽고 솔직하게 풀었습니다.
+                    어떤 치료가 왜 필요한지, 지금 치료하지 않으면 어떻게 되는지,
+                    그리고 이음치과가 어떤 기준으로 진료를 결정하는지를 담았습니다.
+                  </p>
+                  <p>
+                    읽고 나서 <strong>"아, 이래서 그런 말을 했구나"</strong> 라고
+                    이해되신다면 충분합니다.
+                  </p>
+                </div>
+
+                <div class="doctor-book-badges">
+                  <span class="book-badge">비매품</span>
+                  <span class="book-badge">소량 제작</span>
+                  <span class="book-badge">원내 소장용</span>
+                </div>
+
+                <p class="doctor-book-note">
+                  ※ 정식 출판물이 아닌 내원 환자분들께 드리는 소량 제작본입니다.
+                  내원 시 대기실에서 자유롭게 열람하실 수 있습니다.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
     </div>
   ))
 }

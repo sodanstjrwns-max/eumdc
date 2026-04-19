@@ -165,7 +165,24 @@ export function personJsonLd() {
       { '@type': 'Organization', name: '대한치과보철학회' },
       { '@type': 'Organization', name: '대한치과보존학회' }
     ],
-    knowsAbout: ['임플란트', '심미보철', '턱관절치료', '디지털치과']
+    knowsAbout: ['임플란트', '심미보철', '턱관절치료', '디지털치과'],
+    // 저서 — E-E-A-T (Expertise & Authoritativeness) 강화
+    hasOccupation: {
+      '@type': 'Occupation',
+      name: '치과의사',
+      occupationalCategory: 'Dentist'
+    },
+    workExample: {
+      '@type': 'Book',
+      name: '치과가 두렵지 않으면 좋겠습니다',
+      alternateName: '설명으로 안심하고, 실력으로 다시 찾는 치과의 기록',
+      author: { '@type': 'Person', name: '최효영' },
+      publisher: { '@type': 'Organization', name: SITE_NAME },
+      inLanguage: 'ko',
+      image: `${SITE_URL}/static/book-cover.jpg`,
+      abstract: '진료실에서 매일 듣는 환자들의 질문과 불안에서 시작된 책. 칫솔 선택부터 임플란트 후 관리까지 치과에서 마주치는 주제를 쉽고 솔직하게 풀어낸 환자 교육용 소량 제작본입니다.',
+      bookFormat: 'Paperback'
+    }
   }
 }
 
@@ -596,6 +613,20 @@ export function doctorJsonLd(doctor: any) {
       memberOf: membershipsArr.map((m: any) => ({
         '@type': 'Organization', name: typeof m === 'string' ? m : (m.org || m.name || '')
       }))
+    } : {}),
+    // 저서 (최효영 원장 전용) — E-E-A-T 권위성 강화
+    ...(doctor.slug === 'choi-hyoyoung' ? {
+      workExample: {
+        '@type': 'Book',
+        name: '치과가 두렵지 않으면 좋겠습니다',
+        alternateName: '설명으로 안심하고, 실력으로 다시 찾는 치과의 기록',
+        author: { '@type': 'Person', name: doctor.name },
+        publisher: { '@type': 'Organization', name: SITE_NAME },
+        inLanguage: 'ko',
+        image: `${SITE_URL}/static/book-cover.jpg`,
+        abstract: '진료실에서 매일 듣는 환자들의 질문과 불안에서 시작된 책. 칫솔 선택부터 임플란트 후 관리까지 치과에서 마주치는 주제를 쉽고 솔직하게 풀어낸 환자 교육용 소량 제작본입니다.',
+        bookFormat: 'Paperback'
+      }
     } : {})
   }
 }
