@@ -11860,3 +11860,138 @@ body.gsap-active .doctor-grid-item {
 }
 .doctor-profile-philosophy.rich-content p { margin: 0 0 10px; }
 .doctor-profile-philosophy.rich-content p:last-child { margin-bottom: 0; }
+
+/* ========================================================================
+   🩺 DOCTOR DETAIL — Timeline & Membership lists (v5.2)
+   ======================================================================== */
+
+/* Timeline (학력·경력·자격) */
+.timeline-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.timeline-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 18px;
+  align-items: start;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 66px;
+  top: 6px;
+  bottom: -16px;
+  width: 1px;
+  background: rgba(184, 150, 90, 0.25);
+}
+.timeline-item:last-child::before { display: none; }
+
+.timeline-year {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #b8965a;
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+  white-space: nowrap;
+  position: relative;
+}
+.timeline-year::after {
+  content: '';
+  position: absolute;
+  right: -11px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 2px solid #b8965a;
+  z-index: 1;
+}
+.timeline-item:not(:has(.timeline-year))::before,
+.timeline-body:only-child::before {
+  display: none;
+}
+
+.timeline-body {
+  padding-left: 8px;
+}
+.timeline-primary {
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: #0F1B2D;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+.timeline-sub {
+  font-size: 0.85rem;
+  color: rgba(15, 27, 45, 0.65);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* Membership list (소속 학회) */
+.membership-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.membership-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(184, 150, 90, 0.06);
+  border: 1px solid rgba(184, 150, 90, 0.15);
+  border-radius: 10px;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.membership-item:hover {
+  background: rgba(184, 150, 90, 0.1);
+  border-color: rgba(184, 150, 90, 0.3);
+}
+.membership-org {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #0F1B2D;
+  flex: 1;
+}
+.membership-role {
+  font-size: 0.78rem;
+  color: #8a6e3f;
+  font-weight: 500;
+  padding: 3px 10px;
+  background: rgba(184, 150, 90, 0.12);
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Mobile timeline */
+@media (max-width: 480px) {
+  .timeline-item {
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+  }
+  .timeline-item::before { left: 55px; }
+  .timeline-year::after { right: -9px; }
+  .timeline-year { font-size: 0.78rem; }
+  .timeline-primary { font-size: 0.9rem; }
+  .timeline-sub { font-size: 0.8rem; }
+
+  .membership-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px;
+  }
+}
