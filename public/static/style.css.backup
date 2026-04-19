@@ -26,10 +26,10 @@
   --white-muted: rgba(15, 27, 45, 0.4);
   --white-ghost: rgba(15, 27, 45, 0.08);
 
-  /* Accent = Mist Blue (서울비디치과 최효영 원장님 선호 컬러 시스템) */
-  --gold: #7EA8BE;
-  --gold-bright: #A8C4D4;
-  --gold-dim: rgba(126, 168, 190, 0.1);
+  /* Accent = Navy blue tones */
+  --gold: #1B3A5C;
+  --gold-bright: #2A5A8F;
+  --gold-dim: rgba(27, 58, 92, 0.08);
   --navy: #0F1B2D;
   --navy-light: #1B3A5C;
 

@@ -54,9 +54,9 @@
 .hero .title-line.accent .title-word {
   -webkit-text-stroke: 0 !important;
   background: linear-gradient(180deg,
-    #A8C4D4 0%,
-    #7EA8BE 30%,
-    #5E8BA3 70%,
+    #F4DCA0 0%,
+    #E8C77A 30%,
+    #C9A35E 70%,
     #8A6E3F 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -82,7 +82,7 @@
   display: block;
   width: 60px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(126, 168, 190, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(232, 199, 122, 0.6), transparent);
   margin: 0.8em auto 0;
 }
 
@@ -95,12 +95,12 @@
 /* hero-tag 텍스트 — 골드 톤으로 통일 (어두운 navy는 안 보임) */
 .story-hero .tag-text,
 .hero .tag-text {
-  color: #7EA8BE !important;
+  color: #E8C77A !important;
   opacity: 0.9;
 }
 .story-hero .tag-line,
 .hero .tag-line {
-  background: linear-gradient(90deg, transparent, #7EA8BE 50%, transparent) !important;
+  background: linear-gradient(90deg, transparent, #E8C77A 50%, transparent) !important;
   opacity: 0.6;
 }
 
@@ -124,9 +124,9 @@
 }
 #nav:not(.scrolled) .nav-booking:hover,
 #nav:not(.scrolled) .nav-menu-btn:hover {
-  background: rgba(126, 168, 190, 0.95);
+  background: rgba(232, 199, 122, 0.95);
   color: #0F1B2D !important;
-  border-color: #7EA8BE !important;
+  border-color: #E8C77A !important;
 }
 
 /* Scrolled 상태 — 흰 배경에서 navy 텍스트가 정확히 보이게 */
@@ -311,7 +311,7 @@
   width: 72px;
   height: 72px;
   margin: 0 auto 1.5rem;
-  background: linear-gradient(135deg, #7EA8BE 0%, #5E8BA3 100%);
+  background: linear-gradient(135deg, #E8C77A 0%, #B8965A 100%);
   border-radius: 50%;
   opacity: 0.15;
   position: relative;
@@ -323,7 +323,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 2.2rem;
-  color: #5E8BA3;
+  color: #B8965A;
   opacity: 0.6;
 }
 .empty-state p {
@@ -385,7 +385,7 @@
   font-family: var(--font-en, 'DM Serif Display', serif);
   font-size: 6rem;
   line-height: 1;
-  color: rgba(126, 168, 190, 0.35);
+  color: rgba(232, 199, 122, 0.35);
   position: absolute;
   top: -1rem;
   left: 50%;
@@ -408,14 +408,14 @@
   position: absolute;
   top: 0; left: 0; right: 0; bottom: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(126, 168, 190, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 20% 30%, rgba(232, 199, 122, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 80% 70%, rgba(42, 90, 143, 0.4) 0%, transparent 50%);
   pointer-events: none;
 }
 .page-hero-mini > .container-wide { position: relative; z-index: 1; }
 
 .page-hero-mini .section-label.light {
-  color: #7EA8BE !important;
+  color: #E8C77A !important;
   letter-spacing: 0.3em;
   font-size: 0.72rem;
   font-weight: 600;
@@ -501,7 +501,7 @@
 @media (min-width: 1024px) {
   .story-hero::after,
   .hero::after {
-    color: rgba(126, 168, 190, 0.25) !important;
+    color: rgba(232, 199, 122, 0.25) !important;
   }
 }
 
@@ -576,9 +576,9 @@
   height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    rgba(126, 168, 190, 0.06) 20%,
-    rgba(126, 168, 190, 0.16) 50%,
-    rgba(126, 168, 190, 0.06) 80%,
+    rgba(232, 199, 122, 0.06) 20%,
+    rgba(232, 199, 122, 0.16) 50%,
+    rgba(232, 199, 122, 0.06) 80%,
     transparent 100%);
   opacity: 0.6;
 }
@@ -589,7 +589,7 @@
   top: -3px;
   width: 6px;
   height: 6px;
-  border: 1px solid rgba(126, 168, 190, 0.4);
+  border: 1px solid rgba(232, 199, 122, 0.4);
   border-radius: 50%;
   background: #0A1220;
 }
@@ -643,7 +643,7 @@
   display: inline-block;
   width: 1.2em;
   height: 1px;
-  background: rgba(126, 168, 190, 0.6);
+  background: rgba(232, 199, 122, 0.6);
   margin-right: 0.7em;
   transform: translateY(-0.3em);
 }
@@ -722,9 +722,9 @@
   -webkit-backdrop-filter: blur(6px);
 }
 .hero-cta-ghost:hover {
-  color: #A8C4D4 !important;
-  border-color: rgba(126, 168, 190, 0.6) !important;
-  background: rgba(126, 168, 190, 0.06) !important;
+  color: #F4DCA0 !important;
+  border-color: rgba(232, 199, 122, 0.6) !important;
+  background: rgba(232, 199, 122, 0.06) !important;
   transform: translateY(-2px);
 }
 
@@ -779,7 +779,7 @@
 .hero-proof-plus,
 .hero-proof-unit {
   font-size: 0.7em;
-  color: rgba(126, 168, 190, 0.9);
+  color: rgba(232, 199, 122, 0.9);
   margin-left: 0.1em;
   font-style: italic;
 }
@@ -1289,11 +1289,11 @@
 .hero-cta-wrap .hero-cta-ghost svg { stroke: #FFFFFF !important; opacity: 0.9; }
 .hero-cta-wrap .hero-cta-ghost:hover {
   background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(126, 168, 190, 0.85) !important;
-  color: #A8C4D4 !important;
+  border-color: rgba(232, 199, 122, 0.85) !important;
+  color: #F4DCA0 !important;
   transform: translateY(-2px);
 }
-.hero-cta-wrap .hero-cta-ghost:hover svg { stroke: #A8C4D4 !important; }
+.hero-cta-wrap .hero-cta-ghost:hover svg { stroke: #F4DCA0 !important; }
 
 /* 카카오 — 이미 노란색이지만 한번 더 강제 (구버전 덮개 방지) */
 .hero-cta-wrap .hero-cta-kakao,
@@ -1396,7 +1396,7 @@
   font-weight: 700 !important;
   line-height: 1 !important;
   letter-spacing: -0.02em !important;
-  background: linear-gradient(180deg, #A8C4D4 0%, #7EA8BE 50%, #5E8BA3 100%) !important;
+  background: linear-gradient(180deg, #FFE9A8 0%, #F4C870 50%, #D4A64A 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   color: transparent !important;
@@ -1409,10 +1409,10 @@
 
 .hero-proof-star {
   font-size: 1.1rem !important;
-  color: #7EA8BE !important;
+  color: #F4C870 !important;
   margin-right: 0.25rem !important;
   display: inline-block !important;
-  text-shadow: 0 0 12px rgba(126, 168, 190,0.6) !important;
+  text-shadow: 0 0 12px rgba(244,200,112,0.6) !important;
 }
 
 .hero-proof-plus,
@@ -1538,7 +1538,7 @@
   padding: 0 1.5rem !important;
 }
 .marquee-band.dark .marquee-track span {
-  color: rgba(126, 168, 190,0.55) !important;
+  color: rgba(244,200,112,0.55) !important;
 }
 
 @media (max-width: 768px) {
@@ -1804,7 +1804,7 @@
 }
 
 .hero-subcopy-accent {
-  color: #7EA8BE !important;
+  color: #F4C870 !important;
   font-weight: 600 !important;
 }
 
@@ -1814,22 +1814,22 @@
 .floating-cta-group .floating-call {
   background: linear-gradient(135deg, #1a2d4a 0%, #0F1B2D 100%) !important;
   color: #FFFFFF !important;
-  border: 1.5px solid rgba(126, 168, 190,0.35) !important;
+  border: 1.5px solid rgba(244,200,112,0.35) !important;
   box-shadow: 
     0 6px 20px rgba(15,27,45,0.35),
     0 2px 6px rgba(15,27,45,0.25) !important;
 }
 .floating-cta-group .floating-call:hover {
   background: linear-gradient(135deg, #2a4068 0%, #1a2d4a 100%) !important;
-  border-color: rgba(126, 168, 190,0.6) !important;
+  border-color: rgba(244,200,112,0.6) !important;
   box-shadow: 
     0 10px 28px rgba(15,27,45,0.45),
-    0 3px 10px rgba(126, 168, 190,0.3) !important;
+    0 3px 10px rgba(244,200,112,0.3) !important;
 }
 .floating-cta-group .floating-call svg,
 .floating-cta-group .floating-call path {
-  stroke: #7EA8BE !important;
-  color: #7EA8BE !important;
+  stroke: #F4C870 !important;
+  color: #F4C870 !important;
 }
 
 /* End of FLOATING CTA polish ═══════════════════════════════════════ */
@@ -1854,7 +1854,7 @@
   position: absolute !important;
   inset: 0 !important;
   background: 
-    radial-gradient(ellipse 50% 80% at 50% 50%, rgba(126, 168, 190,0.06) 0%, transparent 70%) !important;
+    radial-gradient(ellipse 50% 80% at 50% 50%, rgba(244,200,112,0.06) 0%, transparent 70%) !important;
   pointer-events: none !important;
 }
 
@@ -1888,12 +1888,12 @@
   font-weight: 700 !important;
   line-height: 1 !important;
   letter-spacing: -0.025em !important;
-  background: linear-gradient(180deg, #A8C4D4 0%, #7EA8BE 50%, #5E8BA3 100%) !important;
+  background: linear-gradient(180deg, #FFE9A8 0%, #F4C870 50%, #D4A64A 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
-  text-shadow: 0 2px 20px rgba(126, 168, 190,0.2) !important;
+  text-shadow: 0 2px 20px rgba(244,200,112,0.2) !important;
   opacity: 1 !important;
 }
 
@@ -1901,7 +1901,7 @@
   font-family: 'Playfair Display', 'Noto Serif KR', serif !important;
   font-size: clamp(1.2rem, 3vw, 1.6rem) !important;
   font-weight: 500 !important;
-  background: linear-gradient(180deg, #7EA8BE 0%, #5E8BA3 100%) !important;
+  background: linear-gradient(180deg, #F4C870 0%, #D4A64A 100%) !important;
   -webkit-background-clip: text !important;
   background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
@@ -1925,8 +1925,8 @@
   height: 60px !important;
   background: linear-gradient(180deg, 
     transparent 0%, 
-    rgba(126, 168, 190,0.3) 30%, 
-    rgba(126, 168, 190,0.3) 70%, 
+    rgba(244,200,112,0.3) 30%, 
+    rgba(244,200,112,0.3) 70%, 
     transparent 100%) !important;
   flex-shrink: 0 !important;
 }
@@ -2140,12 +2140,12 @@
   line-height: 1 !important;
   letter-spacing: -0.02em !important;
   /* 솔리드 골드 - gradient 제거로 가독성 확보 */
-  color: #7EA8BE !important;
+  color: #F4C870 !important;
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
-  -webkit-text-fill-color: #7EA8BE !important;
-  text-shadow: 0 2px 12px rgba(126, 168, 190, 0.3) !important;
+  -webkit-text-fill-color: #F4C870 !important;
+  text-shadow: 0 2px 12px rgba(244, 200, 112, 0.3) !important;
   display: inline-block !important;
   width: auto !important;
   margin: 0 !important;
@@ -2153,7 +2153,7 @@
 .story-stats .hero-stat-unit {
   font-family: 'DM Serif Display', 'Inter', serif !important;
   font-size: clamp(1rem, 3.5vw, 1.4rem) !important;
-  color: #7EA8BE !important;
+  color: #F4C870 !important;
   opacity: 0.8 !important;
   margin-left: 0.15rem !important;
   font-weight: 400 !important;
@@ -2269,7 +2269,7 @@ html body nav .nav-kakao {
 
 /* ╔═══════════════════════════════════════════════════════════════════╗
    ║  MIST BLUE 통합 컬러 시스템 v11                                    ║
-   ║  골드(#7EA8BE) 전면 퇴역 → Mist Blue (#7EA8BE) 통일              ║
+   ║  골드(#F4C870) 전면 퇴역 → Mist Blue (#7EA8BE) 통일              ║
    ║  철학: "진료의 냄새는 쿨톤이다"                                     ║
    ╚═══════════════════════════════════════════════════════════════════╝ */
 
@@ -2294,7 +2294,7 @@ html body nav .nav-kakao {
   --ink-navy: #1E2A3F;
 }
 
-/* ═══ 골드 HEX 직접 타겟 — #7EA8BE (메인 골드) ═══ */
+/* ═══ 골드 HEX 직접 타겟 — #F4C870 (메인 골드) ═══ */
 [style*="F4C870"],
 [style*="f4c870"] {
   color: #7EA8BE !important;
@@ -2516,8 +2516,8 @@ html body .hero-stat-unit,
 }
 
 /* 전역 SVG fill 골드 제거 */
-svg[fill="#7EA8BE"], svg[fill="#7ea8be"],
-path[fill="#7EA8BE"], path[fill="#7ea8be"] {
+svg[fill="#F4C870"], svg[fill="#f4c870"],
+path[fill="#F4C870"], path[fill="#f4c870"] {
   fill: #7EA8BE !important;
 }
 
@@ -2539,24 +2539,3 @@ path[fill="#7EA8BE"], path[fill="#7ea8be"] {
 }
 
 /* End v12 ═══════════════════════════════════════════ */
-
-/* ═══ 플로팅 전화 SVG 골드 완전 제거 v13 ═══ */
-.floating-btn.floating-call,
-.floating-call,
-a.floating-call,
-html body .floating-call {
-  background: linear-gradient(135deg, #1E2A3F 0%, #0F1B2D 100%) !important;
-  border: 1.5px solid rgba(126, 168, 190, 0.4) !important;
-}
-.floating-btn.floating-call svg,
-.floating-call svg,
-.floating-call svg *,
-.floating-call path,
-.floating-call circle,
-html body .floating-call svg,
-html body .floating-call svg path {
-  color: #A8C4D4 !important;
-  fill: #A8C4D4 !important;
-  stroke: #A8C4D4 !important;
-}
-/* End v13 ═══════════════════════════════════ */
