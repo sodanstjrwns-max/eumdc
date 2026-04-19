@@ -93,8 +93,9 @@ export function localBusinessJsonLd() {
     openingHoursSpecification: [
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '12:00', closes: '21:00' },
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday', 'Sunday'], opens: '10:00', closes: '17:00' },
-      // 금요일 정기휴무: Google은 opens/closes 00:00을 비정상으로 인식하므로 제외
-      // 대신 specialOpeningHoursSpecification으로 처리하거나 휴무일은 생략
+      // 금요일 정기휴무: Google 공식 가이드에 따라 opens=closes=00:00으로 명시
+      // (누락 시 "정보 없음"으로 오인될 수 있음)
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '00:00', closes: '00:00' },
     ],
     // 대표원장 (Person)
     founder: personJsonLd(),

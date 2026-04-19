@@ -104,8 +104,8 @@ app.route('', regionsRoutes)
 app.get('/', (c) => {
   return c.render(mainPage(), {
     seo: {
-      title: '이음치과의원 | 부산 명지 임플란트·심미보철',
-      description: '부산 강서구 명지 이음치과. 임플란트·심미보철·턱관절 전문. 월~목 야간 21시, 토·일 진료. ☎ 051-206-5888. 주차 무료.',
+      title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문',
+      description: '부산 강서구 명지국제신도시 이음치과의원. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철, 턱관절(TMJ) 치료 전문. 월~목 야간 21시, 토·일 주말 진료, 금요일 휴무. 네이버 평점 4.9★. ☎ 051-206-5888. 무료주차 2시간.',
       keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
       canonical: SITE_URL,
       ogUrl: SITE_URL,
@@ -135,8 +135,8 @@ app.get('/', (c) => {
 app.get('/treatments', (c) => {
   return c.render(treatmentsPage(), {
     seo: {
-      title: '진료 안내 | 이음치과 전문 진료과목',
-      description: '이음치과 진료과목. 임플란트·심미보철·턱관절·심미레진·충치치료·잇몸치료 등 전문 진료. 투명한 설명, 확실한 결과.',
+      title: '진료 안내 | 이음치과 임플란트·심미보철·턱관절·레진·일반진료',
+      description: '부산 명지 이음치과 진료과목 안내. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철, 턱관절(TMJ), 심미레진, 충치·근관치료, 잇몸치료까지 전문의 시스템. 투명한 설명과 정직한 수가, 확실한 결과를 약속합니다.',
       keywords: '이음치과 진료, 임플란트, 심미보철, 턱관절, 심미레진, 충치치료, 신경치료, 잇몸치료, 소아치과, 부산치과 진료',
       canonical: `${SITE_URL}/treatments`,
       ogUrl: `${SITE_URL}/treatments`,
@@ -208,8 +208,8 @@ app.get('/doctors', async (c) => {
   ).all() as any
   return c.render(doctorsPage(results || []), {
     seo: {
-      title: '의료진 소개 | 이음치과의원 전문 치과의사',
-      description: '이음치과의원 의료진 소개. 임플란트·심미보철·턱관절 전문 의료진이 정성을 다해 진료합니다.',
+      title: '의료진 소개 | 이음치과 최효영 대표원장·전문 치과의사',
+      description: '이음치과의원 의료진 소개. 서울대학교 치의학과 출신 최효영 대표원장과 임플란트·심미보철·턱관절(TMJ) 전문 의료진이 CBCT·디지털 장비 기반으로 정밀하고 정성어린 진료를 제공합니다.',
       keywords: '이음치과 의료진, 최효영 원장, 부산치과 전문의, 임플란트 전문의, 치과의사',
       canonical: `${SITE_URL}/doctors`,
       ogUrl: `${SITE_URL}/doctors`,
@@ -255,8 +255,8 @@ app.get('/doctors/:slug', async (c) => {
 app.get('/about', (c) => {
   return c.render(missionPage(), {
     seo: {
-      title: '병원 소개 | 이음치과의원 미션과 가치',
-      description: '이음치과 미션과 핵심 가치. 최첨단 디지털 장비와 병원 시설. 투명성·실력·신뢰·공감의 가치로 진료합니다.',
+      title: '병원 소개 | 이음치과의원 미션·가치·진료철학',
+      description: '이음치과의원의 미션과 핵심 가치. CBCT, 구강스캐너, 3D 프린터 등 최첨단 디지털 장비와 청결한 감염관리 시스템. 투명성·실력·신뢰·공감의 네 가지 가치로 평생 주치의 진료를 실현합니다.',
       keywords: '이음치과 소개, 병원미션, 치과 철학, 디지털 치과, CBCT, 구강스캐너, 3D프린터, 부산치과',
       canonical: `${SITE_URL}/about`,
       ogUrl: `${SITE_URL}/about`,
@@ -272,7 +272,7 @@ app.get('/about', (c) => {
 app.get('/visit', (c) => {
   return c.render(visitGuidePage(), {
     seo: {
-      title: '내원 안내 | 이음치과 오시는 길·진료시간·수가',
+      title: '내원 안내 | 이음치과 오시는길·진료시간·주차·수가표',
       description: '이음치과의원 오시는 길, 진료시간, 수가 안내. 부산 강서구 명지국제8로 265 2층. 주차 2시간 무료. ☎ 051-206-5888.',
       keywords: '이음치과 오시는 길, 이음치과 진료시간, 이음치과 주차, 이음치과 비용, 부산 명지 치과, 야간진료',
       canonical: `${SITE_URL}/visit`,
@@ -294,8 +294,8 @@ app.get('/cases', async (c) => {
   ).all() as any
   return c.render(casesPage(results || []), {
     seo: {
-      title: '비포애프터 | 이음치과 실제 치료 전후 사진',
-      description: '이음치과 임플란트·심미보철·턱관절 치료 전후 사진. 실제 치료 결과를 확인하세요.',
+      title: '비포애프터 | 이음치과 임플란트·라미네이트 치료 전후',
+      description: '이음치과 실제 치료 비포애프터. 임플란트, 라미네이트·올세라믹 심미보철, 심미 레진, 턱관절(TMJ) 케이스별 치료 전후 사진을 확인하고 본인의 치료 결과를 미리 가늠해보세요.',
       keywords: '치과 비포애프터, 임플란트 전후사진, 심미보철 결과, 라미네이트 전후, 치아 성형 전후, 부산치과 치료사례',
       canonical: `${SITE_URL}/cases`,
       ogUrl: `${SITE_URL}/cases`,
@@ -363,8 +363,8 @@ app.get('/blogs', async (c) => {
   ).all() as any
   return c.render(blogsPage(results || []), {
     seo: {
-      title: '치과 건강 블로그 | 이음치과의원 구강관리 정보',
-      description: '이음치과 블로그. 임플란트·심미보철·구강관리 전문 건강 정보. 최효영 원장이 직접 작성합니다.',
+      title: '치과 건강 블로그 | 이음치과 임플란트·심미보철·구강관리 정보',
+      description: '이음치과 건강 블로그. 임플란트 수명, 심미보철 종류, 턱관절 통증, 충치 예방, 스케일링 주기 등 치과 전문 건강 정보를 최효영 대표원장이 직접 작성·감수합니다. 근거 기반 구강관리 가이드.',
       keywords: '치과 블로그, 임플란트 정보, 치아 건강, 치과 상식, 구강 관리, 이음치과 블로그, 부산치과 정보',
       canonical: `${SITE_URL}/blogs`,
       ogUrl: `${SITE_URL}/blogs`,
@@ -439,8 +439,8 @@ app.get('/notices', async (c) => {
   ).all() as any
   return c.render(noticesPage(results || []), {
     seo: {
-      title: '공지사항 | 이음치과의원 진료 안내·휴진·이벤트',
-      description: '이음치과의원의 진료 안내, 휴진 일정, 이벤트 등 최신 공지사항을 확인하세요.',
+      title: '공지사항 | 이음치과 휴진·이벤트·진료 안내',
+      description: '이음치과의원 최신 공지사항. 진료시간 변경, 휴진 일정, 공휴일 안내, 이벤트 및 프로모션, 병원 운영 정책 업데이트 등 환자분들께 꼭 필요한 소식을 실시간으로 전달드립니다.',
       canonical: `${SITE_URL}/notices`,
       ogUrl: `${SITE_URL}/notices`,
       jsonLd: [
@@ -513,7 +513,7 @@ app.get('/faq', async (c) => {
 
   return c.render(faqPage(grouped), {
     seo: {
-      title: '자주 묻는 질문 (FAQ) | 이음치과',
+      title: '자주 묻는 질문 FAQ | 이음치과 임플란트·비용·진료시간 답변',
       description: `이음치과의원 FAQ ${allFaqs.length}개 — 임플란트 비용, 시술 시간, 보험 적용, 턱관절 치료 등 자주 묻는 질문과 전문의 답변 총정리.`,
       keywords: '치과 FAQ, 임플란트 비용, 임플란트 시간, 치과 보험, 턱관절 치료, 부산치과 가격, 라미네이트 비용, 치과 주차, 야간진료치과, 이음치과 질문',
       canonical: `${SITE_URL}/faq`,
@@ -624,7 +624,7 @@ app.get('/regions', (c) => {
   return c.render(seoRegionListPage(), {
     seo: {
       title: '지역별 치과 안내 | 이음치과의원',
-      description: '이음치과의원 지역별 치과 안내. 부산 강서구 명지 일대 지역 맞춤 치과 진료 정보를 확인하세요.',
+      description: '부산 강서구·사하구 지역별 치과 안내. 명지국제신도시, 에코델타시티, 하단, 다대포 등 이음치과의원 진료 가능 지역과 대중교통·주차 정보, 지역 특화 진료 서비스를 확인하세요.',
       canonical: `${SITE_URL}/regions`,
       ogUrl: `${SITE_URL}/regions`,
       jsonLd: [
