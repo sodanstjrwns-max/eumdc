@@ -799,6 +799,9 @@
     var hTrack = document.getElementById('horizontalTrack');
     if (!hTrack || !hTrack.parentElement) return;
 
+    // 모바일에서는 GSAP pin 가로스크롤 비활성 → 네이티브 스와이프 사용
+    if (window.innerWidth <= 768) return;
+
     var totalWidth = hTrack.scrollWidth - window.innerWidth;
     if (totalWidth > 0) {
       gsap.to(hTrack, {

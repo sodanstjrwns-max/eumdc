@@ -395,3 +395,201 @@ a { text-decoration:none; color:inherit; }
   .admin-row { flex-wrap:wrap; }
   .admin-row-actions { width:100%; justify-content:flex-end; }
 }
+
+/* ============================================================
+   📱 ADMIN MOBILE ENHANCED (added 2026-04-19)
+   ============================================================ */
+
+/* 중형 태블릿 이하 */
+@media (max-width: 900px) {
+  .admin-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    position: sticky;
+    top: 0;
+  }
+  .admin-nav {
+    order: 10;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    margin-top: 0.5rem;
+  }
+  .admin-nav::-webkit-scrollbar { display: none; }
+  .admin-tab {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.9rem;
+  }
+}
+
+/* 모바일 본격 최적화 */
+@media (max-width: 768px) {
+  html { font-size: 14px; }
+
+  /* 로그인 폼 */
+  .admin-login { padding: 1rem; }
+  .login-card { padding: 2rem 1.5rem; }
+  .login-brand { font-size: 2rem; }
+
+  /* 헤더 */
+  .admin-brand { font-size: 1rem; }
+  .admin-logout { padding: 0.45rem 0.8rem; font-size: 0.75rem; }
+
+  /* 통계 카드: 2열 유지하되 여백 줄임 */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  .stat-card { padding: 1rem !important; }
+  .stat-value { font-size: 1.5rem !important; }
+  .stat-label { font-size: 0.7rem !important; }
+
+  /* 패널 여백 */
+  .admin-panel { padding: 1rem 0.75rem !important; }
+
+  /* 섹션 헤더 */
+  .admin-section-header h3 { font-size: 0.9rem; }
+
+  /* 데이터 행 — 썸네일 + 정보 + 액션을 2단으로 */
+  .admin-row {
+    display: grid !important;
+    grid-template-columns: 60px 1fr !important;
+    grid-template-rows: auto auto !important;
+    gap: 0.5rem 0.75rem !important;
+    padding: 0.75rem !important;
+    border-radius: 10px !important;
+  }
+  .admin-row-thumb {
+    grid-row: span 2;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .admin-row-info {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .admin-row-info h4 {
+    font-size: 0.9rem !important;
+    white-space: normal !important;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .admin-row-actions {
+    grid-column: 2;
+    grid-row: 2;
+    width: 100% !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+  }
+  .admin-row-actions button,
+  .admin-row-actions .btn {
+    flex: 1 1 auto;
+    min-width: 70px;
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* 상단 툴바(추가/필터/검색) */
+  .admin-toolbar, .admin-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1rem;
+  }
+  .admin-toolbar input,
+  .admin-toolbar select,
+  .admin-controls input,
+  .admin-controls select {
+    width: 100% !important;
+  }
+  .admin-toolbar .btn-primary,
+  .admin-controls .btn-primary {
+    width: 100% !important;
+    padding: 0.75rem !important;
+  }
+
+  /* 모달 — 풀스크린에 가깝게 */
+  .modal-overlay { padding: 0 !important; align-items: flex-end !important; }
+  .modal-card {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92vh !important;
+    border-radius: 16px 16px 0 0 !important;
+    overflow-y: auto;
+  }
+  .modal-large { max-width: 100% !important; }
+  .modal-header {
+    padding: 1rem 1.25rem !important;
+    position: sticky; top: 0; z-index: 5;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-header h3 { font-size: 1rem !important; }
+  .modal-body { padding: 1.25rem !important; }
+  .modal-footer {
+    padding: 0.75rem 1.25rem !important;
+    position: sticky; bottom: 0;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    gap: 0.5rem !important;
+  }
+  .modal-footer button {
+    flex: 1;
+    padding: 0.75rem !important;
+  }
+
+  /* 폼 그룹 */
+  .form-group { margin-bottom: 1rem !important; }
+  .form-group label { font-size: 0.8rem !important; margin-bottom: 0.35rem !important; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.75rem !important;
+    font-size: 16px !important; /* iOS 자동확대 방지 */
+  }
+  .form-group textarea { min-height: 120px; }
+
+  /* 2열 → 1열 */
+  .form-row { grid-template-columns: 1fr !important; gap: 0.75rem !important; }
+
+  /* 케이스 비포/애프터 업로드 그리드 */
+  .case-images-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+  .case-image-slot {
+    padding: 1rem !important;
+  }
+
+  /* 버튼 일반 */
+  button, .btn {
+    min-height: 40px;
+    font-size: 0.85rem;
+  }
+
+  /* 테이블 대체 — 모바일에서 테이블 금지 */
+  table.data-table { display: block; overflow-x: auto; }
+}
+
+/* 초소형 폰 */
+@media (max-width: 420px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .admin-row-actions button,
+  .admin-row-actions .btn { min-width: 60px; font-size: 0.7rem !important; }
+  .admin-brand { font-size: 0.9rem; }
+}
+
+/* 터치 피드백 */
+@media (hover: none) and (pointer: coarse) {
+  .admin-row:hover { border-color: var(--border) !important; }
+  .admin-row:active { transform: scale(0.995); background: var(--surface-2); }
+  button:active, .btn:active { transform: scale(0.97); }
+}

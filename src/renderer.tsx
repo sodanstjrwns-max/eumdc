@@ -24,9 +24,13 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <meta name="author" content="이음치과의원" />
         <meta name="publisher" content="이음치과의원" />
 
-        {/* 파비콘 */}
+        {/* 파비콘 + PWA */}
         <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
-        <link rel="apple-touch-icon" href="/static/favicon.svg" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="mask-icon" href="/static/favicon.svg" color="#0F1B2D" />
 
         {/* 폰트 preconnect + preload (CLS 방지) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />

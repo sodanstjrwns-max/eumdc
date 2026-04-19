@@ -1,6 +1,20 @@
 import { subPageLayout } from './layout'
+import { markdownToHtml, linkDictionaryTerms } from '../utils/content'
 
-export function casesPage() {
+const CATEGORY_NAMES: Record<string, string> = {
+  implant: '임플란트',
+  aesthetic: '심미보철',
+  resin: '심미레진',
+  tmj: '턱관절',
+  general: '일반진료',
+  periodontal: '잇몸치료',
+  'wisdom-tooth': '사랑니',
+  pediatric: '소아',
+  prevention: '예방'
+}
+
+export function casesPage(cases?: any[]) {
+  const items = cases || []
   return subPageLayout('BEFORE & AFTER', (
     <div class="page-cases">
       <section class="page-hero-mini">
@@ -11,7 +25,6 @@ export function casesPage() {
         </div>
       </section>
 
-      {/* Login Gate Banner - shown to non-logged-in users */}
       <div class="login-gate-banner" id="loginGateBanner" style="display:none">
         <div class="container-wide">
           <div class="gate-content">
@@ -30,7 +43,6 @@ export function casesPage() {
         </div>
       </div>
 
-      {/* Filter */}
       <section class="page-filter">
         <div class="container-wide">
           <div class="filter-bar" id="caseFilter">
@@ -44,22 +56,87 @@ export function casesPage() {
         </div>
       </section>
 
-      {/* Cases Grid */}
       <section class="page-grid-section">
         <div class="container-wide">
-          <div class="cases-grid" id="casesGrid">
-            <div class="loading-spinner">불러오는 중...</div>
-          </div>
-          <div class="load-more-wrap" id="casesLoadMore" style="display:none">
-            <button class="btn-load-more" data-hover>더 보기</button>
-          </div>
+          {items.length === 0 ? (
+            <div class="empty-state">
+              <p>등록된 케이스가 없습니다.</p>
+            </div>
+          ) : (
+            <div class="cases-grid" id="casesGrid">
+              {items.map((cs: any) => (
+                <article class="case-card" data-reveal data-cat={cs.category}>
+                  <a href={`/cases/${cs.id}`} class="case-card-link" data-hover>
+                    <div class="case-card-thumbs">
+                      <div class="case-thumb-pair">
+                        <div class="case-thumb">
+                          <span class="case-label">BEFORE</span>
+                          {cs.pano_before || cs.intra_before ? (
+                            <img src={cs.pano_before || cs.intra_before} alt={`${cs.title} Before`} loading="lazy" />
+                          ) : <div class="case-thumb-placeholder">No Image</div>}
+                        </div>
+                        <div class="case-thumb">
+                          <span class="case-label after">AFTER</span>
+                          {cs.pano_after || cs.intra_after ? (
+                            <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
+                          ) : <div class="case-thumb-placeholder">No Image</div>}
+                        </div>
+                      </div>
+                    </div>
+                    <div class="case-card-body">
+                      <span class="case-card-category">{CATEGORY_NAMES[cs.category] || cs.category}</span>
+                      <h2 class="case-card-title">{cs.title}</h2>
+                      {cs.description && (
+                        <p class="case-card-desc">{cs.description.substring(0, 80)}{cs.description.length > 80 ? '…' : ''}</p>
+                      )}
+                      <div class="case-card-meta">
+                        {cs.patient_age_group && <span>{cs.patient_age_group}</span>}
+                        {cs.patient_gender && <span>{cs.patient_gender}</span>}
+                        {cs.treatment_duration && <span>{cs.treatment_duration}</span>}
+                      </div>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
   ))
 }
 
-export function caseDetailPage(id: string) {
+export function caseDetailPage(
+  id: string,
+  caseData?: any,
+  doctor?: any,
+  dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>
+) {
+  if (!caseData) {
+    return subPageLayout('CASE DETAIL', (
+      <div class="page-case-detail">
+        <section class="page-hero-mini">
+          <div class="container-wide">
+            <a href="/cases" class="back-link" data-hover>← 목록으로</a>
+          </div>
+        </section>
+        <section class="case-detail-section">
+          <div class="container-wide">
+            <div class="empty-state">
+              <h1>케이스를 찾을 수 없습니다</h1>
+              <a href="/cases" class="btn-primary">목록으로 돌아가기</a>
+            </div>
+          </div>
+        </section>
+      </div>
+    ))
+  }
+
+  let descHtml = markdownToHtml(caseData.description || '')
+  if (dictTerms && dictTerms.length > 0) {
+    descHtml = linkDictionaryTerms(descHtml, dictTerms)
+  }
+
   return subPageLayout('CASE DETAIL', (
     <div class="page-case-detail">
       <section class="page-hero-mini">
@@ -69,9 +146,99 @@ export function caseDetailPage(id: string) {
       </section>
       <section class="case-detail-section">
         <div class="container-wide">
-          <div id="caseDetail" data-case-id={id}>
-            <div class="loading-spinner">불러오는 중...</div>
-          </div>
+          <article class="case-article">
+            <header class="case-article-header">
+              <span class="case-article-category">{CATEGORY_NAMES[caseData.category] || caseData.category}</span>
+              <h1 class="case-article-title">{caseData.title}</h1>
+              <div class="case-article-meta">
+                {caseData.patient_age_group && <span class="meta-chip">{caseData.patient_age_group}</span>}
+                {caseData.patient_gender && <span class="meta-chip">{caseData.patient_gender}</span>}
+                {caseData.region_text && <span class="meta-chip">{caseData.region_text}</span>}
+                {caseData.treatment_duration && <span class="meta-chip">치료 {caseData.treatment_duration}</span>}
+                {caseData.patient_consent ? <span class="meta-chip consent">✓ 환자 동의</span> : null}
+              </div>
+            </header>
+
+            {/* 비포애프터 비교 이미지 */}
+            <div class="case-compare-grid">
+              {(caseData.pano_before || caseData.pano_after) && (
+                <div class="compare-set">
+                  <h2 class="compare-title">파노라마 X-ray</h2>
+                  <div class="compare-pair">
+                    <figure class="compare-item">
+                      <span class="compare-label">BEFORE</span>
+                      {caseData.pano_before ? (
+                        <img src={caseData.pano_before} alt={`${caseData.title} 파노라마 비포`} loading="eager" />
+                      ) : <div class="compare-placeholder">No Image</div>}
+                    </figure>
+                    <figure class="compare-item">
+                      <span class="compare-label after">AFTER</span>
+                      {caseData.pano_after ? (
+                        <img src={caseData.pano_after} alt={`${caseData.title} 파노라마 애프터`} loading="eager" />
+                      ) : <div class="compare-placeholder">No Image</div>}
+                    </figure>
+                  </div>
+                </div>
+              )}
+              {(caseData.intra_before || caseData.intra_after) && (
+                <div class="compare-set">
+                  <h2 class="compare-title">구강 사진</h2>
+                  <div class="compare-pair">
+                    <figure class="compare-item">
+                      <span class="compare-label">BEFORE</span>
+                      {caseData.intra_before ? (
+                        <img src={caseData.intra_before} alt={`${caseData.title} 구강 비포`} loading="lazy" />
+                      ) : <div class="compare-placeholder">No Image</div>}
+                    </figure>
+                    <figure class="compare-item">
+                      <span class="compare-label after">AFTER</span>
+                      {caseData.intra_after ? (
+                        <img src={caseData.intra_after} alt={`${caseData.title} 구강 애프터`} loading="lazy" />
+                      ) : <div class="compare-placeholder">No Image</div>}
+                    </figure>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* 치료 내용 */}
+            {caseData.description && (
+              <section class="case-article-body">
+                <h2 class="section-heading">치료 경과</h2>
+                <div class="rich-content" dangerouslySetInnerHTML={{ __html: descHtml }} />
+              </section>
+            )}
+
+            {/* 담당의 */}
+            {doctor && (
+              <section class="case-doctor-card">
+                <h2 class="section-heading">담당 의료진</h2>
+                <div class="doctor-card">
+                  {doctor.photo && (
+                    <div class="doctor-card-photo">
+                      <img src={doctor.photo} alt={`${doctor.name} ${doctor.title || '원장'}`} loading="lazy" />
+                    </div>
+                  )}
+                  <div class="doctor-card-info">
+                    <h3 class="doctor-card-name">
+                      <a href={`/doctors/${doctor.slug}`} data-hover>{doctor.name}</a>
+                      <span class="doctor-card-title">{doctor.title || '원장'}</span>
+                    </h3>
+                    {doctor.greeting && <p class="doctor-card-greeting">{doctor.greeting.substring(0, 120)}{doctor.greeting.length > 120 ? '…' : ''}</p>}
+                    <a href={`/doctors/${doctor.slug}`} class="doctor-card-more">프로필 자세히 보기 →</a>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            <footer class="case-article-footer">
+              <p class="case-disclaimer">
+                ※ 본 케이스는 환자의 동의를 받아 공개되었으며, 개인 정보 보호를 위해 식별 가능한 정보는 제외하였습니다.
+                치료 결과는 개인의 구강 상태·생활 습관·관리 방법에 따라 달라질 수 있습니다.
+              </p>
+              <a href="/cases" class="back-to-list">← 비포애프터 목록으로</a>
+            </footer>
+          </article>
         </div>
       </section>
     </div>

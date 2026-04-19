@@ -192,8 +192,11 @@ app.get('/treatments/:slug', async (c) => {
 })
 
 // === 의료진 전체 ===
-app.get('/doctors', (c) => {
-  return c.render(doctorsPage(), {
+app.get('/doctors', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    'SELECT * FROM doctors WHERE is_published = 1 ORDER BY sort_order, id'
+  ).all() as any
+  return c.render(doctorsPage(results || []), {
     seo: {
       title: '의료진 소개 | 이음치과의원 전문 치과의사',
       description: '이음치과의원 의료진 소개. 임플란트·심미보철·턱관절 전문 의료진이 정성을 다해 진료합니다.',
@@ -218,7 +221,7 @@ app.get('/doctors/:slug', async (c) => {
   const name = doctor?.name || '의료진'
   const title = doctor?.title || '원장'
 
-  return c.render(doctorDetailPage(slug), {
+  return c.render(doctorDetailPage(slug, doctor), {
     seo: {
       title: `${name} ${title} | 이음치과의원 의료진`,
       description: doctor?.greeting || `이음치과의원 ${name} ${title}. 실력과 진심으로 진료합니다.`,
@@ -273,8 +276,13 @@ app.get('/visit', (c) => {
 })
 
 // === 비포애프터 목록 ===
-app.get('/cases', (c) => {
-  return c.render(casesPage(), {
+app.get('/cases', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, title, category, description, pano_before, pano_after, intra_before, intra_after,
+     patient_age_group, patient_gender, region_text, treatment_duration, views, created_at
+     FROM cases WHERE is_published = 1 ORDER BY created_at DESC`
+  ).all() as any
+  return c.render(casesPage(results || []), {
     seo: {
       title: '비포애프터 | 이음치과 실제 치료 전후 사진',
       description: '이음치과 임플란트·심미보철·턱관절 치료 전후 사진. 실제 치료 결과를 확인하세요.',
@@ -297,6 +305,12 @@ app.get('/cases', (c) => {
 app.get('/cases/:id', async (c) => {
   const id = c.req.param('id')
   const caseData = await c.env.DB.prepare('SELECT * FROM cases WHERE id = ?').bind(id).first() as any
+  const doctor = caseData?.doctor_id
+    ? await c.env.DB.prepare('SELECT id, name, slug, title, photo, greeting FROM doctors WHERE id = ?').bind(caseData.doctor_id).first()
+    : null
+  const { results: dictTerms } = await c.env.DB.prepare(
+    'SELECT term as name, slug FROM dict_terms WHERE is_published = 1 LIMIT 300'
+  ).all() as any
   const title = caseData?.title || '비포애프터 상세'
   const desc = caseData?.description?.substring(0, 160) || '이음치과의원의 치료 결과를 확인하세요.'
   const category = caseData?.category || 'general'
@@ -305,7 +319,7 @@ app.get('/cases/:id', async (c) => {
     tmj: '턱관절', general: '일반진료'
   }
 
-  return c.render(caseDetailPage(id), {
+  return c.render(caseDetailPage(id, caseData, doctor, dictTerms || []), {
     seo: {
       title: `${title} | 이음치과 ${categoryNames[category] || ''} 비포애프터`,
       description: desc,
@@ -332,8 +346,12 @@ app.get('/cases/:id', async (c) => {
 })
 
 // === 블로그 목록 ===
-app.get('/blogs', (c) => {
-  return c.render(blogsPage(), {
+app.get('/blogs', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, title, content, thumbnail, meta_title, meta_description, slug, author_name, views, created_at
+     FROM blogs WHERE is_published = 1 ORDER BY created_at DESC`
+  ).all() as any
+  return c.render(blogsPage(results || []), {
     seo: {
       title: '치과 건강 블로그 | 이음치과의원 구강관리 정보',
       description: '이음치과 블로그. 임플란트·심미보철·구강관리 전문 건강 정보. 최효영 원장이 직접 작성합니다.',
@@ -350,13 +368,25 @@ app.get('/blogs', (c) => {
 
 // === 블로그 상세 (동적 SEO + BlogPosting 스키마) ===
 app.get('/blogs/:id', async (c) => {
-  const id = c.req.param('id')
-  const blog = await c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first() as any
+  const idOrSlug = c.req.param('id')
+  // id가 숫자면 id 검색, 아니면 slug 검색
+  const isNumeric = /^\d+$/.test(idOrSlug)
+  const blog = await (isNumeric
+    ? c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(idOrSlug).first()
+    : c.env.DB.prepare('SELECT * FROM blogs WHERE slug = ?').bind(idOrSlug).first()) as any
+  const { results: blogImages } = blog
+    ? await c.env.DB.prepare('SELECT * FROM blog_images WHERE blog_id = ? ORDER BY sort_order').bind(blog.id).all()
+    : { results: [] } as any
+  const { results: dictTerms } = await c.env.DB.prepare(
+    'SELECT term as name, slug FROM dict_terms WHERE is_published = 1 LIMIT 300'
+  ).all() as any
+  const blogWithImages = blog ? { ...blog, images: blogImages || [] } : null
+  const id = blog?.id?.toString() || idOrSlug
   const title = blog?.meta_title || blog?.title || '블로그 글'
   const desc = blog?.meta_description || blog?.content?.substring(0, 160) || '이음치과의원 블로그'
   const slug = blog?.slug || id
 
-  return c.render(blogDetailPage(id), {
+  return c.render(blogDetailPage(id, blogWithImages, dictTerms || []), {
     seo: {
       title: `${title} | 이음치과 블로그`,
       description: desc,
@@ -392,8 +422,12 @@ app.get('/blogs/:id', async (c) => {
 })
 
 // === 공지사항 목록 ===
-app.get('/notices', (c) => {
-  return c.render(noticesPage(), {
+app.get('/notices', async (c) => {
+  const { results } = await c.env.DB.prepare(
+    `SELECT id, title, content, thumbnail, is_pinned, views, created_at FROM notices
+     WHERE is_published = 1 ORDER BY is_pinned DESC, created_at DESC`
+  ).all() as any
+  return c.render(noticesPage(results || []), {
     seo: {
       title: '공지사항 | 이음치과의원 진료 안내·휴진·이벤트',
       description: '이음치과의원의 진료 안내, 휴진 일정, 이벤트 등 최신 공지사항을 확인하세요.',
@@ -411,10 +445,13 @@ app.get('/notices', (c) => {
 app.get('/notices/:id', async (c) => {
   const id = c.req.param('id')
   const notice = await c.env.DB.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first() as any
+  const { results: noticeImages } = notice
+    ? await c.env.DB.prepare('SELECT * FROM notice_images WHERE notice_id = ? ORDER BY sort_order').bind(id).all()
+    : { results: [] } as any
   const title = notice?.title || '공지사항'
   const desc = notice?.content?.substring(0, 160) || '이음치과의원 공지사항'
 
-  return c.render(noticeDetailPage(id), {
+  return c.render(noticeDetailPage(id, notice, noticeImages || []), {
     seo: {
       title: `${title} | 이음치과 공지사항`,
       description: desc,
@@ -765,5 +802,109 @@ app.get('/sitemap.xml', async (c) => {
 function escXml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
 }
+
+// === 루트 경로 파비콘/매니페스트 (브라우저가 기본 요청하는 경로) ===
+app.get('/favicon.ico', async (c) => {
+  return c.redirect('/static/favicon.ico', 301)
+})
+app.get('/apple-touch-icon.png', async (c) => {
+  return c.redirect('/static/apple-touch-icon.png', 301)
+})
+app.get('/apple-touch-icon-precomposed.png', async (c) => {
+  return c.redirect('/static/apple-touch-icon.png', 301)
+})
+app.get('/manifest.json', async (c) => {
+  return c.redirect('/static/manifest.json', 301)
+})
+
+// === 전역 에러 핸들러 (디버깅 + 사용자 친화적 500 페이지) ===
+app.onError((err, c) => {
+  console.error('[APP ERROR]', c.req.path, err?.stack || err)
+  // API는 JSON
+  if (c.req.path.startsWith('/api/') || c.req.path.startsWith('/r2/')) {
+    return c.json({ error: 'Internal Server Error', path: c.req.path, message: err?.message }, 500)
+  }
+  c.status(500)
+  return c.render(
+    <div class="page-404">
+      <section class="error-section">
+        <div class="container-wide">
+          <div class="error-inner">
+            <span class="error-code">500</span>
+            <h1 class="error-title">일시적인 오류가 발생했습니다</h1>
+            <p class="error-desc">
+              요청을 처리하는 중 예상치 못한 문제가 발생했습니다.<br/>
+              잠시 후 다시 시도하시거나 아래 링크에서 다른 페이지를 방문해 주세요.
+            </p>
+            <div class="error-actions">
+              <a href="/" class="btn-primary" data-hover>홈으로</a>
+              <a href="javascript:history.back()" class="btn-secondary" data-hover>이전 페이지</a>
+            </div>
+            <div class="error-contact">
+              <p>계속 문제가 발생한다면 전화로 문의해 주세요.</p>
+              <a href="tel:0515555555" class="error-tel" data-hover>📞 051-555-5555</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>,
+    { seo: { title: '오류 | 이음치과의원', description: '일시적 오류', canonical: `${SITE_URL}${c.req.path}`, noindex: true } }
+  )
+})
+
+// === 404 Not Found 페이지 (브랜드 디자인) ===
+app.notFound(async (c) => {
+  const path = c.req.path
+  // API는 JSON 404
+  if (path.startsWith('/api/') || path.startsWith('/r2/')) {
+    return c.json({ error: 'Not Found', path }, 404)
+  }
+  c.status(404)
+  // 페이지는 디자인된 404
+  return c.render(
+    <div class="page-404">
+      <section class="error-section">
+        <div class="container-wide">
+          <div class="error-inner">
+            <span class="error-code">404</span>
+            <h1 class="error-title">페이지를 찾을 수 없습니다</h1>
+            <p class="error-desc">
+              요청하신 주소의 페이지가 존재하지 않거나, 삭제 또는 이동되었을 수 있습니다.<br/>
+              아래 링크에서 원하시는 정보를 찾아보세요.
+            </p>
+            <div class="error-actions">
+              <a href="/" class="btn-primary" data-hover>홈으로 돌아가기</a>
+              <a href="/treatments" class="btn-secondary" data-hover>진료 안내</a>
+              <a href="/visit" class="btn-secondary" data-hover>오시는 길</a>
+            </div>
+            <div class="error-quicklinks">
+              <h2 class="quicklinks-heading">추천 페이지</h2>
+              <div class="quicklinks-grid">
+                <a href="/cases" data-hover>비포애프터 →</a>
+                <a href="/blogs" data-hover>블로그 →</a>
+                <a href="/doctors" data-hover>의료진 소개 →</a>
+                <a href="/faq" data-hover>자주 묻는 질문 →</a>
+                <a href="/dictionary" data-hover>치과 용어 사전 →</a>
+                <a href="/notices" data-hover>공지사항 →</a>
+              </div>
+            </div>
+            <div class="error-contact">
+              <p>더 궁금하신 점은 전화로 문의해 주세요.</p>
+              <a href="tel:0515555555" class="error-tel" data-hover>📞 051-555-5555</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>,
+    {
+      seo: {
+        title: '페이지를 찾을 수 없습니다 (404) | 이음치과의원',
+        description: '요청하신 페이지를 찾을 수 없습니다. 이음치과의원 메인 페이지에서 원하시는 정보를 찾아보세요.',
+        canonical: `${SITE_URL}${path}`,
+        noindex: true
+      }
+    }
+  )
+})
 
 export default app
