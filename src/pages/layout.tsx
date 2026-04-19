@@ -81,7 +81,7 @@ export function subPageLayout(title: string, children: any) {
           <div class="footer-top-grid">
             <div class="footer-brand-col">
               <div class="footer-brand-logo">
-                <img src="/static/images/symbol-white.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
+                <img src="/static/images/symbol.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
                 <div class="footer-brand-text">
                   <div class="footer-brand-big">이음치과</div>
                   <div class="footer-brand-en">IEUM DENTAL CLINIC</div>

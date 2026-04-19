@@ -13978,44 +13978,32 @@ body.gsap-active .doctor-grid-item {
 }
 
 /* ─────────────────────────────────────────────
-   3. 푸터 로고 심볼 — 깔끔한 둥근 사각 배경 카드로 감쌈
-   (기존: 투명 png → 안티앨리어싱 경계가 배경과 어색하게 섞임)
-   (개선: 살짝 밝은 네이비 카드 위에 심볼 얹어 톤 정돈)
+   3. 푸터 로고 심볼 — 헤더 로고와 완전 동일한 룩 (원본 컬러 symbol.png, 투명 배경)
+   ※ 기존 흰색 변환본 + 민트 카드 배경 → 헤더와 톤이 달라 보여서 리셋
 ───────────────────────────────────────────── */
 .footer-brand-symbol {
-  /* 카드 형태 래핑 */
-  padding: 8px;
-  background: linear-gradient(135deg, rgba(74, 188, 189, 0.10), rgba(26, 74, 140, 0.22));
-  border: 1px solid rgba(74, 188, 189, 0.28);
-  border-radius: 14px;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  height: 56px !important;
+  width: auto !important;
   box-sizing: content-box;
-  height: 48px !important;
-  width: auto;
-  /* 살짝 인셋 섀도우로 입체감 */
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 2px 14px rgba(0, 48, 106, 0.35);
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25)) !important;
-  transition: all 0.35s var(--ease, cubic-bezier(.2,.8,.2,1));
+  transition: opacity 0.35s var(--ease, cubic-bezier(.2,.8,.2,1));
 }
 .footer-brand-logo:hover .footer-brand-symbol,
 .footer-brand-col:hover .footer-brand-symbol {
-  border-color: rgba(74, 188, 189, 0.55);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 4px 20px rgba(74, 188, 189, 0.25);
+  opacity: 0.85;
 }
 
 .footer-minimal .footer-brand-symbol {
-  height: 40px !important;
-  padding: 7px;
-  border-radius: 12px;
+  height: 44px !important;
 }
 
 @media (max-width: 640px) {
   .footer-brand-symbol {
-    height: 42px !important;
-    padding: 7px;
-    border-radius: 12px;
+    height: 46px !important;
   }
 }
