@@ -12170,3 +12170,241 @@ body.gsap-active .doctor-grid-item {
     line-height: 1.75;
   }
 }
+
+/* ================================================
+   Main Page — Director's Book Section (v23)
+   04 — PUBLISHED WORK
+   진료 카드 끝나고 등장하는 시네마틱 책 소개
+   ================================================ */
+.director-book {
+  padding: clamp(80px, 13vw, 180px) 0;
+  background:
+    radial-gradient(ellipse at top right, rgba(126, 168, 190, 0.06) 0%, transparent 60%),
+    linear-gradient(180deg, var(--bg) 0%, var(--surface-2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.director-book::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(168, 196, 212, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(27, 58, 92, 0.04) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.director-book-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto clamp(48px, 7vw, 88px);
+  position: relative;
+  z-index: 1;
+}
+.director-book-header .section-label {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  font-size: 0.78rem;
+  margin-bottom: 24px;
+  display: inline-block;
+}
+.director-book-heading {
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.15;
+  margin: 0 0 20px;
+  letter-spacing: -0.02em;
+}
+.director-book-heading em {
+  font-style: normal;
+  font-family: var(--font-en);
+  color: var(--cta);
+  font-weight: 400;
+  padding: 0 6px;
+}
+.director-book-lede {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: var(--white-dim);
+  line-height: 1.75;
+  margin: 0;
+}
+
+.director-book-card {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.director-book-link {
+  display: grid;
+  grid-template-columns: minmax(280px, 440px) 1fr;
+  gap: clamp(40px, 6vw, 100px);
+  align-items: center;
+  padding: clamp(36px, 5vw, 72px) clamp(32px, 5vw, 72px);
+  background: var(--bg);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 3px rgba(15, 27, 45, 0.04),
+    0 20px 60px rgba(15, 27, 45, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.6s var(--ease-expo),
+    box-shadow 0.6s var(--ease-expo);
+  border: 1px solid rgba(15, 27, 45, 0.04);
+}
+.director-book-link:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 2px 4px rgba(15, 27, 45, 0.06),
+    0 40px 80px rgba(15, 27, 45, 0.14);
+}
+.director-book-link:hover .director-book-cover-img {
+  transform: rotate(0deg) translateY(-4px);
+}
+.director-book-link:hover .director-book-more svg {
+  transform: translateX(6px);
+}
+
+.director-book-cover-wrap {
+  position: relative;
+  aspect-ratio: 420 / 594;
+}
+.director-book-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 4px;
+  transform: rotate(-2deg);
+  transition: transform 0.8s var(--ease-expo);
+  box-shadow:
+    0 1px 2px rgba(15, 27, 45, 0.1),
+    0 24px 48px rgba(15, 27, 45, 0.14),
+    0 48px 96px rgba(15, 27, 45, 0.08);
+}
+
+.director-book-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.director-book-kicker {
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 0;
+}
+.director-book-bigtitle {
+  font-size: clamp(1.8rem, 3.6vw, 2.8rem);
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+}
+.director-book-tagline {
+  font-size: clamp(0.95rem, 1.3vw, 1.08rem);
+  color: var(--white-dim);
+  line-height: 1.5;
+  margin: 0 0 8px;
+  font-weight: 500;
+}
+.director-book-excerpt {
+  border-left: 3px solid var(--gold);
+  padding: 4px 0 4px 20px;
+  margin: 8px 0;
+  font-size: 0.96rem;
+  line-height: 1.75;
+  color: var(--white-dim);
+  font-style: normal;
+  quotes: none;
+}
+
+.director-book-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 20px;
+  border-top: 1px solid var(--white-ghost);
+}
+.director-book-badges-mini {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.book-badge-mini {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--cta);
+  background: var(--cta-dim);
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+.director-book-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cta);
+  letter-spacing: 0.02em;
+}
+.director-book-more svg {
+  transition: transform 0.4s var(--ease-expo);
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+  .director-book-link {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 32px 28px;
+  }
+  .director-book-cover-wrap {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .director-book-cover-img {
+    transform: rotate(0deg);
+  }
+  .director-book-text {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .director-book {
+    padding: 64px 0 80px;
+  }
+  .director-book-link {
+    padding: 28px 20px;
+    border-radius: 12px;
+  }
+  .director-book-cover-wrap {
+    max-width: 240px;
+  }
+  .director-book-bigtitle {
+    font-size: 1.6rem;
+  }
+  .director-book-excerpt {
+    font-size: 0.9rem;
+    padding-left: 16px;
+  }
+  .director-book-meta-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

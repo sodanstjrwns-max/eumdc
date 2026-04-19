@@ -447,12 +447,63 @@ export function mainPage() {
         </div>
       </section>
 
+      {/* PUBLISHED WORK — 원장 저서 */}
+      <section class="section director-book" id="section-book" aria-label="대표원장 저서 - 치과가 두렵지 않으면 좋겠습니다">
+        <div class="container-wide">
+          <div class="director-book-header">
+            <span class="section-label">04 — PUBLISHED WORK</span>
+            <h2 class="director-book-heading" data-reveal>
+              원장이 쓴 <em>이야기</em>
+            </h2>
+            <p class="director-book-lede" data-reveal>
+              진료실에서 매일 듣는 말들에서 시작된 책.<br/>
+              환자분들께 꼭 드리고 싶었던 이야기를 담았습니다.
+            </p>
+          </div>
+
+          <div class="director-book-card" data-reveal>
+            <a href="/doctors/choi-hyoyoung#book-heading" class="director-book-link" data-hover aria-label="최효영 원장 저서 상세 보기">
+              <div class="director-book-cover-wrap">
+                <img
+                  src="/static/book-cover.jpg"
+                  alt="최효영 원장 저서 '치과가 두렵지 않으면 좋겠습니다' 표지"
+                  class="director-book-cover-img"
+                  loading="lazy"
+                  width="420"
+                  height="594"
+                />
+              </div>
+              <div class="director-book-text">
+                <p class="director-book-kicker">최효영 원장 저서</p>
+                <h3 class="director-book-bigtitle">치과가<br/>두렵지 않으면<br/>좋겠습니다</h3>
+                <p class="director-book-tagline">설명으로 안심하고,<br/>실력으로 다시 찾는 치과의 기록</p>
+                <blockquote class="director-book-excerpt">
+                  "칫솔 하나 고르는 법부터 임플란트 수술 후 관리까지,
+                  치과에 오시면 한 번쯤 마주치게 되는 주제들을
+                  최대한 쉽고 솔직하게 풀었습니다."
+                </blockquote>
+                <div class="director-book-meta-row">
+                  <div class="director-book-badges-mini">
+                    <span class="book-badge-mini">비매품</span>
+                    <span class="book-badge-mini">원내 소장용</span>
+                  </div>
+                  <span class="director-book-more">
+                    책 이야기 더 보기
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* PROMISE — Our 4 Commitments */}
       <section class="section promise-section" id="section-promise" aria-label="이음치과의 약속">
         <div class="promise-bg" aria-hidden="true"><div class="grain"></div></div>
         <div class="container-wide">
           <div class="promise-header">
-            <span class="section-label">04 — PROMISE</span>
+            <span class="section-label">05 — PROMISE</span>
             <h2 class="promise-main-title">이음의<br/><em>약속</em></h2>
             <p class="promise-subtitle">환자분께 드리는 네 가지 약속입니다.<br/>진료실에서 벌어지는 모든 순간에 이 약속을 지킵니다.</p>
           </div>
@@ -497,7 +548,7 @@ export function mainPage() {
       <section class="section equipment-minimal" id="section-equipment" aria-label="디지털 장비 안내">
         <div class="container-wide">
           <div class="equip-header">
-            <span class="section-label">05 — EQUIPMENT</span>
+            <span class="section-label">06 — EQUIPMENT</span>
             <h2 class="equip-title">Digital<br/>Dentistry</h2>
             <p class="equip-subtitle">이음치과는 '최신 장비가 있다'는 것에 만족하지 않습니다.<br/>각 장비가 <em>환자에게 어떤 이점</em>을 주는지가 더 중요합니다.</p>
           </div>
@@ -554,7 +605,7 @@ export function mainPage() {
         <div class="container-wide">
           <div class="contact-layout">
             <div class="contact-left">
-              <span class="section-label light">06 — CONTACT</span>
+              <span class="section-label light">07 — CONTACT</span>
               <a href="tel:051-206-5888" class="contact-phone-big" data-hover>
                 <span class="phone-label">Call us</span>
                 <span class="phone-number">051-206-5888</span>
