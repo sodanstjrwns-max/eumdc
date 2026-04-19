@@ -2238,3 +2238,31 @@
   .gallery-item[aria-hidden="true"] { display: none !important; }
 }
 /* End gallery v9 ═══════════════════ */
+
+/* ═══ NAV CTA CLEANUP v10 — 플로팅과 중복되는 상단 CTA 숨김 ═══ */
+html body #nav .nav-booking,
+html body #nav .nav-kakao,
+html body #nav.scrolled .nav-booking,
+html body #nav.scrolled .nav-kakao,
+html body #nav:not(.scrolled) .nav-booking,
+html body #nav:not(.scrolled) .nav-kakao,
+html body nav .nav-booking,
+html body nav .nav-kakao {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 로고만 남으면 좌측 정렬, MENU는 우측 */
+#nav, nav#nav {
+  justify-content: space-between !important;
+}
+.nav-brand {
+  margin-right: auto !important;
+}
+/* End v10 ═══════════════════ */
