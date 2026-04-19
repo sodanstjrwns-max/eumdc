@@ -11025,3 +11025,160 @@ body.gsap-active .h-card.is-visible {
     padding: 0.6rem 0 !important;
   }
 }
+
+/* ============================================================
+   🌫️ STORY CHAPTER — 공포의 어둠 유지 (모바일)
+   "입 안은 보이지 않으니까요 → 맞습니다 → 우리는 보이지 않는 것을 두려워합니다 → 귀신처럼요"
+   이 시퀀스는 어둠/공포의 정점. 밝아지면 안됨.
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Chapter 3: 공포의 안개 — 깊은 다크 블루 + 희미한 안개 */
+  .story-chapter-dark {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(30, 50, 80, 0.5) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 30% 80%, rgba(20, 35, 60, 0.4) 0%, transparent 60%),
+      linear-gradient(180deg,
+        #0a1128 0%,
+        #0e1730 20%,
+        #121f3d 50%,
+        #0e1730 80%,
+        #0a1128 100%) !important;
+    position: relative;
+  }
+
+  /* 안개 레이어 — 모바일에서도 살려서 공포감 유지 */
+  .story-chapter-dark .chapter-fog,
+  .story-chapter-dark .chapter-fog-2 {
+    display: block !important;
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none;
+    opacity: 0.6;
+    animation: mobileFogDrift 20s ease-in-out infinite alternate;
+  }
+  .story-chapter-dark .chapter-fog {
+    background:
+      radial-gradient(ellipse 90% 40% at 20% 30%, rgba(180, 200, 230, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 70% 50% at 80% 70%, rgba(160, 180, 210, 0.06) 0%, transparent 55%);
+  }
+  .story-chapter-dark .chapter-fog-2 {
+    background:
+      radial-gradient(ellipse 80% 30% at 60% 20%, rgba(200, 220, 240, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 20% at 50% 90%, rgba(140, 170, 200, 0.04) 0%, transparent 60%);
+    animation-duration: 28s;
+    animation-direction: alternate-reverse;
+  }
+  @keyframes mobileFogDrift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); opacity: 0.5; }
+    50%  { transform: translate3d(-5%, 2%, 0) scale(1.05); opacity: 0.7; }
+    100% { transform: translate3d(3%, -1%, 0) scale(1); opacity: 0.5; }
+  }
+
+  /* Chapter 3 텍스트: 흰색으로 반전 — 어둠 속에 떠오르는 속삭임 */
+  .story-chapter-dark .story-text,
+  .story-chapter-dark .story-text.story-small,
+  .story-chapter-dark .story-text.story-pause,
+  .story-chapter-dark .story-text.story-whisper {
+    color: rgba(245, 247, 250, 0.92) !important;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+  }
+  .story-chapter-dark .story-text em {
+    color: rgba(140, 180, 220, 0.95) !important;
+    font-style: normal;
+    font-weight: 600;
+  }
+  /* 귀신처럼요 — 속삭임 톤 유지하되 흰색으로 */
+  .story-chapter-dark .story-text.story-whisper {
+    color: rgba(200, 215, 235, 0.75) !important;
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+  /* "맞습니다" — 잠시 쉬어가는 호흡, 살짝 어둡게 */
+  .story-chapter-dark .story-text.story-pause {
+    color: rgba(180, 200, 225, 0.7) !important;
+    letter-spacing: 0.1em;
+  }
+  /* 챕터 번호 watermark도 어두운 톤 */
+  .story-chapter-dark .story-chapter-num {
+    color: rgba(180, 200, 225, 0.06) !important;
+  }
+
+  /* ---------- Chapter 4 (Turn): 어둠 → 빛 전환. 과도기 톤 ---------- */
+  .story-chapter-turn {
+    background: linear-gradient(180deg,
+      #0e1730 0%,
+      #1a2a4a 25%,
+      #2a4068 50%,
+      #5878a8 75%,
+      #a8c4e4 100%) !important;
+  }
+  .story-chapter-turn .story-text {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.3);
+  }
+  .story-chapter-turn .story-text em {
+    color: rgba(200, 220, 245, 0.98) !important;
+    font-style: normal;
+    font-weight: 700;
+  }
+  /* Turn 끝자락 "두려움은 사라집니다" — 밝은 빛 */
+  .story-chapter-turn .story-text.story-emphasis {
+    color: rgba(20, 40, 70, 0.9) !important;
+    text-shadow: 0 2px 20px rgba(255, 255, 255, 0.4);
+  }
+
+  /* ---------- Chapter Resolve & Climax도 톤 점진적으로 ---------- */
+  .story-chapter-resolve {
+    background: linear-gradient(180deg,
+      #eef2f7 0%,
+      #f5f7fa 50%,
+      #eef2f7 100%) !important;
+  }
+
+  /* 다크 챕터들 간 트랜지션 하드 컷 방지 — fade */
+  .story-chapter-dark::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, #0e1730 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .story-chapter-turn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to top, transparent, #0e1730 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+/* ============================================================
+   🔧 .story-chapter 다시 flex 복원 (내 이전 override가 깨뜨렸음)
+   ============================================================ */
+@media (max-width: 768px) {
+  .story-chapter {
+    display: block !important;  /* 내부 story-line이 각자 100svh 먹으니 block 유지 */
+    position: relative !important;
+    overflow: hidden !important;  /* 배경 fx가 바깥으로 새지 않도록 */
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+  /* chapter-bg-fx가 story-chapter 전체를 덮도록 */
+  .story-chapter .chapter-bg-fx {
+    position: absolute !important;
+    inset: 0 !important;
+    pointer-events: none;
+    z-index: 0;
+  }
+  /* story-line은 relative + z-index 1로 위에 */
+  .story-chapter .story-line {
+    position: relative !important;
+    z-index: 2 !important;
+  }
+}
