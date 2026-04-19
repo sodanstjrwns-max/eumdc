@@ -356,11 +356,12 @@ export function mainPage() {
               <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
               <h3>보여드립니다</h3>
               <p class="pillar-lead">말로만 설명하지 않습니다.</p>
-              <p class="pillar-desc">CBCT와 구강스캐너로 촬영한 3D 영상을 모니터로 직접 보여드립니다. 어디가 어떻게 아프고, 왜 치료가 필요한지 — 환자분이 눈으로 확인하고 납득하실 때 비로소 치료를 시작합니다. "뭔지도 모르고 치료받았다"는 경험, 이음에서는 없습니다.</p>
+              <p class="pillar-desc"><strong>CBCT</strong>로 뼈와 신경을 3D로 꺼내 보이고, <strong>구강스캐너</strong>로 내 입 속을 그대로 스캔해 모니터에 띄웁니다. 여기에 <strong>큐레이펜 C</strong>로 엑스레이에도 안 잡히는 <em>초기 충치·미세 균열·플라그</em>까지 형광으로 비춰드립니다. 환자분이 눈으로 확인하고 납득하실 때 비로소 치료를 시작합니다. "뭔지도 모르고 치료받았다"는 경험, 이음에서는 없습니다.</p>
               <ul class="pillar-details">
-                <li>진료 전 3D 영상으로 상태 설명</li>
+                <li>CBCT 3D 영상으로 뼈·신경 상태 설명</li>
+                <li>구강스캐너로 치아 상태 실시간 공유</li>
+                <li>큐레이펜 C로 초기 충치·균열 시각화</li>
                 <li>치료 계획을 환자와 함께 수립</li>
-                <li>치료 과정마다 경과 사진 공유</li>
               </ul>
             </div>
             <div class="pillar-card" data-reveal>
@@ -594,6 +595,13 @@ export function mainPage() {
               <p class="equip-name-en">NiTram Endo System</p>
               <p class="equip-desc">니켈-티타늄 합금 파일을 이용한 정밀 근관치료(신경치료) 시스템입니다. 복잡한 치아 뿌리 형태에도 안전하게 적용되어 치료 성공률을 높이고 재치료를 줄입니다.</p>
               <span class="equip-benefit">환자 이점: 신경치료 성공률 향상 → 재치료 감소</span>
+            </div>
+            <div class="equip-item" data-reveal>
+              <span class="equip-num">07</span>
+              <h4>큐레이펜 C</h4>
+              <p class="equip-name-en">Qraypen C · QLF Fluorescence</p>
+              <p class="equip-desc">405nm 푸른 가시광선과 특수 필터(QLF 기술)로 치아의 형광 반응을 분석합니다. 건강한 법랑질은 녹색, 초기 충치·미세 균열은 어둡게, 세균 활성 부위는 붉은 형광으로 나타나 엑스레이로도 안 보이는 문제까지 눈으로 확인할 수 있습니다. 식약처 2등급 의료기기.</p>
+              <span class="equip-benefit">환자 이점: 초기 충치·균열 가시화 → 과잉진료 없는 증거 기반 진단</span>
             </div>
           </div>
         </div>
