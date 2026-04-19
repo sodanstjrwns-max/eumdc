@@ -2053,3 +2053,31 @@
 }
 
 /* End of STATS + GALLERY FIX v6 ═══════════════════════════════════════ */
+
+/* ─── STATS VISIBILITY FIX v7 — data-reveal opacity:0 우회 ─── */
+.story-stats [data-reveal],
+.story-stats .hero-stat {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+}
+
+.story-stats .hero-stat-num,
+.story-stats .hero-stat-unit,
+.story-stats .hero-stat-label {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* story-stats-inner가 빈 높이 나오지 않도록 최소 높이 보장 */
+.story-stats-inner {
+  min-height: 120px !important;
+}
+
+@media (max-width: 768px) {
+  .story-stats-inner {
+    min-height: 100px !important;
+  }
+}
+
+/* End v7 ═══════════════════════════════════════ */
