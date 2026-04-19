@@ -387,11 +387,6 @@ export function mainPage() {
             <div class="director-visual">
               <div class="director-frame" data-hover>
                 <img src="/static/img/photo_5.jpg" alt="이음치과의원 대표원장 최효영" class="director-photo" width="400" height="500" />
-                <div class="frame-content">
-                  <span class="frame-label">DIRECTOR</span>
-                  <div class="frame-name">최효영</div>
-                  <div class="frame-title">대표원장</div>
-                </div>
               </div>
             </div>
             <div class="director-info">

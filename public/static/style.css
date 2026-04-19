@@ -11182,3 +11182,118 @@ body.gsap-active .h-card.is-visible {
     z-index: 2 !important;
   }
 }
+
+/* ========================================================================
+   🔧 FIX v3 (2026-04-19) — Menu button visibility + Director photo
+   ======================================================================== */
+
+/* ---------- [1] MENU BUTTON always visible (white bg 문제 해결) ---------- */
+/* Default scrolled state: ensure strong contrast on translucent white bg */
+#nav.scrolled {
+  background: rgba(15, 27, 45, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+#nav.scrolled .nav-brand,
+#nav.scrolled .nav-booking,
+#nav.scrolled .nav-menu-btn {
+  color: #F5F7FA !important;
+}
+#nav.scrolled .nav-menu-btn {
+  border-color: rgba(245, 247, 250, 0.35) !important;
+  background: rgba(255, 255, 255, 0.06);
+}
+#nav.scrolled .nav-menu-btn span {
+  color: #F5F7FA !important;
+}
+#nav.scrolled .nav-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(245, 247, 250, 0.6) !important;
+}
+
+/* Over dark story chapters — keep same dark bar style (no inversion) */
+#nav.nav-dark-zone.scrolled,
+#nav.nav-dark-zone:not(.scrolled) {
+  background: rgba(15, 27, 45, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+}
+#nav.nav-dark-zone .nav-brand,
+#nav.nav-dark-zone .nav-booking,
+#nav.nav-dark-zone .nav-menu-btn,
+#nav.nav-dark-zone .nav-menu-btn span {
+  color: #F5F7FA !important;
+}
+#nav.nav-dark-zone .nav-menu-btn {
+  border-color: rgba(245, 247, 250, 0.35) !important;
+}
+
+/* Hero transparent state — light text on dark hero stays the same */
+#nav:not(.scrolled):not(.nav-dark-zone) .nav-menu-btn {
+  color: rgba(245, 247, 250, 0.95) !important;
+  border-color: rgba(245, 247, 250, 0.45) !important;
+}
+#nav:not(.scrolled):not(.nav-dark-zone) .nav-menu-btn span {
+  color: rgba(245, 247, 250, 0.95) !important;
+}
+
+/* Hover slide-in overlay → keep it consistent */
+.nav-menu-btn::before {
+  background: rgba(245, 247, 250, 0.18) !important;
+}
+.nav-menu-btn:hover span {
+  color: #F5F7FA !important;
+}
+
+/* ---------- [2] DIRECTOR FRAME — remove overlay leftovers ---------- */
+/* Defensive: even if cached HTML still has frame-content, hide it */
+.director-frame .frame-content { display: none !important; }
+
+/* Frame presentation — photo-first, subtle gold corner accents only */
+.director-frame {
+  aspect-ratio: 3/4;
+  display: block;
+  background: #0F1B2D;
+}
+.director-photo {
+  filter: saturate(0.95) contrast(1.03) brightness(0.98);
+}
+
+/* ---------- [3] DIRECTOR PHOTO — BIGGER on mobile ---------- */
+@media (max-width: 768px) {
+  .director-layout {
+    grid-template-columns: 1fr !important;
+    gap: 2.5rem !important;
+  }
+  .director-visual {
+    position: relative !important;
+    top: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .director-frame {
+    aspect-ratio: 4/5 !important;
+    max-width: 100% !important;
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(15, 27, 45, 0.18);
+  }
+  .director-photo {
+    object-position: center 20%;
+  }
+  /* Enhance corner accents on mobile for presence */
+  .director-frame::before,
+  .director-frame::after {
+    width: 36px;
+    height: 36px;
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .director-frame {
+    aspect-ratio: 4/5 !important;
+    border-radius: 12px;
+  }
+}
