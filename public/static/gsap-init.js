@@ -793,43 +793,36 @@
   }
 
   // ═══════════════════════════════════════════════════
-  // HORIZONTAL SCROLL — GSAP pin
+  // SERVICES CARDS — Clean CSS scroll-snap + fade-in
+  // (GSAP pin horizontal scroll 폐기 — 버벅임/overrun 문제 해결)
   // ═══════════════════════════════════════════════════
   function initHorizontalScroll() {
     var hTrack = document.getElementById('horizontalTrack');
-    if (!hTrack || !hTrack.parentElement) return;
+    if (!hTrack) return;
 
-    // 모바일에서는 GSAP pin 가로스크롤 비활성 → 네이티브 스와이프 사용
-    if (window.innerWidth <= 768) return;
-
-    var totalWidth = hTrack.scrollWidth - window.innerWidth;
-    if (totalWidth > 0) {
-      gsap.to(hTrack, {
-        scrollTrigger: {
-          trigger: hTrack.parentElement,
-          start: 'top top',
-          end: '+=' + totalWidth,
-          scrub: 1.5,
-          pin: true,
-          anticipatePin: 1
-        },
-        x: -totalWidth,
-        ease: 'none'
-      });
-    }
-
-    // Stagger cards
     var cards = hTrack.querySelectorAll('.h-card');
-    cards.forEach(function(card, i) {
-      gsap.from(card, {
-        scrollTrigger: {
-          trigger: card,
-          start: 'left 90%', end: 'left 50%', scrub: 1,
-          containerAnimation: gsap.getById && gsap.getById('hScroll') || undefined
-        },
-        opacity: 0.5, y: 20, duration: 0.5
-      });
-    });
+    if (!cards.length) return;
+
+    // IntersectionObserver로 카드 fade-in (모바일/데스크탑 공통)
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry, i) {
+          if (entry.isIntersecting) {
+            // 스태거 효과를 약간 넣음
+            var idx = Array.prototype.indexOf.call(cards, entry.target);
+            setTimeout(function() {
+              entry.target.classList.add('is-visible');
+            }, (idx % 3) * 80);
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+      cards.forEach(function(card) { io.observe(card); });
+    } else {
+      // Fallback: 전부 즉시 보이게
+      cards.forEach(function(card) { card.classList.add('is-visible'); });
+    }
   }
 
   // ═══════════════════════════════════════════════════
