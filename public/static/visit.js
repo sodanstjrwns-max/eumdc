@@ -38,12 +38,17 @@
         return;
       }
 
-      // Group by treatment
+      // Group by treatment — 엑셀에 가격 있는 진료만 표시
+      // treatment_id가 NULL인 항목은 "구강관리" 그룹으로 묶음
       var groups = {};
       prices.forEach(function (p) {
-        var key = p.treatment_slug || 'etc';
+        var key = p.treatment_slug || 'oral-care';
         if (!groups[key]) {
-          groups[key] = { name: p.treatment_name || '기타', icon: p.treatment_icon || '', items: [] };
+          groups[key] = {
+            name: p.treatment_name || '구강관리',
+            icon: p.treatment_icon || '',
+            items: []
+          };
         }
         groups[key].items.push(p);
       });
@@ -53,12 +58,11 @@
         var g = groups[key];
         html += '<div class="price-group">';
         html += '<h3 class="price-group-title">' + esc(g.name) + '</h3>';
-        html += '<table class="price-table"><thead><tr><th>항목</th><th>비용</th><th>보험</th><th>비고</th></tr></thead><tbody>';
+        html += '<table class="price-table"><thead><tr><th>항목</th><th>비용 (비급여)</th><th>비고</th></tr></thead><tbody>';
         g.items.forEach(function (p) {
           html += '<tr>' +
             '<td>' + esc(p.item_name) + '</td>' +
             '<td class="price-val">' + esc(p.price_text || '-') + '</td>' +
-            '<td>' + (p.insurance_covered ? '<span class="badge-insurance">보험적용</span>' : '-') + '</td>' +
             '<td class="price-note">' + esc(p.note || '') + '</td>' +
             '</tr>';
         });
