@@ -39,9 +39,9 @@ export interface SeoMeta {
 
 /** 기본 SEO 메타 */
 export const defaultSeo: SeoMeta = {
-  title: '이음치과의원 | 부산 명지 임플란트·심미보철·턱관절 전문',
-  description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철·턱관절(TMJ) 전문. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888',
-  keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, 최효영, 강서구치과, 명지국제신도시치과, 야간진료, 주말진료',
+  title: '이음치과의원 | 부산 명지 임플란트·심미보철 전문',
+  description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철 전문. 충치·신경치료·잇몸치료·턱관절·소아 등 일반진료까지. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888',
+  keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 최효영, 강서구치과, 명지국제신도시치과, 야간진료, 주말진료, 턱관절, 일반진료',
   ogType: 'website',
   ogImage: DEFAULT_IMAGE,
 }
@@ -58,7 +58,7 @@ export function localBusinessJsonLd() {
     '@id': `${SITE_URL}/#organization`,
     name: SITE_NAME,
     alternateName: SITE_NAME_EN,
-    description: '부산 명지 이음치과의원 - 임플란트, 심미보철, 턱관절 전문. 투명한 진료, 확실한 결과.',
+    description: '부산 명지 이음치과의원 - 임플란트, 심미보철 전문. 충치·잇몸·턱관절 등 일반진료까지. 투명한 진료, 확실한 결과.',
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -113,16 +113,16 @@ export function localBusinessJsonLd() {
         serviceOffer('임플란트', '디지털 가이드 기반 정밀 임플란트. CBCT와 구강스캐너 3D 진단. 원내 가이드 직접 제작.'),
         serviceOffer('심미보철', '라미네이트, 올세라믹, 지르코니아 크라운. 자연치아와 구별 불가한 정밀 보철.'),
         serviceOffer('심미레진', '자연치아 색상에 맞춘 레진 수복. 최소 삭제, 당일 완료.'),
-        serviceOffer('턱관절 치료', '턱관절 통증, 이갈이, 스플린트. 체계적 치료 프로토콜.'),
-        serviceOffer('일반진료', '충치, 신경치료, 사랑니 발치, 잇몸치료, 스케일링.')
+        serviceOffer('일반진료', '충치, 신경치료, 사랑니 발치, 잇몸치료, 스케일링.'),
+        serviceOffer('턱관절 치료', '턱관절 통증, 이갈이, 스플린트. 체계적 치료 프로토콜.')
       ]
     },
     availableService: [
       medicalService('임플란트', '디지털 가이드 기반 정밀 임플란트'),
       medicalService('심미보철', '라미네이트, 올세라믹, 지르코니아 크라운'),
       medicalService('심미레진', '자연치아색 레진 충전 및 수복'),
-      medicalService('턱관절 치료', '턱관절 통증, 이갈이, 스플린트'),
-      medicalService('일반진료', '충치, 신경치료, 사랑니, 스케일링')
+      medicalService('일반진료', '충치, 신경치료, 사랑니, 스케일링'),
+      medicalService('턱관절 치료', '턱관절 통증, 이갈이, 스플린트')
     ],
     // 리뷰 통합 (AEO - AI가 "평판" 참고)
     aggregateRating: {
@@ -156,7 +156,7 @@ export function personJsonLd() {
     '@id': `${SITE_URL}/#director`,
     name: '최효영',
     jobTitle: '대표원장',
-    description: '이음치과의원 대표원장. 강원대학교 치과대학 졸업. 임플란트, 심미보철, 턱관절 전문.',
+    description: '이음치과의원 대표원장. 강원대학교 치과대학 졸업. 임플란트, 심미보철 전문.',
     image: `${SITE_URL}/static/img/photo_5.jpg`,
     alumniOf: { '@type': 'CollegeOrUniversity', name: '강원대학교 치과대학' },
     worksFor: { '@type': 'Dentist', name: SITE_NAME, '@id': `${SITE_URL}/#organization` },
