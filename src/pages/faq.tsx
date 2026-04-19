@@ -1,3 +1,5 @@
+import { subPageLayout } from './layout'
+
 type FaqGroup = Record<string, { name: string; faqs: { id: number; question: string; answer: string; category_name: string; category_slug: string }[] }>
 
 export function faqPage(serverGroups?: FaqGroup) {
@@ -17,10 +19,9 @@ export function faqPage(serverGroups?: FaqGroup) {
     ? Object.values(serverGroups).reduce((sum, g) => sum + g.faqs.length, 0)
     : 0
 
-  return (
-    <div class="sub-page faq-page" itemscope itemtype="https://schema.org/FAQPage">
-      <div class="sub-page-content">
-        <div class="container-wide">
+  return subPageLayout('FAQ', (
+    <div class="faq-page" itemscope itemtype="https://schema.org/FAQPage">
+      <div class="container-wide">
           {/* Header */}
           <div class="page-hero-mini">
             <span class="section-label">FAQ</span>
@@ -101,12 +102,11 @@ export function faqPage(serverGroups?: FaqGroup) {
               </div>
             </div>
           </div>
-        </div>
       </div>
 
       <script dangerouslySetInnerHTML={{ __html: FAQ_SCRIPT }} />
     </div>
-  )
+  ))
 }
 
 function escHtml(s: string): string {

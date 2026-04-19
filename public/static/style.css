@@ -11297,3 +11297,105 @@ body.gsap-active .h-card.is-visible {
     border-radius: 12px;
   }
 }
+
+/* ========================================================================
+   🔧 FIX v4 (2026-04-19) — Menu button = solid pill (always readable)
+   ======================================================================== */
+
+/* Whole nav bar: strong dark pill on any background */
+#nav {
+  padding: 0.75rem clamp(1rem, 3vw, 2rem);
+}
+#nav.scrolled,
+#nav.nav-dark-zone,
+#nav.nav-dark-zone.scrolled {
+  background: rgba(15, 27, 45, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 24px rgba(15, 27, 45, 0.18);
+}
+
+/* MENU button — solid readable pill regardless of scroll state */
+.nav-menu-btn,
+#nav.scrolled .nav-menu-btn,
+#nav.nav-dark-zone .nav-menu-btn {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(245, 247, 250, 0.55) !important;
+  color: #F8F9FC !important;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 1 !important;
+  mix-blend-mode: normal !important;
+}
+.nav-menu-btn span,
+#nav.scrolled .nav-menu-btn span,
+#nav.nav-dark-zone .nav-menu-btn span {
+  color: #F8F9FC !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+}
+
+/* Hover — brighter, more prominent */
+.nav-menu-btn:hover,
+#nav.scrolled .nav-menu-btn:hover,
+#nav.nav-dark-zone .nav-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.26) !important;
+  border-color: rgba(245, 247, 250, 0.85) !important;
+}
+.nav-menu-btn:hover span {
+  color: #FFFFFF !important;
+}
+
+/* Disable the slide-up white overlay (was making button invisible) */
+.nav-menu-btn::before {
+  display: none !important;
+}
+
+/* Nav-booking — same treatment for consistency */
+.nav-booking,
+#nav.scrolled .nav-booking {
+  color: #F8F9FC !important;
+}
+
+/* Nav-brand (이음) — always readable */
+.nav-brand,
+#nav.scrolled .nav-brand,
+#nav.nav-dark-zone .nav-brand {
+  color: #F8F9FC !important;
+}
+
+/* nav-login button (로그인) */
+.nav-login-btn,
+#nav.scrolled .nav-login-btn,
+#nav.nav-dark-zone .nav-login-btn {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(245, 247, 250, 0.55) !important;
+  color: #F8F9FC !important;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+.nav-login-btn:hover {
+  background: rgba(255, 255, 255, 0.26) !important;
+}
+
+/* Mobile — ensure same readable pill on tight screens */
+@media (max-width: 768px) {
+  .nav-menu-btn {
+    padding: 0.5rem 1rem !important;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .nav-menu-btn span {
+    font-size: 0.65rem !important;
+    letter-spacing: 0.22em !important;
+  }
+  .nav-login-btn {
+    padding: 0.45rem 0.9rem !important;
+    font-size: 0.65rem !important;
+  }
+}

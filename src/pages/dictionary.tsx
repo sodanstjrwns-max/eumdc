@@ -2,11 +2,12 @@
 // 치과 용어 백과사전 — 목록 + 상세 페이지  (Premium v2)
 // 초성 검색, 카테고리 필터, 정렬, 자동완성, 통계
 // =============================================
+import { subPageLayout } from './layout'
 
 /** 백과사전 메인 페이지 */
 export function dictionaryPage() {
-  return (
-    <div class="sub-page dict-page">
+  return subPageLayout('DICTIONARY', (
+    <div class="dict-page">
       {/* ─── 히어로 ─── */}
       <header class="sub-hero dict-hero">
         <div class="sub-hero-inner">
@@ -160,13 +161,13 @@ export function dictionaryPage() {
 
       <script src="/static/dictionary.js"></script>
     </div>
-  )
+  ))
 }
 
 /** 백과사전 상세 페이지 */
 export function dictionaryDetailPage(slug: string) {
-  return (
-    <div class="sub-page dict-detail-page">
+  return subPageLayout('DICTIONARY', (
+    <div class="dict-detail-page">
       <header class="sub-hero dict-hero dict-hero-compact">
         <div class="sub-hero-inner">
           <nav class="breadcrumb" aria-label="브레드크럼">
@@ -197,5 +198,5 @@ export function dictionaryDetailPage(slug: string) {
 
       <script src="/static/dictionary.js"></script>
     </div>
-  )
+  ))
 }
