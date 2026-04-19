@@ -149,8 +149,18 @@ app.get('/treatments', (c) => {
 })
 
 // === 진료과목 상세 ===
+// 구 URL 호환: prosthetics → aesthetic (DB slug은 aesthetic)
+const TREATMENT_SLUG_ALIASES: Record<string, string> = {
+  'prosthetics': 'aesthetic',
+}
+
 app.get('/treatments/:slug', async (c) => {
-  const slug = c.req.param('slug')
+  const rawSlug = c.req.param('slug')
+  // 별칭 슬러그는 301 영구 리다이렉트
+  if (TREATMENT_SLUG_ALIASES[rawSlug]) {
+    return c.redirect(`/treatments/${TREATMENT_SLUG_ALIASES[rawSlug]}`, 301)
+  }
+  const slug = rawSlug
   const treatment = await c.env.DB.prepare(
     'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any

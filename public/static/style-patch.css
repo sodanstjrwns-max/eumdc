@@ -2671,3 +2671,217 @@ html body .floating-call svg path {
   top: -4px !important;
   bottom: -4px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   v16 — FULL MENU 타이포그래피 리파인
+   
+   설계 철학: "여백이 곧 럭셔리다"
+   - 기존: 60.8px 초대형 타이포 → 답답, 데스크탑 94% 세로 점유
+   - 변경: 타이포 30% 축소 + 트래킹(자간) 확장 + 좌측 인덱스 넘버
+   - 레퍼런스: Aēsop, Loro Piana, Hermès 글로벌 메뉴
+   ═══════════════════════════════════════════════════════════ */
+
+/* 메뉴 배경 — 불투명도 확실히 (히어로 비침 방지) */
+.full-menu {
+  background: #0F1B2D !important;
+}
+.full-menu.open {
+  background: linear-gradient(135deg, #0F1B2D 0%, #162744 60%, #1B3254 100%) !important;
+}
+.menu-overlay {
+  background: #0F1B2D !important;
+  opacity: 1 !important;
+}
+
+/* 컨테이너 — 중앙 정렬 + 최대폭 제한 (너무 넓게 퍼지지 않도록) */
+.menu-content {
+  max-width: 640px !important;
+  margin: 0 auto !important;
+  padding: clamp(4rem, 10vh, 6rem) clamp(2rem, 6vw, 4rem) clamp(3rem, 8vh, 5rem) !important;
+  justify-content: center !important;
+}
+
+/* 링크 스택 — 간격 확대 (여백으로 호흡) */
+.menu-links {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: clamp(0.25rem, 1.2vh, 0.75rem) !important;
+}
+
+/* 메뉴 링크 본체 — 타이포 30% 축소 + 자간 확장 */
+.menu-link {
+  font-family: var(--font-kr) !important;
+  /* 모바일 26px, 태블릿 32px, 데스크탑 42px (기존 대비 -30%) */
+  font-size: clamp(1.4rem, 3vw, 2.4rem) !important;
+  font-weight: 300 !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.4 !important;
+  color: rgba(255, 255, 255, 0.92) !important;
+  padding: clamp(0.4rem, 1.2vh, 0.9rem) 0 !important;
+  position: relative !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 인덱스 넘버 — 왼쪽으로 이동, Mist Blue 상시 노출 (더 세련됨) */
+.menu-link::after {
+  content: attr(data-index) !important;
+  position: absolute !important;
+  left: auto !important;
+  right: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  font-family: var(--font-en, 'Inter', sans-serif) !important;
+  font-size: 0.65rem !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.3em !important;
+  color: rgba(126, 168, 190, 0.5) !important;
+  opacity: 1 !important;
+  transition: color 0.3s var(--ease, ease), transform 0.3s var(--ease, ease) !important;
+}
+
+/* 호버: 색상만 살짝 변화 + 인덱스 활성화 */
+.menu-link:hover {
+  color: #7EA8BE !important;
+}
+.menu-link:hover::after {
+  color: #7EA8BE !important;
+  opacity: 1 !important;
+  transform: translateY(-50%) translateX(-4px) !important;
+}
+/* 텍스트 슬라이드 축소 (2rem → 0.5rem, 덜 산만) */
+.menu-link:hover span {
+  transform: translateX(0.5rem) !important;
+}
+
+/* 모바일 전용 — 패딩/간격 더 타이트하게 */
+@media (max-width: 768px) {
+  .menu-content {
+    padding: 5rem 1.5rem 3rem !important;
+    justify-content: flex-start !important;
+  }
+  .menu-links {
+    gap: 0.1rem !important;
+  }
+  .menu-link {
+    font-size: 1.5rem !important;   /* 기존 35.1px → 24px */
+    font-weight: 400 !important;
+    padding: 0.7rem 0 !important;
+    letter-spacing: -0.015em !important;
+  }
+  .menu-link::after {
+    font-size: 0.55rem !important;
+    letter-spacing: 0.25em !important;
+  }
+}
+
+/* 아주 작은 모바일 (360px 이하) */
+@media (max-width: 360px) {
+  .menu-link {
+    font-size: 1.35rem !important;   /* 21.6px */
+    padding: 0.6rem 0 !important;
+  }
+}
+
+/* 데스크탑 전용 — 여백 극대화, 타이포 절제 */
+@media (min-width: 1024px) {
+  .menu-content {
+    max-width: 720px !important;
+    padding: 6rem 4rem 4rem !important;
+    justify-content: center !important;
+  }
+  .menu-link {
+    font-size: 2.2rem !important;   /* 기존 60.8px → 35.2px */
+    padding: 0.6rem 0 !important;
+  }
+  .menu-link::after {
+    font-size: 0.7rem !important;
+  }
+}
+
+/* 메뉴 푸터 (LOCATION, 주소 등) — 더 미니멀하게 */
+.menu-footer {
+  padding-top: clamp(2rem, 4vh, 3rem) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin-top: clamp(2rem, 5vh, 3rem) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   v16.1 — 메뉴 링크 visibility 긴급 수정
+   원인: 원본의 .full-menu.open .menu-link nth-child(1~6)만 
+         transition-delay 있고 7~9는 없어서 상태 전환이 꼬이며
+         일부 링크가 opacity:0 상태로 남아있음
+   ═══════════════════════════════════════════════════════════ */
+
+/* 메뉴 열린 상태에서는 모든 링크 무조건 표시 */
+.full-menu.open .menu-link {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.3s ease !important;
+}
+
+/* 7~9번 링크 stagger 지연 추가 (자연스러운 등장 순서) */
+.full-menu.open .menu-link:nth-child(7) { transition-delay: 0.40s !important; }
+.full-menu.open .menu-link:nth-child(8) { transition-delay: 0.45s !important; }
+.full-menu.open .menu-link:nth-child(9) { transition-delay: 0.50s !important; }
+.full-menu.open .menu-link:nth-child(10) { transition-delay: 0.55s !important; }
+
+/* 닫힌 상태에서는 원래대로 숨김 (깜빡임 방지) */
+.full-menu:not(.open) .menu-link {
+  opacity: 0;
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   v16.2 — 메뉴 열림 속도 개선 + overlay 먼저 페이드
+   
+   기존: clip-path 0.8s ease-expo → 데스크탑에서 0.8초 내내 0% 근처
+         → 시각적으로 "메뉴가 느리게 열린다"
+   개선: clip-path 0.55s + easing 변경 + overlay는 opacity로
+         먼저 살짝 뜨게 해서 즉각 피드백
+   ═══════════════════════════════════════════════════════════ */
+
+.full-menu {
+  transition: clip-path 0.55s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* 오버레이는 투명→불투명으로 빠르게 전환 (0.3s) */
+.menu-overlay {
+  opacity: 0 !important;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.full-menu.open .menu-overlay {
+  opacity: 1 !important;
+}
+
+/* open 시 링크 등장 딜레이 단축 (전체 0.55s 안에 수렴) */
+.full-menu.open .menu-link:nth-child(1) { transition-delay: 0.05s !important; }
+.full-menu.open .menu-link:nth-child(2) { transition-delay: 0.08s !important; }
+.full-menu.open .menu-link:nth-child(3) { transition-delay: 0.11s !important; }
+.full-menu.open .menu-link:nth-child(4) { transition-delay: 0.14s !important; }
+.full-menu.open .menu-link:nth-child(5) { transition-delay: 0.17s !important; }
+.full-menu.open .menu-link:nth-child(6) { transition-delay: 0.20s !important; }
+.full-menu.open .menu-link:nth-child(7) { transition-delay: 0.23s !important; }
+.full-menu.open .menu-link:nth-child(8) { transition-delay: 0.26s !important; }
+.full-menu.open .menu-link:nth-child(9) { transition-delay: 0.29s !important; }
+.full-menu.open .menu-link:nth-child(10) { transition-delay: 0.32s !important; }
+
+/* ═══════════════════════════════════════════════════════════
+   v16.3 — 메뉴 텍스트 blur 제거
+   원인: GSAP scroll-velocity blur가 .menu-link에 상시 적용되어
+         메뉴 열린 상태에서도 blur(1~3px) 남아있음
+   ═══════════════════════════════════════════════════════════ */
+.full-menu,
+.full-menu *,
+.menu-content,
+.menu-content *,
+.menu-link,
+.menu-link *,
+.menu-link span {
+  filter: none !important;
+  -webkit-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}

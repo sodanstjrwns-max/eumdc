@@ -1023,7 +1023,7 @@
 (function () {
   var SERVICE_MAP = {
     '임플란트': 'implant',
-    '심미보철': 'prosthetics',
+    '심미보철': 'aesthetic',
     '심미 레진': 'resin',
     '턱관절': 'tmj',
     '일반진료': 'general'
