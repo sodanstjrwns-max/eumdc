@@ -2107,3 +2107,134 @@
 }
 
 /* End v8 ═════════════════════════════════════ */
+
+/* ═══ STATS FINAL v9 — 숫자 크기 + 솔리드 골드 강제 ═══ */
+.story-stats {
+  padding: 3.5rem 1rem !important;
+  background: linear-gradient(135deg, #0F1B2D 0%, #1a2d4a 50%, #0F1B2D 100%) !important;
+}
+.story-stats-inner {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  max-width: 560px !important;
+  margin: 0 auto !important;
+}
+.story-stats .hero-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  flex: 1 1 0 !important;
+  padding: 0.5rem !important;
+  gap: 0.4rem !important;
+  min-height: 110px !important;
+}
+.story-stats .hero-stat-num {
+  font-family: 'DM Serif Display', 'Inter', serif !important;
+  font-size: clamp(2.5rem, 11vw, 4rem) !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.02em !important;
+  /* 솔리드 골드 - gradient 제거로 가독성 확보 */
+  color: #F4C870 !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #F4C870 !important;
+  text-shadow: 0 2px 12px rgba(244, 200, 112, 0.3) !important;
+  display: inline-block !important;
+  width: auto !important;
+  margin: 0 !important;
+}
+.story-stats .hero-stat-unit {
+  font-family: 'DM Serif Display', 'Inter', serif !important;
+  font-size: clamp(1rem, 3.5vw, 1.4rem) !important;
+  color: #F4C870 !important;
+  opacity: 0.8 !important;
+  margin-left: 0.15rem !important;
+  font-weight: 400 !important;
+}
+.story-stats .hero-stat-label {
+  font-family: 'Noto Sans KR', sans-serif !important;
+  font-size: clamp(0.7rem, 2.8vw, 0.85rem) !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  letter-spacing: 0.05em !important;
+  text-transform: none !important;
+  margin-top: 0.6rem !important;
+  display: block !important;
+}
+.story-stats .hero-stat-divider {
+  display: none !important;
+}
+/* 제목이 있다면 */
+.story-stats h2, .story-stats .story-stats-title {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1rem !important;
+  text-align: center !important;
+  margin-bottom: 1.5rem !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  font-weight: 300 !important;
+}
+
+@media (min-width: 769px) {
+  .story-stats-inner {
+    max-width: 800px !important;
+    gap: 2rem !important;
+  }
+  .story-stats .hero-stat-num {
+    font-size: clamp(3rem, 5vw, 4.5rem) !important;
+  }
+}
+/* End v9 ════════════════════════ */
+
+/* ═══ GALLERY MOBILE SWIPE FINAL v9 ═══ */
+@media (max-width: 768px) {
+  .gallery-strip {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important;
+    touch-action: pan-x !important;
+    padding: 1rem 1rem !important;
+  }
+  .gallery-strip::-webkit-scrollbar { display: none !important; }
+  
+  .gallery-track {
+    animation: none !important;
+    -webkit-animation: none !important;
+    transform: none !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.75rem !important;
+    width: max-content !important;
+    padding-right: 2rem !important;
+  }
+  .gallery-track:hover { animation: none !important; }
+  
+  .gallery-item {
+    flex: 0 0 78vw !important;
+    max-width: 320px !important;
+    min-width: 260px !important;
+    height: 260px !important;
+    scroll-snap-align: center !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+  .gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+  }
+  /* 중복 아이템(무한 마퀴용) 숨김 */
+  .gallery-item[aria-hidden="true"] { display: none !important; }
+}
+/* End gallery v9 ═══════════════════ */
