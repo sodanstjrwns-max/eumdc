@@ -15,8 +15,8 @@ export function mainPage() {
       {/* === NAVIGATION === */}
       <nav id="nav">
         <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
-          <span class="nav-brand-mark">이음</span>
-          <span class="nav-brand-dot" aria-hidden="true"></span>
+          <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="40" height="44" loading="eager" />
+          <span class="nav-brand-mark">이음치과</span>
           <span class="nav-brand-sub">EUM · EST.2025</span>
         </a>
         <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
@@ -140,23 +140,11 @@ export function mainPage() {
             </a>
           </div>
 
-          {/* NEW — Micro proof row: 실제 신뢰 지표 */}
-          <div class="hero-proof" aria-label="신뢰 지표">
-            <div class="hero-proof-item">
-              <span class="hero-proof-star" aria-hidden="true">★</span>
-              <span class="hero-proof-num">4.9</span>
-              <span class="hero-proof-label">네이버 평점</span>
-            </div>
-            <span class="hero-proof-sep" aria-hidden="true"></span>
-            <div class="hero-proof-item">
-              <span class="hero-proof-num">387<span class="hero-proof-plus">+</span></span>
-              <span class="hero-proof-label">방문자 리뷰</span>
-            </div>
-            <span class="hero-proof-sep" aria-hidden="true"></span>
-            <div class="hero-proof-item">
-              <span class="hero-proof-num">8<span class="hero-proof-unit">년</span></span>
-              <span class="hero-proof-label">진료 경력</span>
-            </div>
+          {/* Brand signature — 실제 정체성 */}
+          <div class="hero-signature" aria-label="이음치과 시그니처">
+            <span class="hero-signature-ko">이음치과</span>
+            <span class="hero-signature-divider" aria-hidden="true"></span>
+            <span class="hero-signature-en">EUM DENTAL · MYEONGJI</span>
           </div>
 
           <div class="hero-bottom">
@@ -289,27 +277,18 @@ export function mainPage() {
           스토리 이후 증거를 순서대로 제시
       ═══════════════════════════════════════════════════ */}
 
-      {/* Stats — 숫자로 보는 신뢰 */}
-      <section class="story-stats" id="storyStats" aria-label="이음치과 성과">
+      {/* Brand Monogram — 숫자 대신 정체성 */}
+      <section class="story-brand" id="storyBrand" aria-label="이음치과 브랜드">
         <div class="container-wide">
-          <div class="story-stats-inner">
-            <div class="hero-stat" data-reveal>
-              <span class="hero-stat-num" data-count="387">0</span>
-              <span class="hero-stat-unit">+</span>
-              <span class="hero-stat-label">리뷰 수</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat" data-reveal>
-              <span class="hero-stat-num" data-count="4.9">0</span>
-              <span class="hero-stat-unit">★</span>
-              <span class="hero-stat-label">네이버 평점</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat" data-reveal>
-              <span class="hero-stat-num" data-count="8">0</span>
-              <span class="hero-stat-unit">년</span>
-              <span class="hero-stat-label">진료 경력</span>
-            </div>
+          <div class="story-brand-inner" data-reveal>
+            <span class="story-brand-kicker">EUM DENTAL CLINIC</span>
+            <h2 class="story-brand-name">이음치과</h2>
+            <span class="story-brand-divider" aria-hidden="true"></span>
+            <p class="story-brand-tagline">
+              실력으로 신뢰를,<br/>
+              신뢰로 마음까지 잇습니다.
+            </p>
+            <span class="story-brand-meta">Busan · Myeongji International City</span>
           </div>
         </div>
       </section>
@@ -619,7 +598,7 @@ export function mainPage() {
                 <span class="phone-number">051-206-5888</span>
               </a>
               <div class="contact-address">
-                <p>부산광역시 강서구 명지국제8로 265 2층</p>
+                <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
                 <p>이음치과의원</p>
                 <div class="contact-actions">
                   <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="naver-btn" data-hover>
@@ -655,7 +634,13 @@ export function mainPage() {
         <div class="container-wide">
           <div class="footer-top-grid">
             <div class="footer-brand-col">
-              <div class="footer-brand-big">이음</div>
+              <div class="footer-brand-logo">
+                <img src="/static/images/symbol-white.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
+                <div class="footer-brand-text">
+                  <div class="footer-brand-big">이음치과</div>
+                  <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
+                </div>
+              </div>
               <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
               <div class="footer-sns">
                 <a href="https://www.instagram.com/eum.dental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
@@ -691,8 +676,10 @@ export function mainPage() {
             </div>
           </div>
           <div class="footer-biz-info">
-            <p>이음치과의원 | 대표원장: 최효영 | 사업자등록번호: 000-00-00000</p>
-            <p>부산광역시 강서구 명지국제8로 265 2층 | TEL: 051-206-5888 | E-mail: hyogunim@gmail.com</p>
+            <p>이음치과의원 · 대표원장 최효영</p>
+            <p>사업자등록번호 624-45-01223</p>
+            <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
+            <p>TEL 051-206-5888 · hyogunim@gmail.com</p>
           </div>
           <div class="footer-bottom-bar">
             <span>&copy; <span id="footerYear">2025</span> 이음치과의원. All rights reserved.</span>

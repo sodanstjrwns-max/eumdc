@@ -79,7 +79,10 @@ export function noticeDetailPage(id: string, notice?: any, images?: any[]) {
     ))
   }
 
-  const contentHtml = notice.content_html || markdownToHtml(notice.content || '')
+  // content(마크다운 원본)가 있으면 우선 사용 — content_html이 구 버전 변환기로 저장된 경우가 있어 항상 재변환
+  const contentHtml = notice.content
+    ? markdownToHtml(notice.content)
+    : (notice.content_html || '')
 
   return subPageLayout('NOTICE', (
     <div class="page-notice-detail">

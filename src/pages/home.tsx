@@ -11,7 +11,10 @@ export function HomePage() {
 
       {/* === NAVIGATION === */}
       <nav id="nav" role="navigation" aria-label="메인 네비게이션">
-        <a href="/" class="nav-brand" data-hover>이음</a>
+        <a href="/" class="nav-brand nav-brand--logo" data-hover aria-label="이음치과의원 홈">
+          <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="36" height="40" loading="eager" />
+          <span class="nav-brand-text">이음치과</span>
+        </a>
         <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
           <span>네이버 예약</span>
@@ -84,25 +87,11 @@ export function HomePage() {
             <span class="title-line accent"><span class="title-word" data-split>잇습니다.</span></span>
           </h1>
 
-          {/* Hero Stats Counter */}
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="387">0</span>
-              <span class="hero-stat-unit">+</span>
-              <span class="hero-stat-label">리뷰 수</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="4.9">0</span>
-              <span class="hero-stat-unit">★</span>
-              <span class="hero-stat-label">네이버 평점</span>
-            </div>
-            <div class="hero-stat-divider"></div>
-            <div class="hero-stat">
-              <span class="hero-stat-num" data-count="8">0</span>
-              <span class="hero-stat-unit">년</span>
-              <span class="hero-stat-label">진료 경력</span>
-            </div>
+          {/* Brand signature — 숫자 대신 정체성 */}
+          <div class="hero-signature" aria-label="이음치과 시그니처">
+            <span class="hero-signature-ko">이음치과</span>
+            <span class="hero-signature-divider" aria-hidden="true"></span>
+            <span class="hero-signature-en">EUM DENTAL · MYEONGJI</span>
           </div>
 
           <div class="hero-bottom">
@@ -335,7 +324,7 @@ export function HomePage() {
                 <span class="phone-number">051-206-5888</span>
               </a>
               <div class="contact-address">
-                <p>부산광역시 강서구 명지국제8로 265 2층</p>
+                <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
                 <p>이음치과의원</p>
                 <div class="contact-actions">
                   <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" class="map-btn" data-hover>네이버 지도 →</a>
@@ -366,7 +355,13 @@ export function HomePage() {
       <footer class="footer-minimal">
         <div class="container-wide">
           <div class="footer-top">
-            <div class="footer-brand-big">이음</div>
+            <div class="footer-brand-logo">
+              <img src="/static/images/symbol-white.png" alt="이음치과의원" class="footer-brand-symbol" width="48" height="53" loading="lazy" />
+              <div class="footer-brand-text">
+                <div class="footer-brand-big">이음치과</div>
+                <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
+              </div>
+            </div>
             <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
           </div>
           <div class="footer-bottom-bar">

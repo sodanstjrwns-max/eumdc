@@ -604,15 +604,31 @@
     var group = document.getElementById('floatingCtaGroup');
     if (!btn && !group) return;
 
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 500) {
+    // Hide floating CTA when footer enters viewport (prevents overlap with 안내 column)
+    var footerVisible = false;
+    var footer = document.querySelector('footer.footer-full, footer.footer-minimal');
+    if (footer && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          footerVisible = entry.isIntersecting;
+          applyVisibility();
+        });
+      }, { rootMargin: '0px 0px -20% 0px', threshold: 0 });
+      io.observe(footer);
+    }
+
+    function applyVisibility() {
+      var shouldShow = window.scrollY > 500 && !footerVisible;
+      if (shouldShow) {
         if (group) group.classList.add('visible');
         if (btn) btn.classList.add('visible');
       } else {
         if (group) group.classList.remove('visible');
         if (btn) btn.classList.remove('visible');
       }
-    }, { passive: true });
+    }
+
+    window.addEventListener('scroll', applyVisibility, { passive: true });
   }
 
   /* ═══════════════════════════════════════════

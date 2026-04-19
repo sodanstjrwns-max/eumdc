@@ -41,7 +41,7 @@ export function seoRegionPage(slug: string, h1Title?: string) {
           <div class="region-info-grid">
             <div class="region-info-card">
               <h3>주소</h3>
-              <p>부산 강서구 명지국제8로 265 2층</p>
+              <p>부산 강서구 명지국제8로 265, 201호 (명지동)</p>
             </div>
             <div class="region-info-card">
               <h3>전화</h3>

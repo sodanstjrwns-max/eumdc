@@ -7,12 +7,12 @@
 export const SITE_URL = 'https://eumdc.kr'
 export const SITE_NAME = '이음치과의원'
 export const SITE_NAME_EN = 'Eum Dental Clinic'
-const DEFAULT_IMAGE = `${SITE_URL}/static/og-image.png`
+const DEFAULT_IMAGE = `${SITE_URL}/static/og-image.jpg`
 const LOGO_URL = `${SITE_URL}/static/favicon.svg`
 const PHONE = '+82-51-206-5888'
 const PHONE_DISPLAY = '051-206-5888'
 const EMAIL = 'hyogunim@gmail.com'
-const ADDRESS_FULL = '부산광역시 강서구 명지국제8로 265 2층'
+const ADDRESS_FULL = '부산광역시 강서구 명지국제8로 265, 201호 (명지동)'
 const NAVER_MAP_URL = 'https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90'
 
 // ─── SeoMeta 인터페이스 ───
@@ -78,7 +78,7 @@ export function localBusinessJsonLd() {
     paymentAccepted: '카드, 현금, 무이자 할부',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '명지국제8로 265 2층',
+      streetAddress: '명지국제8로 265, 201호',
       addressLocality: '부산광역시',
       addressRegion: '강서구',
       postalCode: '46726',
@@ -443,7 +443,7 @@ export function visitHowToJsonLd() {
     totalTime: 'PT60M',
     steps: [
       { name: '전화 예약', text: '051-206-5888로 전화하여 원하시는 날짜와 시간에 예약합니다. 카카오톡 예약도 가능합니다.' },
-      { name: '내원 및 접수', text: '부산 강서구 명지국제8로 265 2층에 내원하여 접수합니다. 주차 2시간 무료입니다.' },
+      { name: '내원 및 접수', text: '부산 강서구 명지국제8로 265, 201호 (명지동)에 내원하여 접수합니다. 주차 2시간 무료입니다.' },
       { name: '정밀 검진', text: 'CBCT 3D 영상, 구강 스캐너 등 디지털 장비로 정밀 검진을 진행합니다.' },
       { name: '상담 및 치료 계획', text: '검진 결과를 영상으로 직접 보여드리며 충분히 설명합니다. 치료 계획과 비용을 투명하게 안내합니다.' },
       { name: '치료 진행', text: '동의하신 치료 계획에 따라 최소 침습, 최대 보존 원칙으로 진료를 진행합니다.' },

@@ -8,7 +8,10 @@ export function subPageLayout(title: string, children: any) {
 
       {/* Navigation */}
       <nav id="nav" class="scrolled" role="navigation" aria-label="서브페이지 네비게이션">
-        <a href="/" class="nav-brand" data-hover>이음</a>
+        <a href="/" class="nav-brand nav-brand--logo" data-hover aria-label="이음치과의원 홈">
+          <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="36" height="40" loading="eager" />
+          <span class="nav-brand-text">이음치과</span>
+        </a>
         <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
           <span>네이버 예약</span>
@@ -77,7 +80,13 @@ export function subPageLayout(title: string, children: any) {
         <div class="container-wide">
           <div class="footer-top-grid">
             <div class="footer-brand-col">
-              <div class="footer-brand-big">이음</div>
+              <div class="footer-brand-logo">
+                <img src="/static/images/symbol-white.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
+                <div class="footer-brand-text">
+                  <div class="footer-brand-big">이음치과</div>
+                  <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
+                </div>
+              </div>
               <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
               <div class="footer-sns">
                 <a href="https://www.instagram.com/eum.dental/" target="_blank" rel="noopener" aria-label="인스타그램">
@@ -112,10 +121,18 @@ export function subPageLayout(title: string, children: any) {
             </div>
           </div>
           <div class="footer-biz-info">
-            <p>이음치과의원 | 대표원장: 최효영 | 부산광역시 강서구 명지국제8로 265 2층 | TEL: 051-206-5888</p>
+            <p>이음치과의원 · 대표원장 최효영</p>
+            <p>사업자등록번호 624-45-01223</p>
+            <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
+            <p>TEL 051-206-5888</p>
           </div>
           <div class="footer-bottom-bar">
             <span>&copy; 2025 이음치과의원. All rights reserved.</span>
+            <div class="footer-legal-links">
+              <a href="/about">개인정보처리방침</a>
+              <a href="/about">이용약관</a>
+              <a href="/notices">공지사항</a>
+            </div>
           </div>
         </div>
       </footer>

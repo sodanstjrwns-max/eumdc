@@ -159,7 +159,7 @@ export function visitGuidePage() {
                   <div class="map-pin">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                   </div>
-                  <p class="map-address">부산광역시 강서구 명지국제8로 265 2층</p>
+                  <p class="map-address">부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
                   <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" class="map-naver-btn">네이버 지도로 보기 →</a>
                 </div>
               </div>
@@ -170,7 +170,7 @@ export function visitGuidePage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>
                   주소
                 </h3>
-                <p>부산광역시 강서구 명지국제8로 265 2층<br/>이음치과의원</p>
+                <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)<br/>이음치과의원</p>
               </div>
               <div class="visit-info-card">
                 <h3>

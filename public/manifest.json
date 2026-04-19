@@ -1,0 +1,26 @@
+{
+  "name": "이음치과의원",
+  "short_name": "이음치과",
+  "description": "부산 명지국제신도시 이음치과의원 - 실력으로 신뢰를, 신뢰로 마음까지 잇습니다.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00306A",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/static/favicon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/favicon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
