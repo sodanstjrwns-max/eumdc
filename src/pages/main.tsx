@@ -14,8 +14,12 @@ export function mainPage() {
 
       {/* === NAVIGATION === */}
       <nav id="nav">
-        <a href="/" class="nav-brand" data-hover>이음</a>
-        <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" class="nav-booking" data-hover>
+        <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
+          <span class="nav-brand-mark">이음</span>
+          <span class="nav-brand-dot" aria-hidden="true"></span>
+          <span class="nav-brand-sub">EUM · EST.2025</span>
+        </a>
+        <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
           <span>네이버 예약</span>
         </a>
@@ -53,6 +57,7 @@ export function mainPage() {
               <span class="menu-label">CONTACT</span>
               <p><a href="tel:051-206-5888">051-206-5888</a></p>
               <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="menu-kakao-link">카카오톡 상담 →</a>
+              <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="menu-naver-link">네이버 예약 →</a>
             </div>
             <div class="menu-footer-col">
               <span class="menu-label">HOURS</span>
@@ -95,26 +100,63 @@ export function mainPage() {
         </div>
         <div class="hero-scan-line" id="heroScanLine" aria-hidden="true"></div>
 
+        {/* Premium frame: constellation horizon line + side vertical rule */}
+        <div class="hero-frame" aria-hidden="true">
+          <div class="hero-frame-horizon"></div>
+          <div class="hero-frame-grid"></div>
+        </div>
+
         <div class="hero-content">
           <div class="hero-tag">
             <span class="tag-line" aria-hidden="true"></span>
-            <span class="tag-text">EUM DENTAL CLINIC — BUSAN</span>
+            <span class="tag-text">EUM DENTAL CLINIC — BUSAN · 명지</span>
           </div>
           <h1 class="hero-title">
             <span class="title-line"><span class="title-word" data-split>치과가</span></span>
             <span class="title-line"><span class="title-word" data-split>그렇게도</span></span>
             <span class="title-line accent"><span class="title-word" data-split>두려운 이유</span></span>
           </h1>
-          {/* Hero CTA */}
+
+          {/* NEW — 서브카피: hook 다음의 한 줄 answer */}
+          <p class="hero-subcopy">
+            <span class="hero-subcopy-inner">
+              보이지 않기 때문입니다. <span class="hero-subcopy-accent">이음은, 모두 보여드립니다.</span>
+            </span>
+          </p>
+
+          {/* Hero CTA — 3 channels: Kakao(primary) · Naver booking · Call */}
           <div class="hero-cta-wrap">
-            <a href="tel:051-206-5888" class="hero-cta-btn" data-hover>
-              <span>지금 상담하기</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="hero-cta-btn hero-cta-kakao hero-cta-primary" data-hover>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+              <span>카카오톡 1분 상담</span>
             </a>
-            <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="hero-cta-btn hero-cta-kakao" data-hover>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-              <span>카카오톡 상담</span>
+            <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="hero-cta-btn hero-cta-naver" data-hover>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
+              <span>네이버 예약</span>
             </a>
+            <a href="tel:051-206-5888" class="hero-cta-btn hero-cta-ghost" data-hover>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              <span>051-206-5888</span>
+            </a>
+          </div>
+
+          {/* NEW — Micro proof row: 실제 신뢰 지표 */}
+          <div class="hero-proof" aria-label="신뢰 지표">
+            <div class="hero-proof-item">
+              <span class="hero-proof-star" aria-hidden="true">★</span>
+              <span class="hero-proof-num">4.9</span>
+              <span class="hero-proof-label">네이버 평점</span>
+            </div>
+            <span class="hero-proof-sep" aria-hidden="true"></span>
+            <div class="hero-proof-item">
+              <span class="hero-proof-num">387<span class="hero-proof-plus">+</span></span>
+              <span class="hero-proof-label">방문자 리뷰</span>
+            </div>
+            <span class="hero-proof-sep" aria-hidden="true"></span>
+            <div class="hero-proof-item">
+              <span class="hero-proof-num">8<span class="hero-proof-unit">년</span></span>
+              <span class="hero-proof-label">진료 경력</span>
+            </div>
           </div>
 
           <div class="hero-bottom">
@@ -521,11 +563,15 @@ export function mainPage() {
                 <p>부산광역시 강서구 명지국제8로 265 2층</p>
                 <p>이음치과의원</p>
                 <div class="contact-actions">
-                  <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" class="map-btn" data-hover>네이버 지도 →</a>
+                  <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="naver-btn" data-hover>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
+                    네이버 예약 →
+                  </a>
                   <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="kakao-btn" data-hover>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
                     카카오톡 상담 →
                   </a>
+                  <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" class="map-btn" data-hover>네이버 지도 →</a>
                 </div>
               </div>
             </div>
@@ -556,7 +602,7 @@ export function mainPage() {
                 <a href="https://www.instagram.com/eum.dental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
                 </a>
-                <a href="https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90" target="_blank" rel="noopener" aria-label="이음치과 네이버 지도">
+                <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" aria-label="이음치과 네이버 지도">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
                 </a>
                 <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" aria-label="이음치과 카카오톡 상담" class="footer-sns-kakao">
@@ -599,14 +645,19 @@ export function mainPage() {
         </div>
       </footer>
 
-      {/* Floating CTA */}
-      {/* Floating CTA Group */}
+      {/* Floating CTA Group — Kakao · Naver booking · Call */}
       <div class="floating-cta-group" id="floatingCtaGroup">
         <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="floating-btn floating-kakao" data-hover aria-label="카카오톡 상담">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+          <span class="floating-btn-label">카카오</span>
+        </a>
+        <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="floating-btn floating-naver" data-hover aria-label="네이버 예약">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
+          <span class="floating-btn-label">예약</span>
         </a>
         <a href="tel:051-206-5888" class="floating-btn floating-call" id="floatingCall" data-hover aria-label="전화 상담">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span class="floating-btn-label">전화</span>
         </a>
       </div>
 

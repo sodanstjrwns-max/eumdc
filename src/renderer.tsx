@@ -40,6 +40,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
 
         {/* CSS */}
         <link href="/static/style.css" rel="stylesheet" />
+        <link href="/static/style-patch.css" rel="stylesheet" />
 
         {/* GSAP for advanced animations */}
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>

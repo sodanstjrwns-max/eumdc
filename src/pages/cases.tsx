@@ -60,7 +60,12 @@ export function casesPage(cases?: any[]) {
         <div class="container-wide">
           {items.length === 0 ? (
             <div class="empty-state">
-              <p>등록된 케이스가 없습니다.</p>
+              <p>준비된 비포애프터 사례를 곧 공개합니다.<br/>실제 치료 결과가 궁금하시다면 직접 문의해 주세요.</p>
+              <div class="empty-state-cta-row">
+                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="empty-state-cta primary">카카오톡으로 사례 문의 →</a>
+                <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="empty-state-cta naver">네이버 예약 →</a>
+                <a href="tel:051-206-5888" class="empty-state-cta secondary">전화로 상담 ☎</a>
+              </div>
             </div>
           ) : (
             <div class="cases-grid" id="casesGrid">
