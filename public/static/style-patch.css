@@ -1833,3 +1833,222 @@
 }
 
 /* End of FLOATING CTA polish ═══════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STATS + GALLERY FIX v6 — 숫자 가시성 + 갤러리 터치 스와이프 (2026-04-19)
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── 1. STORY STATS — 배경 어둡게 + 넘버 선명하게 ─── */
+.story-stats {
+  background: 
+    radial-gradient(ellipse 60% 80% at 50% 50%, rgba(42,90,143,0.25) 0%, transparent 60%) !important,
+    linear-gradient(135deg, #0F1B2D 0%, #1a2d4a 50%, #0F1B2D 100%) !important;
+  padding: 4rem 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.story-stats::before {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: 
+    radial-gradient(ellipse 50% 80% at 50% 50%, rgba(244,200,112,0.06) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.story-stats .story-stats-inner {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2.5rem !important;
+  position: relative !important;
+  z-index: 2 !important;
+  flex-wrap: nowrap !important;
+  padding: 0 1rem !important;
+}
+
+.story-stats .hero-stat {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  padding: 1rem 1.5rem !important;
+  text-align: center !important;
+  position: relative !important;
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+.story-stats .hero-stat-num {
+  font-family: 'Playfair Display', 'Noto Serif KR', serif !important;
+  font-size: clamp(2.5rem, 7vw, 4rem) !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.025em !important;
+  background: linear-gradient(180deg, #FFE9A8 0%, #F4C870 50%, #D4A64A 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: 0 2px 20px rgba(244,200,112,0.2) !important;
+  opacity: 1 !important;
+}
+
+.story-stats .hero-stat-unit {
+  font-family: 'Playfair Display', 'Noto Serif KR', serif !important;
+  font-size: clamp(1.2rem, 3vw, 1.6rem) !important;
+  font-weight: 500 !important;
+  background: linear-gradient(180deg, #F4C870 0%, #D4A64A 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  margin-left: 0.1em !important;
+}
+
+.story-stats .hero-stat-label {
+  display: block !important;
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  color: rgba(255,255,255,0.75) !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  margin-top: 0.5rem !important;
+  white-space: nowrap !important;
+}
+
+.story-stats .hero-stat-divider {
+  display: block !important;
+  width: 1px !important;
+  height: 60px !important;
+  background: linear-gradient(180deg, 
+    transparent 0%, 
+    rgba(244,200,112,0.3) 30%, 
+    rgba(244,200,112,0.3) 70%, 
+    transparent 100%) !important;
+  flex-shrink: 0 !important;
+}
+
+/* 모바일: Stats 섹션 */
+@media (max-width: 768px) {
+  .story-stats {
+    padding: 3rem 0 !important;
+  }
+  .story-stats .story-stats-inner {
+    flex-direction: row !important;
+    gap: 0 !important;
+    padding: 0 0.75rem !important;
+  }
+  .story-stats .hero-stat {
+    padding: 0.5rem 0.25rem !important;
+    flex: 1 !important;
+  }
+  .story-stats .hero-stat-num {
+    font-size: 2rem !important;
+  }
+  .story-stats .hero-stat-unit {
+    font-size: 1rem !important;
+  }
+  .story-stats .hero-stat-label {
+    font-size: 0.6rem !important;
+    letter-spacing: 0.08em !important;
+    margin-top: 0.4rem !important;
+  }
+  .story-stats .hero-stat-divider {
+    width: 1px !important;
+    height: 40px !important;
+    display: block !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .story-stats .hero-stat-num {
+    font-size: 1.7rem !important;
+  }
+  .story-stats .hero-stat-label {
+    font-size: 0.55rem !important;
+  }
+}
+
+/* 카운트업 안 돼도 숫자 자체가 보이도록 data-count 초기값 대체 */
+.story-stats .hero-stat-num:empty::before,
+.story-stats .hero-stat-num:is([data-count]) {
+  min-width: 2ch !important;
+}
+
+/* ─── 2. GALLERY STRIP — 터치 스와이프 가능하게 ─── */
+.gallery-strip {
+  padding: 2rem 0 !important;
+  overflow: hidden !important;
+}
+
+/* 데스크톱: 기존 자동 마퀴 유지 */
+@media (min-width: 769px) {
+  .gallery-track {
+    animation: galleryScroll 45s linear infinite !important;
+  }
+  .gallery-strip:hover .gallery-track {
+    animation-play-state: paused !important;
+  }
+}
+
+/* 모바일: 자동 애니메이션 OFF → 수동 터치 스와이프 */
+@media (max-width: 768px) {
+  .gallery-strip {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+    scrollbar-width: none !important;
+    touch-action: pan-x !important;
+    padding: 1.5rem 0 !important;
+  }
+  .gallery-strip::-webkit-scrollbar {
+    display: none !important;
+  }
+  .gallery-track {
+    animation: none !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 0.75rem !important;
+    padding: 0 1rem !important;
+    width: max-content !important;
+    transform: none !important;
+  }
+  .gallery-item {
+    flex: 0 0 auto !important;
+    width: 80vw !important;
+    max-width: 320px !important;
+    height: 220px !important;
+    scroll-snap-align: center !important;
+    border-radius: 14px !important;
+    overflow: hidden !important;
+    box-shadow: 
+      0 8px 24px rgba(15,27,45,0.12),
+      0 2px 6px rgba(15,27,45,0.08) !important;
+  }
+  .gallery-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+  }
+  /* 모바일에선 중복 aria-hidden 이미지 숨겨서 깔끔하게 (원본 6장만 표시) */
+  .gallery-item[aria-hidden="true"] {
+    display: none !important;
+  }
+  /* 페이드 마스크 유지 */
+  .gallery-strip::before,
+  .gallery-strip::after {
+    width: 30px !important;
+  }
+}
+
+/* 힌트: 모바일에서 "← 스와이프 →" 같은 미묘한 UI 암시 */
+@media (max-width: 768px) {
+  .gallery-strip {
+    position: relative !important;
+  }
+}
+
+/* End of STATS + GALLERY FIX v6 ═══════════════════════════════════════ */

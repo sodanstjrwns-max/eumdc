@@ -331,15 +331,28 @@
       });
     }
 
-    var statsEl = document.querySelector('.hero-stats');
-    if (statsEl) {
+    // 초기값: data-count 값을 바로 표시 (애니메이션 실패해도 최소 숫자는 보이도록)
+    statNums.forEach(function(el) {
+      var target = el.getAttribute('data-count');
+      if (target) {
+        var isFloat = target.indexOf('.') > -1;
+        el.textContent = isFloat ? parseFloat(target).toFixed(1) : Math.floor(parseFloat(target)).toLocaleString();
+      }
+    });
+
+    // IntersectionObserver 트리거: story-stats 섹션이면 카운트업 재실행
+    var statsContainer = document.querySelector('.story-stats') || document.querySelector('.hero-stats');
+    if (statsContainer && 'IntersectionObserver' in window) {
       var observer = new IntersectionObserver(function (entries) {
         if (entries[0].isIntersecting) {
+          // 카운트업 위해 0으로 리셋 후 애니메이션
+          animated = false;
+          statNums.forEach(function(el) { el.textContent = '0'; });
           animateCounters();
           observer.disconnect();
         }
-      }, { threshold: 0.5 });
-      observer.observe(statsEl);
+      }, { threshold: 0.3 });
+      observer.observe(statsContainer);
     }
   }
 
