@@ -1,7 +1,9 @@
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { getCookie } from 'hono/cookie'
 import { renderer } from './renderer'
 import type { HonoEnv } from './types'
+import { verifyHmacToken } from './routes/auth'
 import casesRoutes from './routes/cases'
 import blogsRoutes from './routes/blogs'
 import noticesRoutes from './routes/notices'
@@ -86,6 +88,9 @@ app.use('*', async (c, next) => {
   } else if (path === '/sitemap.xml' || path === '/robots.txt') {
     // SEO 인프라: 1시간 캐시
     c.header('Cache-Control', 'public, max-age=3600, s-maxage=3600')
+  } else if (path === '/cases' || path.startsWith('/cases/')) {
+    // 비포애프터: 로그인 여부에 따라 응답이 달라짐 → 캐시 금지
+    c.header('Cache-Control', 'private, no-store, no-cache, must-revalidate')
   } else if (status === 200 && c.req.method === 'GET') {
     // 공개 HTML 페이지: 브라우저 5분, CF 엣지 1시간 (stale-while-revalidate로 끊김 없음)
     c.header('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400')
@@ -357,14 +362,40 @@ app.get('/visit', (c) => {
   })
 })
 
+// === 사용자 로그인 여부 확인 헬퍼 ===
+async function isUserLoggedIn(c: any): Promise<boolean> {
+  const session = getCookie(c, 'eum_user')
+  if (!session) return false
+  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const payload = await verifyHmacToken(session, secret)
+  if (!payload || !payload.startsWith('eum-user:')) return false
+  try {
+    const userId = parseInt(payload.split(':')[1])
+    if (!userId) return false
+    const user = await c.env.DB.prepare(
+      'SELECT id FROM users WHERE id = ? AND is_active = 1'
+    ).bind(userId).first()
+    return !!user
+  } catch {
+    return false
+  }
+}
+
 // === 비포애프터 목록 ===
 app.get('/cases', async (c) => {
+  const loggedIn = await isUserLoggedIn(c)
   const { results } = await c.env.DB.prepare(
     `SELECT id, title, category, description, pano_before, pano_after, intra_before, intra_after,
      patient_age_group, patient_gender, region_text, treatment_duration, views, created_at
      FROM cases WHERE is_published = 1 ORDER BY created_at DESC`
   ).all() as any
-  return c.render(casesPage(results || []), {
+  // 비로그인: after 이미지 URL을 응답에서 제거 (HTML 소스/DevTools에서도 노출 방지)
+  const safeResults = (results || []).map((r: any) => loggedIn ? r : ({
+    ...r,
+    pano_after: null,
+    intra_after: null
+  }))
+  return c.render(casesPage(safeResults, loggedIn), {
     seo: {
       title: '비포애프터 | 이음치과 임플란트·라미네이트 치료 전후',
       description: '이음치과 실제 치료 비포애프터. 임플란트, 라미네이트·올세라믹 심미보철, 심미 레진, 턱관절(TMJ) 케이스별 치료 전후 사진을 확인하고 본인의 치료 결과를 미리 가늠해보세요.',
@@ -386,7 +417,13 @@ app.get('/cases', async (c) => {
 // === 비포애프터 상세 (동적 SEO) ===
 app.get('/cases/:id', async (c) => {
   const id = c.req.param('id')
+  const loggedIn = await isUserLoggedIn(c)
   const caseData = await c.env.DB.prepare('SELECT * FROM cases WHERE id = ? AND is_published = 1').bind(id).first() as any
+  // 비로그인 시 after 이미지 URL 제거 (HTML 소스 노출 방지)
+  if (caseData && !loggedIn) {
+    caseData.pano_after = null
+    caseData.intra_after = null
+  }
 
   // 존재하지 않는 case → 404
   if (!caseData) {
@@ -422,14 +459,14 @@ app.get('/cases/:id', async (c) => {
     tmj: '턱관절', general: '일반진료'
   }
 
-  return c.render(caseDetailPage(id, caseData, doctor, dictTerms || []), {
+  return c.render(caseDetailPage(id, caseData, doctor, dictTerms || [], loggedIn), {
     seo: {
       title: `${title} | 이음치과 ${categoryNames[category] || ''} 비포애프터`,
       description: desc,
       keywords: `${categoryNames[category] || ''} 비포애프터, ${categoryNames[category] || ''} 전후사진, 치과 치료결과, 이음치과`,
       canonical: `${SITE_URL}/cases/${id}`,
       ogUrl: `${SITE_URL}/cases/${id}`,
-      ogImage: caseData?.pano_after || caseData?.intra_after || undefined,
+      ogImage: loggedIn ? (caseData?.pano_after || caseData?.intra_after || undefined) : undefined,
       jsonLd: [
         caseData ? caseDetailJsonLd({
           id: caseData.id, title, category,

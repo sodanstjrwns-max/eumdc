@@ -82,24 +82,12 @@
     return d.innerHTML;
   }
 
-  // === CASES LIST (before visible, after login-gated) ===
+  // === CASES LIST (SSR 렌더링 - 클라이언트 필터만 처리) ===
   function initCasesPage() {
     var grid = document.getElementById('casesGrid');
     if (!grid) return;
 
-    var isLoggedIn = !!currentUser;
-    var loginBanner = document.getElementById('loginGateBanner');
-
-    // Show login gate banner if not logged in
-    if (!isLoggedIn && loginBanner) {
-      loginBanner.style.display = '';
-    }
-
-    var page = 1;
-    var category = 'all';
-    var loading = false;
-
-    // Filter buttons
+    // 필터 버튼: SSR 카드를 data-cat 기준으로 show/hide
     var filterBar = document.getElementById('caseFilter');
     if (filterBar) {
       filterBar.addEventListener('click', function (e) {
@@ -107,89 +95,17 @@
         if (!btn) return;
         filterBar.querySelectorAll('.filter-btn').forEach(function (b) { b.classList.remove('active'); });
         btn.classList.add('active');
-        category = btn.dataset.cat;
-        page = 1;
-        grid.innerHTML = '<div class="loading-spinner">불러오는 중...</div>';
-        loadCases();
+        var category = btn.dataset.cat;
+        var cards = grid.querySelectorAll('.case-card');
+        cards.forEach(function (card) {
+          if (category === 'all' || card.dataset.cat === category) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
       });
     }
-
-    function loadCases() {
-      if (loading) return;
-      loading = true;
-      var url = '/api/cases?page=' + page + '&limit=12';
-      if (category !== 'all') url += '&category=' + category;
-      fetch(url).then(function (r) { return r.json(); }).then(function (data) {
-        if (page === 1) grid.innerHTML = '';
-
-        var items = data.cases || [];
-
-        if (items.length === 0 && page === 1) {
-          grid.innerHTML = '<div class="empty-state"><p>등록된 케이스가 없습니다.</p></div>';
-        }
-
-        items.forEach(function (c) {
-          var beforeImg = c.pano_before || c.intra_before || '';
-          var afterImg = c.pano_after || c.intra_after || '';
-          var card = document.createElement('a');
-          card.href = '/cases/' + c.id;
-          card.className = 'case-card';
-          card.setAttribute('data-hover', '');
-
-          // Before image is ALWAYS visible
-          var beforeHtml = '';
-          if (beforeImg) {
-            beforeHtml = '<div class="case-card-before"><img src="' + beforeImg + '" alt="Before" loading="lazy"/><div class="case-img-label">Before</div></div>';
-          }
-
-          // After image: blurred if not logged in
-          var afterHtml = '';
-          if (afterImg) {
-            if (isLoggedIn) {
-              afterHtml = '<div class="case-card-after"><img src="' + afterImg + '" alt="After" loading="lazy"/><div class="case-img-label after">After</div></div>';
-            } else {
-              afterHtml = '<div class="case-card-after blurred"><img src="' + afterImg + '" alt="After" loading="lazy"/><div class="case-img-label after">After</div>' +
-                '<div class="blur-overlay"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>로그인 후 열람</span></div></div>';
-            }
-          }
-
-          // No image fallback
-          if (!beforeImg && !afterImg) {
-            beforeHtml = '<div class="case-card-before"><div class="no-img">NO IMAGE</div></div>';
-          }
-
-          // Meta info line
-          var metaParts = [];
-          if (c.patient_age_group) metaParts.push(esc(c.patient_age_group));
-          if (c.patient_gender) metaParts.push(c.patient_gender === 'M' ? '남성' : c.patient_gender === 'F' ? '여성' : esc(c.patient_gender));
-          if (c.treatment_duration) metaParts.push(esc(c.treatment_duration));
-          if (c.region_text) metaParts.push(esc(c.region_text));
-
-          card.innerHTML =
-            '<div class="case-card-images">' + beforeHtml + afterHtml + '</div>' +
-            '<div class="case-card-body">' +
-              '<span class="case-tag">' + categoryLabel(c.category) + '</span>' +
-              '<h3>' + esc(c.title || '') + '</h3>' +
-              (metaParts.length > 0 ? '<div class="case-patient-info">' + metaParts.join(' · ') + '</div>' : '') +
-              '<div class="case-meta"><span>' + formatDate(c.created_at) + '</span><span>조회 ' + (c.views || 0) + '</span></div>' +
-            '</div>';
-          grid.appendChild(card);
-        });
-
-        var loadMoreBtn = document.getElementById('casesLoadMore');
-        if (loadMoreBtn) {
-          loadMoreBtn.style.display = (data.total > page * 12) ? '' : 'none';
-        }
-        loading = false;
-      }).catch(function () { loading = false; });
-    }
-
-    var loadMoreBtn = document.getElementById('casesLoadMore');
-    if (loadMoreBtn) {
-      loadMoreBtn.addEventListener('click', function () { page++; loadCases(); });
-    }
-
-    loadCases();
   }
 
   // === CASE DETAIL (before visible, after login-gated) ===

@@ -13,7 +13,7 @@ const CATEGORY_NAMES: Record<string, string> = {
   prevention: '예방'
 }
 
-export function casesPage(cases?: any[]) {
+export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
   const items = cases || []
   return subPageLayout('BEFORE & AFTER', (
     <div class="page-cases">
@@ -25,23 +25,25 @@ export function casesPage(cases?: any[]) {
         </div>
       </section>
 
-      <div class="login-gate-banner" id="loginGateBanner" style="display:none">
-        <div class="container-wide">
-          <div class="gate-content">
-            <div class="gate-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <div class="gate-text">
-              <h3>회원 전용 콘텐츠입니다</h3>
-              <p>비포애프터 사진은 환자 보호를 위해 로그인 후 열람하실 수 있습니다.</p>
-            </div>
-            <div class="gate-actions">
-              <a href="/login" class="gate-btn-login">로그인</a>
-              <a href="/signup" class="gate-btn-signup">회원가입</a>
+      {!isLoggedIn && (
+        <div class="login-gate-banner" id="loginGateBanner">
+          <div class="container-wide">
+            <div class="gate-content">
+              <div class="gate-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="gate-text">
+                <h3>AFTER 사진은 회원 전용입니다</h3>
+                <p>의료법에 따라 치료 후(AFTER) 사진은 로그인하신 회원에게만 공개됩니다. 로그인 또는 회원가입 후 열람하세요.</p>
+              </div>
+              <div class="gate-actions">
+                <a href="/login" class="gate-btn-login">로그인</a>
+                <a href="/signup" class="gate-btn-signup">회원가입</a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <section class="page-filter">
         <div class="container-wide">
@@ -80,11 +82,18 @@ export function casesPage(cases?: any[]) {
                             <img src={cs.pano_before || cs.intra_before} alt={`${cs.title} Before`} loading="lazy" />
                           ) : <div class="case-thumb-placeholder">No Image</div>}
                         </div>
-                        <div class="case-thumb">
+                        <div class={`case-thumb${!isLoggedIn ? ' locked' : ''}`}>
                           <span class="case-label after">AFTER</span>
-                          {cs.pano_after || cs.intra_after ? (
-                            <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
-                          ) : <div class="case-thumb-placeholder">No Image</div>}
+                          {isLoggedIn ? (
+                            cs.pano_after || cs.intra_after ? (
+                              <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
+                            ) : <div class="case-thumb-placeholder">No Image</div>
+                          ) : (
+                            <div class="case-thumb-lock">
+                              <svg class="lock-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                              <span class="lock-text">로그인 후 열람</span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -115,7 +124,8 @@ export function caseDetailPage(
   id: string,
   caseData?: any,
   doctor?: any,
-  dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>
+  dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>,
+  isLoggedIn: boolean = false
 ) {
   if (!caseData) {
     return subPageLayout('CASE DETAIL', (
@@ -142,6 +152,18 @@ export function caseDetailPage(
     descHtml = linkDictionaryTerms(descHtml, dictTerms)
   }
 
+  const lockedAfter = (
+    <div class="compare-lock">
+      <svg class="lock-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <div class="lock-title">회원 전용 콘텐츠</div>
+      <p class="lock-desc">의료법에 따라 AFTER 사진은 로그인하신 회원에게만 공개됩니다.</p>
+      <div class="lock-actions">
+        <a href="/login" class="gate-btn-login">로그인</a>
+        <a href="/signup" class="gate-btn-signup">회원가입</a>
+      </div>
+    </div>
+  )
+
   return subPageLayout('CASE DETAIL', (
     <div class="page-case-detail">
       <section class="page-hero-mini">
@@ -149,6 +171,27 @@ export function caseDetailPage(
           <a href="/cases" class="back-link" data-hover>← 목록으로</a>
         </div>
       </section>
+
+      {!isLoggedIn && (
+        <div class="login-gate-banner" id="loginGateBanner">
+          <div class="container-wide">
+            <div class="gate-content">
+              <div class="gate-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div class="gate-text">
+                <h3>AFTER 사진은 회원 전용입니다</h3>
+                <p>BEFORE 사진과 치료 내용은 모두에게 공개됩니다. AFTER 결과 사진은 로그인 후 열람하세요.</p>
+              </div>
+              <div class="gate-actions">
+                <a href="/login" class="gate-btn-login">로그인</a>
+                <a href="/signup" class="gate-btn-signup">회원가입</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section class="case-detail-section">
         <div class="container-wide">
           <article class="case-article">
@@ -166,7 +209,7 @@ export function caseDetailPage(
 
             {/* 비포애프터 비교 이미지 */}
             <div class="case-compare-grid">
-              {(caseData.pano_before || caseData.pano_after) && (
+              {(caseData.pano_before || caseData.pano_after || !isLoggedIn) && caseData.pano_before && (
                 <div class="compare-set">
                   <h2 class="compare-title">파노라마 X-ray</h2>
                   <div class="compare-pair">
@@ -176,16 +219,18 @@ export function caseDetailPage(
                         <img src={caseData.pano_before} alt={`${caseData.title} 파노라마 비포`} loading="eager" />
                       ) : <div class="compare-placeholder">No Image</div>}
                     </figure>
-                    <figure class="compare-item">
+                    <figure class={`compare-item${!isLoggedIn ? ' locked' : ''}`}>
                       <span class="compare-label after">AFTER</span>
-                      {caseData.pano_after ? (
-                        <img src={caseData.pano_after} alt={`${caseData.title} 파노라마 애프터`} loading="eager" />
-                      ) : <div class="compare-placeholder">No Image</div>}
+                      {isLoggedIn ? (
+                        caseData.pano_after ? (
+                          <img src={caseData.pano_after} alt={`${caseData.title} 파노라마 애프터`} loading="eager" />
+                        ) : <div class="compare-placeholder">No Image</div>
+                      ) : lockedAfter}
                     </figure>
                   </div>
                 </div>
               )}
-              {(caseData.intra_before || caseData.intra_after) && (
+              {(caseData.intra_before || caseData.intra_after || !isLoggedIn) && caseData.intra_before && (
                 <div class="compare-set">
                   <h2 class="compare-title">구강 사진</h2>
                   <div class="compare-pair">
@@ -195,11 +240,13 @@ export function caseDetailPage(
                         <img src={caseData.intra_before} alt={`${caseData.title} 구강 비포`} loading="lazy" />
                       ) : <div class="compare-placeholder">No Image</div>}
                     </figure>
-                    <figure class="compare-item">
+                    <figure class={`compare-item${!isLoggedIn ? ' locked' : ''}`}>
                       <span class="compare-label after">AFTER</span>
-                      {caseData.intra_after ? (
-                        <img src={caseData.intra_after} alt={`${caseData.title} 구강 애프터`} loading="lazy" />
-                      ) : <div class="compare-placeholder">No Image</div>}
+                      {isLoggedIn ? (
+                        caseData.intra_after ? (
+                          <img src={caseData.intra_after} alt={`${caseData.title} 구강 애프터`} loading="lazy" />
+                        ) : <div class="compare-placeholder">No Image</div>
+                      ) : lockedAfter}
                     </figure>
                   </div>
                 </div>

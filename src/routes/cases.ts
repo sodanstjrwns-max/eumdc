@@ -1,8 +1,29 @@
 import { Hono } from 'hono'
+import { getCookie } from 'hono/cookie'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
+import { verifyHmacToken } from './auth'
 
 const cases = new Hono<HonoEnv>()
+
+// 사용자 로그인 여부 (AFTER 이미지 접근 권한 확인)
+async function isUserLoggedIn(c: any): Promise<boolean> {
+  const session = getCookie(c, 'eum_user')
+  if (!session) return false
+  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const payload = await verifyHmacToken(session, secret)
+  if (!payload || !payload.startsWith('eum-user:')) return false
+  try {
+    const userId = parseInt(payload.split(':')[1])
+    if (!userId) return false
+    const user = await c.env.DB.prepare(
+      'SELECT id FROM users WHERE id = ? AND is_active = 1'
+    ).bind(userId).first()
+    return !!user
+  } catch {
+    return false
+  }
+}
 
 // List cases (public) — with expanded filters
 cases.get('/api/cases', async (c) => {
@@ -32,7 +53,10 @@ cases.get('/api/cases', async (c) => {
      FROM cases ${where} ORDER BY created_at DESC LIMIT ? OFFSET ?`
   ).bind(...dataBinds).all()
 
-  return c.json({ cases: results, total: (countResult as any)?.total || 0, page, limit })
+  // 비로그인 시 AFTER 이미지 URL 제거 (API 응답에서도 숨김)
+  const loggedIn = await isUserLoggedIn(c)
+  const safe = (results || []).map((r: any) => loggedIn ? r : ({ ...r, pano_after: null, intra_after: null }))
+  return c.json({ cases: safe, total: (countResult as any)?.total || 0, page, limit, loggedIn })
 })
 
 // Get single case + increment views
@@ -49,7 +73,14 @@ cases.get('/api/cases/:id', async (c) => {
     doctor = await c.env.DB.prepare('SELECT id, name, slug, title, photo FROM doctors WHERE id = ?').bind(caseData.doctor_id).first()
   }
 
-  return c.json({ ...caseData, doctor })
+  // 비로그인 시 AFTER 이미지 URL 제거
+  const loggedIn = await isUserLoggedIn(c)
+  if (!loggedIn) {
+    caseData.pano_after = null
+    caseData.intra_after = null
+  }
+
+  return c.json({ ...caseData, doctor, loggedIn })
 })
 
 // Admin: list all (incl unpublished)
