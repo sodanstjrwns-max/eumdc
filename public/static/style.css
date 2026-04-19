@@ -10672,14 +10672,121 @@ img[loading="lazy"] {
     min-height: 100dvh;
     height: auto !important;
   }
-  /* story-line들은 너무 크면 오히려 짜증. 자연스러운 흐름용으로 */
-  .story-line {
+  /* 🎬 한 문장 = 한 컷. 모든 story-line을 화면 꽉 채워 시네마틱 시퀀스 */
+  .story-chapter {
+    /* 챕터는 그저 line들을 담는 래퍼로. 높이 강제 X */
     min-height: auto !important;
     height: auto !important;
-    padding: 4rem 1.25rem !important;
+    display: block !important;
+    padding: 0 !important;
+    position: relative;
   }
+
+  /* ⭐ 핵심: 각 story-line이 화면 하나 = 하나의 "컷" */
+  .story-chapter .story-line,
+  .story-line {
+    min-height: 100svh !important;
+    min-height: 100dvh;
+    height: auto !important;
+    padding: 2rem 1.5rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100%;
+    position: relative;
+    margin: 0 !important;
+  }
+
+  /* 챕터 번호(01, 02...)는 뒷배경 장식으로 */
+  .story-line .story-chapter-num {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    font-size: clamp(8rem, 35vw, 16rem) !important;
+    opacity: 0.05 !important;
+    z-index: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .story-line .story-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* 피날레는 풀블리드로 임팩트 */
   .story-line-finale {
-    min-height: 80svh !important;
+    min-height: 100svh !important;
+    min-height: 100dvh !important;
+  }
+
+  /* 타이포 재튜닝 — 한 컷에 한 문장이니 과하지 않되 충분한 무게 */
+  .story-text.story-question {
+    font-size: clamp(1.9rem, 8vw, 2.8rem) !important;
+    line-height: 1.3 !important;
+    font-weight: 700 !important;
+    word-break: keep-all;
+  }
+  .story-text.story-solo {
+    font-size: clamp(2.4rem, 10vw, 3.6rem) !important;
+    font-weight: 500 !important;
+    letter-spacing: -0.02em;
+  }
+  .story-text.story-emphasis {
+    font-size: clamp(1.3rem, 5.5vw, 1.9rem) !important;
+    font-weight: 600 !important;
+    line-height: 1.6 !important;
+    word-break: keep-all;
+  }
+  .story-text.story-emphasis::after {
+    margin-top: 1.5rem !important;
+  }
+  .story-text.story-small {
+    font-size: clamp(1.3rem, 5vw, 1.8rem) !important;
+    font-weight: 400 !important;
+    color: var(--dark-text-dim, rgba(0,0,0,0.55)) !important;
+  }
+  .story-text.story-pause {
+    font-size: clamp(1.6rem, 6vw, 2.2rem) !important;
+    font-weight: 400 !important;
+    letter-spacing: 0.05em;
+  }
+  .story-text.story-whisper {
+    font-size: clamp(1.4rem, 5.5vw, 2rem) !important;
+    font-style: italic;
+    font-weight: 300 !important;
+    opacity: 0.85;
+  }
+  .story-text.story-turn {
+    font-size: clamp(2.2rem, 9vw, 3.4rem) !important;
+    line-height: 1.2 !important;
+    font-weight: 700 !important;
+    word-break: keep-all;
+  }
+  .story-text.story-bridge {
+    font-size: clamp(1.2rem, 4.5vw, 1.6rem) !important;
+    font-weight: 300 !important;
+  }
+  .story-text.story-action {
+    font-size: clamp(1.8rem, 7vw, 2.6rem) !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    word-break: keep-all;
+  }
+  .story-text.story-finale {
+    font-size: clamp(2.8rem, 12vw, 4.8rem) !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+    word-break: keep-all;
+  }
+  .story-text {
+    /* 기본 story-text 모바일 폴백 */
+    font-size: clamp(1.5rem, 6vw, 2.2rem) !important;
+    line-height: 1.4 !important;
+    word-break: keep-all;
   }
 }
 
