@@ -13855,3 +13855,14 @@ body.gsap-active .doctor-grid-item {
   margin-top: 0;
 }
 
+
+/* ─────────────────────────────────────────────
+   Footer z-index fix — blackout-overlay(z-900)이 푸터를 덮지 않도록 보장
+   (GSAP이 scroll 바닥에서 opacity를 못 돌려놓는 엣지케이스 방어)
+───────────────────────────────────────────── */
+.footer-full,
+.footer-minimal {
+  position: relative;
+  z-index: 950;
+  isolation: isolate;
+}
