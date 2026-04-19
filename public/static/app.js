@@ -1015,3 +1015,61 @@
   }
 
 })();
+
+/* ═══════════════════════════════════════════════════════════
+   진료 카드 클릭 → 해당 진료 페이지 이동 (v15)
+   내부 term-link / dict-link는 자체 동작 유지 (stopPropagation)
+   ═══════════════════════════════════════════════════════════ */
+(function () {
+  var SERVICE_MAP = {
+    '임플란트': 'implant',
+    '심미보철': 'prosthetics',
+    '심미 레진': 'resin',
+    '턱관절': 'tmj',
+    '일반진료': 'general'
+  };
+
+  function initServiceCardNav() {
+    var cards = document.querySelectorAll('.h-card:not(.h-card-intro)');
+    cards.forEach(function (card) {
+      // 이미 처리된 카드 스킵
+      if (card.dataset.navBound === '1') return;
+      card.dataset.navBound = '1';
+
+      var titleEl = card.querySelector('.h-card-title');
+      if (!titleEl) return;
+      var title = (titleEl.textContent || '').trim();
+      var slug = SERVICE_MAP[title];
+      if (!slug) return;
+
+      card.style.cursor = 'pointer';
+      card.setAttribute('role', 'link');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', title + ' 진료 안내 보기');
+      card.dataset.href = '/treatments/' + slug;
+
+      card.addEventListener('click', function (e) {
+        // 내부 <a> (term-link, dict-link 등) 클릭은 버블링 방지
+        var target = e.target;
+        while (target && target !== card) {
+          if (target.tagName === 'A') return; // 내부 링크가 알아서 이동
+          target = target.parentElement;
+        }
+        window.location.href = card.dataset.href;
+      });
+
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          window.location.href = card.dataset.href;
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initServiceCardNav);
+  } else {
+    initServiceCardNav();
+  }
+})();
