@@ -63,6 +63,38 @@ app.use('*', async (c, next) => {
 app.use(renderer)
 app.use('/api/*', cors())
 
+// ═══════════════════════════════════════════
+// 보안 & 성능 미들웨어 (모든 요청에 적용)
+// ═══════════════════════════════════════════
+app.use('*', async (c, next) => {
+  await next()
+
+  const path = c.req.path
+  const status = c.res.status
+
+  // 보안 헤더 (HTTPS 1년 강제, 클릭재킹 방어, MIME 스니핑 방어)
+  c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Frame-Options', 'SAMEORIGIN')
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  c.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self), interest-cohort=()')
+
+  // 캐시 전략 (Cloudflare Edge + Browser)
+  if (path.startsWith('/api/')) {
+    // API는 캐시 금지 (민감 데이터 가능)
+    c.header('Cache-Control', 'no-store, no-cache, must-revalidate')
+  } else if (path === '/sitemap.xml' || path === '/robots.txt') {
+    // SEO 인프라: 1시간 캐시
+    c.header('Cache-Control', 'public, max-age=3600, s-maxage=3600')
+  } else if (status === 200 && c.req.method === 'GET') {
+    // 공개 HTML 페이지: 브라우저 5분, CF 엣지 1시간 (stale-while-revalidate로 끊김 없음)
+    c.header('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400')
+  } else if (status === 404) {
+    // 404는 짧게 캐시 (잘못된 URL이 계속 DB 호출하는 것 방지)
+    c.header('Cache-Control', 'public, max-age=60, s-maxage=300')
+  }
+})
+
 // === Auth routes (public, before admin middleware) ===
 app.route('', authRoutes)
 app.route('', uploadRoutes)
@@ -165,9 +197,29 @@ app.get('/treatments/:slug', async (c) => {
     'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any
 
-  const name = treatment?.name || '진료 안내'
-  const desc = treatment?.meta_description || treatment?.short_desc || `이음치과의원 ${name} 전문 진료 안내.`
-  const metaTitle = treatment?.meta_title || `${name} | 이음치과 전문 진료`
+  // 존재하지 않는 slug는 404로 응답 (soft 404 방지 - SEO 안전)
+  if (!treatment) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 진료 페이지를 찾을 수 없습니다.</p>
+        <a href="/treatments" class="btn-primary">전체 진료 안내로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '진료를 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 진료 페이지를 찾을 수 없습니다. 이음치과 전체 진료 안내를 확인해주세요.',
+          canonical: `${SITE_URL}/treatments`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const name = treatment.name
+  const desc = treatment.meta_description || treatment.short_desc || `이음치과의원 ${name} 전문 진료 안내.`
+  const metaTitle = treatment.meta_title || `${name} | 이음치과 전문 진료`
 
   // FAQ for schema
   let faqJsonLd = null
@@ -228,8 +280,28 @@ app.get('/doctors/:slug', async (c) => {
     'SELECT * FROM doctors WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any
 
-  const name = doctor?.name || '의료진'
-  const title = doctor?.title || '원장'
+  // 존재하지 않는 의료진 → 404
+  if (!doctor) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 의료진 페이지를 찾을 수 없습니다.</p>
+        <a href="/doctors" class="btn-primary">의료진 목록으로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '의료진을 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 의료진 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/doctors`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const name = doctor.name
+  const title = doctor.title || '원장'
 
   return c.render(doctorDetailPage(slug, doctor), {
     seo: {
@@ -314,16 +386,37 @@ app.get('/cases', async (c) => {
 // === 비포애프터 상세 (동적 SEO) ===
 app.get('/cases/:id', async (c) => {
   const id = c.req.param('id')
-  const caseData = await c.env.DB.prepare('SELECT * FROM cases WHERE id = ?').bind(id).first() as any
-  const doctor = caseData?.doctor_id
+  const caseData = await c.env.DB.prepare('SELECT * FROM cases WHERE id = ? AND is_published = 1').bind(id).first() as any
+
+  // 존재하지 않는 case → 404
+  if (!caseData) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 비포애프터를 찾을 수 없습니다.</p>
+        <a href="/cases" class="btn-primary">비포애프터 목록으로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '비포애프터를 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 비포애프터 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/cases`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const doctor = caseData.doctor_id
     ? await c.env.DB.prepare('SELECT id, name, slug, title, photo, greeting FROM doctors WHERE id = ?').bind(caseData.doctor_id).first()
     : null
   const { results: dictTerms } = await c.env.DB.prepare(
     'SELECT term as name, slug FROM dict_terms WHERE is_published = 1 LIMIT 300'
   ).all() as any
-  const title = caseData?.title || '비포애프터 상세'
-  const desc = caseData?.description?.substring(0, 160) || '이음치과의원의 치료 결과를 확인하세요.'
-  const category = caseData?.category || 'general'
+  const title = caseData.title
+  const desc = caseData.description?.substring(0, 160) || '이음치과의원의 치료 결과를 확인하세요.'
+  const category = caseData.category || 'general'
   const categoryNames: Record<string, string> = {
     implant: '임플란트', aesthetic: '심미보철', resin: '심미레진',
     tmj: '턱관절', general: '일반진료'
@@ -384,17 +477,36 @@ app.get('/blogs/:id', async (c) => {
   const blog = await (isNumeric
     ? c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(idOrSlug).first()
     : c.env.DB.prepare('SELECT * FROM blogs WHERE slug = ?').bind(idOrSlug).first()) as any
-  const { results: blogImages } = blog
-    ? await c.env.DB.prepare('SELECT * FROM blog_images WHERE blog_id = ? ORDER BY sort_order').bind(blog.id).all()
-    : { results: [] } as any
+
+  // 존재하지 않는 블로그 글 → 404
+  if (!blog) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 블로그 글을 찾을 수 없습니다.</p>
+        <a href="/blogs" class="btn-primary">블로그 목록으로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '블로그 글을 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 블로그 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/blogs`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const { results: blogImages } = await c.env.DB.prepare('SELECT * FROM blog_images WHERE blog_id = ? ORDER BY sort_order').bind(blog.id).all() as any
   const { results: dictTerms } = await c.env.DB.prepare(
     'SELECT term as name, slug FROM dict_terms WHERE is_published = 1 LIMIT 300'
   ).all() as any
-  const blogWithImages = blog ? { ...blog, images: blogImages || [] } : null
-  const id = blog?.id?.toString() || idOrSlug
-  const title = blog?.meta_title || blog?.title || '블로그 글'
-  const desc = blog?.meta_description || blog?.content?.substring(0, 160) || '이음치과의원 블로그'
-  const slug = blog?.slug || id
+  const blogWithImages = { ...blog, images: blogImages || [] }
+  const id = blog.id?.toString() || idOrSlug
+  const title = blog.meta_title || blog.title
+  const desc = blog.meta_description || blog.content?.substring(0, 160) || '이음치과의원 블로그'
+  const slug = blog.slug || id
 
   return c.render(blogDetailPage(id, blogWithImages, dictTerms || []), {
     seo: {
@@ -455,11 +567,30 @@ app.get('/notices', async (c) => {
 app.get('/notices/:id', async (c) => {
   const id = c.req.param('id')
   const notice = await c.env.DB.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first() as any
-  const { results: noticeImages } = notice
-    ? await c.env.DB.prepare('SELECT * FROM notice_images WHERE notice_id = ? ORDER BY sort_order').bind(id).all()
-    : { results: [] } as any
-  const title = notice?.title || '공지사항'
-  const desc = notice?.content?.substring(0, 160) || '이음치과의원 공지사항'
+
+  // 존재하지 않는 공지 → 404
+  if (!notice) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 공지사항을 찾을 수 없습니다.</p>
+        <a href="/notices" class="btn-primary">공지사항 목록으로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '공지사항을 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 공지사항 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/notices`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const { results: noticeImages } = await c.env.DB.prepare('SELECT * FROM notice_images WHERE notice_id = ? ORDER BY sort_order').bind(id).all() as any
+  const title = notice.title
+  const desc = notice.content?.substring(0, 160) || '이음치과의원 공지사항'
 
   return c.render(noticeDetailPage(id, notice, noticeImages || []), {
     seo: {
@@ -559,14 +690,34 @@ app.get('/dictionary', async (c) => {
 app.get('/dictionary/:slug', async (c) => {
   const slug = c.req.param('slug')
   const term = await c.env.DB.prepare(
-    `SELECT dt.*, dc.name as category_name FROM dict_terms dt JOIN dict_categories dc ON dt.category_id = dc.id WHERE dt.slug = ?`
+    `SELECT dt.*, dc.name as category_name FROM dict_terms dt JOIN dict_categories dc ON dt.category_id = dc.id WHERE dt.slug = ? AND dt.is_published = 1`
   ).bind(slug).first() as any
 
-  const termName = term?.term || '치과 용어'
-  const termDesc = term?.short_desc || '이음치과의원 치과 용어 백과사전'
-  const termFull = term?.full_desc || termDesc
-  const termEn = term?.english || ''
-  const catName = term?.category_name || ''
+  // 존재하지 않는 용어 → 404
+  if (!term) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 치과 용어를 찾을 수 없습니다.</p>
+        <a href="/dictionary" class="btn-primary">용어 사전으로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '용어를 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 치과 용어 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/dictionary`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const termName = term.term
+  const termDesc = term.short_desc || '이음치과의원 치과 용어 백과사전'
+  const termFull = term.full_desc || termDesc
+  const termEn = term.english || ''
+  const catName = term.category_name || ''
 
   return c.render(dictionaryDetailPage(slug), {
     seo: {

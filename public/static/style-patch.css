@@ -2885,3 +2885,56 @@ html body .floating-call svg path {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* ═══════════════════════════════════════════════════════
+   v20 HERO TITLE 가독성 강제 수정
+   문제: .title-line 전체에 dark navy 색 + blur + text-shadow 잔존
+   해법: Mist Blue 전면 적용, blur/shadow 완전 제거, opacity 고정
+   ═══════════════════════════════════════════════════════ */
+
+/* 히어로 타이틀 전체 (치과가 / 그렇게도 / 두려운 이유) */
+html body .hero-title,
+html body .hero-title * {
+  color: #D4E3EC !important;
+  -webkit-text-fill-color: #D4E3EC !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4), 0 0 1px rgba(212, 227, 236, 0.2) !important;
+  opacity: 1 !important;
+  -webkit-text-stroke: 0 transparent !important;
+  transform: none !important;
+}
+
+/* 타이틀 라인 (일반) - 밝은 Mist Blue */
+html body .hero-title .title-line:not(.accent),
+html body .hero-title .title-line:not(.accent) .title-word {
+  color: #D4E3EC !important;
+  -webkit-text-fill-color: #D4E3EC !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+}
+
+/* 타이틀 라인 (.accent - "두려운 이유") - 강조 그라디언트 */
+html body .hero-title .title-line.accent,
+html body .hero-title .title-line.accent .title-word {
+  background: linear-gradient(180deg, #FFFFFF 0%, #B8D4E3 60%, #7EA8BE 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+}
+
+/* hero section 애니메이션 완료 후 빡센 고정 */
+.hero-content, 
+.hero-content * {
+  will-change: auto !important;
+}
+
+/* CTA wrap 불투명도 확실히 1 */
+html body .hero-cta-wrap {
+  opacity: 1 !important;
+  transform: none !important;
+}
