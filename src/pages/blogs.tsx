@@ -17,7 +17,12 @@ export function blogsPage(blogs?: any[]) {
         <div class="container-wide">
           {items.length === 0 ? (
             <div class="empty-state">
-              <p>등록된 블로그 글이 없습니다.</p>
+              <p>첫 블로그 글을 준비하고 있습니다.<br/>치과 상식·진료 이야기를 곧 연재합니다.</p>
+              <div class="empty-state-cta-row">
+                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="empty-state-cta primary">카카오톡 문의 →</a>
+                <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="empty-state-cta naver">네이버 예약 →</a>
+                <a href="tel:051-206-5888" class="empty-state-cta secondary">전화 상담 ☎</a>
+              </div>
             </div>
           ) : (
             <div class="blogs-grid" id="blogsGrid">

@@ -1040,7 +1040,7 @@ app.onError((err, c) => {
             </div>
             <div class="error-contact">
               <p>계속 문제가 발생한다면 전화로 문의해 주세요.</p>
-              <a href="tel:0515555555" class="error-tel" data-hover>📞 051-555-5555</a>
+              <a href="tel:051-206-5888" class="error-tel" data-hover>📞 051-206-5888</a>
             </div>
           </div>
         </div>
@@ -1088,7 +1088,7 @@ app.notFound(async (c) => {
             </div>
             <div class="error-contact">
               <p>더 궁금하신 점은 전화로 문의해 주세요.</p>
-              <a href="tel:0515555555" class="error-tel" data-hover>📞 051-555-5555</a>
+              <a href="tel:051-206-5888" class="error-tel" data-hover>📞 051-206-5888</a>
             </div>
           </div>
         </div>

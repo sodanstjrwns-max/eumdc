@@ -4,8 +4,8 @@
   "description": "부산 강서구 명지 이음치과의원 - 임플란트·심미보철·턱관절 전문",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#00306A",
+  "theme_color": "#00306A",
   "orientation": "portrait-primary",
   "lang": "ko-KR",
   "icons": [

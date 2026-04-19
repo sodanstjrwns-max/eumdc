@@ -16,7 +16,14 @@ export function noticesPage(notices?: any[]) {
       <section class="page-grid-section">
         <div class="container-wide">
           {items.length === 0 ? (
-            <div class="empty-state"><p>등록된 공지사항이 없습니다.</p></div>
+            <div class="empty-state">
+              <p>새로운 공지사항을 준비하고 있습니다.<br/>궁금하신 점은 언제든 편하게 문의해 주세요.</p>
+              <div class="empty-state-cta-row">
+                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="empty-state-cta primary">카카오톡 문의 →</a>
+                <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="empty-state-cta naver">네이버 예약 →</a>
+                <a href="tel:051-206-5888" class="empty-state-cta secondary">전화 상담 ☎</a>
+              </div>
+            </div>
           ) : (
             <div class="notices-list" id="noticesList">
               {items.map((n: any) => (

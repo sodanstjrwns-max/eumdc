@@ -31,3 +31,12 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+# temp debug scripts & audit artifacts (루트 정리)
+_*.mjs
+_audit/
+tmp_*.cjs
+tmp_*.mjs
+core
+*.tar.gz
+*.backup

@@ -16,9 +16,8 @@
       "binding": "R2",
       "bucket_name": "eum-dental-images"
     }
-  ],
-  "vars": {
-    "ADMIN_PASSWORD": "eum2025!",
-    "AUTH_SECRET": "eum-dental-hmac-secret-2026-very-long-random-key"
-  }
+  ]
+  // NOTE: ADMIN_PASSWORD, AUTH_SECRET은 wrangler pages secret 또는
+  // Cloudflare Dashboard > Pages > Settings > Environment variables (Encrypted)로 설정.
+  // 로컬 개발은 .dev.vars 파일에서 자동 로드됩니다 (.gitignore됨).
 }
