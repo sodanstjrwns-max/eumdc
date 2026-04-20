@@ -642,7 +642,7 @@ export function mainPage() {
               </div>
               <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
               <div class="footer-sns">
-                <a href="https://www.instagram.com/eum.dental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
+                <a href="https://www.instagram.com/ieumdental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
                 </a>
                 <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" aria-label="이음치과 네이버 지도">

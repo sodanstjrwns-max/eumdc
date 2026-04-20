@@ -134,7 +134,7 @@ export function localBusinessJsonLd() {
     },
     sameAs: [
       NAVER_MAP_URL,
-      'https://www.instagram.com/eum.dental/'
+      'https://www.instagram.com/ieumdental/'
     ],
     // 접근성
     amenityFeature: [
