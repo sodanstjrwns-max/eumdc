@@ -396,7 +396,7 @@ export function mainPage() {
             <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">CBCT 3D 영상으로 뼈의 양·밀도·신경 위치를 정밀 분석하고, 원내 3D 프린터로 환자 맞춤 수술 가이드를 직접 제작합니다. 절개를 최소화하여 통증과 회복 기간을 단축합니다.</p><div class="h-card-features"><span><a href="/dictionary/digital-guide" class="term-link">원내 가이드</a> 제작</span><span><a href="/dictionary/cbct" class="term-link">CBCT</a> 정밀 진단</span><span><a href="/dictionary/digital-impression" class="term-link">디지털 인상</a></span><span>최고 수준 기공소</span></div><p class="h-card-patient-note">환자분 후기: "절개 없이 한 임플란트, 당일에 밥을 먹었어요."</p><div class="h-card-arrow">→</div><a href="/dictionary?service=implant" class="h-card-dict-link">임플란트 관련 용어 보기 →</a></div></div>
             <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">구강스캐너로 정밀 스캔 후, 자연치아와 구별이 불가능한 보철물을 맞춤 제작합니다. 라미네이트, 올세라믹 등 환자분의 얼굴형과 미소 라인에 맞는 최적의 솔루션을 제안합니다.</p><div class="h-card-features"><span><a href="/dictionary/laminate" class="term-link">라미네이트</a></span><span><a href="/dictionary/all-ceramic" class="term-link">올세라믹</a></span><span>정밀 색조 매칭</span><span>미소 라인 분석</span></div><p class="h-card-patient-note">자연치아 같은 투명도와 색감 — 주변에서 보철인 줄 몰라요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=aesthetic" class="h-card-dict-link">심미보철 관련 용어 보기 →</a></div></div>
             <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">치아 색상에 완벽히 맞춘 고급 레진으로 치아 삭제를 최소화하면서 당일에 치료를 마칩니다. 앞니 틈, 깨진 치아, 변색 부위 등을 자연스럽게 복원합니다.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span><span>앞니 심미 복원</span></div><p class="h-card-patient-note">가성비 최고 — 자연스러우면서 당일에 끝나는 치료.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=resin" class="h-card-dict-link">레진 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링 — 기본 진료에 가장 충실합니다. 아쿠아케어(드릴 없는 치료)와 니트람 근관치료 시스템으로 통증과 불안을 줄입니다.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span><span>무통 마취</span></div><p class="h-card-patient-note">기본을 잘하는 치과가 진짜 좋은 치과라는 걸 느꼈어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a></div></div>
+            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링 — 기본 진료에 가장 충실합니다. 아쿠아케어로 수복 전 치면을 정밀 관리하고, 고배율 확대경 아래 세심한 치료로 통증과 불안을 줄입니다.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span><span>무통 마취</span></div><p class="h-card-patient-note">기본을 잘하는 치과가 진짜 좋은 치과라는 걸 느꼈어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a></div></div>
             <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱 소리, 통증, 입 벌림 제한을 CBCT와 교합 분석으로 정밀 진단합니다. 물리치료와 맞춤 스플린트, 체계적 프로토콜로 근본 원인부터 해결합니다.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span><span>체계적 프로토콜</span></div><p class="h-card-patient-note">턱 통증으로 잠을 못 잤는데, 치료 후 확실히 달라졌어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=tmj" class="h-card-dict-link">턱관절 관련 용어 보기 →</a></div></div>
           </div>
         </div>
@@ -417,10 +417,9 @@ export function mainPage() {
               <blockquote class="director-quote" data-reveal>"다른 사람들이 치과 이야기를 할 때<br/>정직하게 치료를 잘하는 병원이라며<br/>추천하는 곳을 만들고 싶습니다."</blockquote>
               <p class="director-philosophy" data-reveal>환자가 아파서 찾아오는 곳이 아니라, 건강할 때도 생각나는 치과. 이음치과가 지향하는 병원의 모습입니다. 모든 환자분을 가족처럼 대하고, 과잉 진료 없이 정직하게 — 그것이 이음의 철학입니다.</p>
               <div class="credentials-grid">
-                <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 졸업</li></ul></div>
+                <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 치의학과 졸업 (2021)</li></ul></div>
                 <div class="cred-block" data-reveal><h4>Experience</h4><ul><li>전 사상연세비앤이치과병원 원장</li><li>전 다대치과의원 원장</li></ul></div>
-                <div class="cred-block" data-reveal><h4>Membership</h4><ul><li>대한구강악면임플란트학회</li><li>대한치과보철학회</li><li>대한치과보존학회</li></ul></div>
-                <div class="cred-block" data-reveal><h4>Training</h4><ul><li>Dentalbean Implant Course</li><li>Osstem Master · Oneguide Course</li><li>Doctor's Endo Seminar</li><li>Professional Expert Dentistry</li></ul></div>
+                <div class="cred-block" data-reveal><h4>Philosophy</h4><ul><li>과잉 없이, 필요한 만큼만</li><li>보존이 우선, 발치는 마지막</li><li>오늘의 편리보다 10년 뒤의 치아</li></ul></div>
               </div>
             </div>
           </div>
@@ -564,16 +563,16 @@ export function mainPage() {
             <div class="equip-item" data-reveal>
               <span class="equip-num">05</span>
               <h4>아쿠아케어</h4>
-              <p class="equip-name-en">Aquacare</p>
-              <p class="equip-desc">미세분말을 고압으로 분사하여 충치만 정밀하게 제거합니다. 드릴 없이 치료하므로 진동과 소음이 거의 없고, 건강한 치아 조직을 최대한 보존할 수 있습니다.</p>
-              <span class="equip-benefit">환자 이점: 드릴 없는 치료 → 불안감 해소</span>
+              <p class="equip-name-en">Aquacare · Periodontal &amp; Prep Mode</p>
+              <p class="equip-desc">레진이나 보철물은 붙이기 전 준비가 결과를 좌우합니다. 이음치과는 수복 치료 전 아쿠아케어(프렙 모드)로 치아 표면을 미세하게 다듬어, 접착제가 더 단단히 결합할 수 있는 환경을 만듭니다. 치주 모드로 잇몸 라인 관리까지 정밀하게 케어합니다.</p>
+              <span class="equip-benefit">환자 이점: 오래가는 치료를 위한 보이지 않는 한 단계</span>
             </div>
             <div class="equip-item" data-reveal>
               <span class="equip-num">06</span>
               <h4>니트람</h4>
-              <p class="equip-name-en">NiTram Endo System</p>
-              <p class="equip-desc">니켈-티타늄 합금 파일을 이용한 정밀 근관치료(신경치료) 시스템입니다. 복잡한 치아 뿌리 형태에도 안전하게 적용되어 치료 성공률을 높이고 재치료를 줄입니다.</p>
-              <span class="equip-benefit">환자 이점: 신경치료 성공률 향상 → 재치료 감소</span>
+              <p class="equip-name-en">NITRAM · Handpiece Oiling &amp; Sterilizer</p>
+              <p class="equip-desc">입 안에 직접 들어오는 드릴은, 표면 소독만으로는 내부까지 멸균하기 어렵습니다. 이음치과는 진료 때마다 핸드피스 전용 멸균기 니트람으로 내부 오일링과 고압증기 멸균을 거칩니다. 눈에 보이지 않는 곳일수록 더 신경 쓴다는 저희의 원칙입니다.</p>
+              <span class="equip-benefit">환자 이점: 드릴 내부까지 무균 → 교차감염 걱정 없이</span>
             </div>
             <div class="equip-item" data-reveal>
               <span class="equip-num">07</span>

@@ -95,14 +95,14 @@ export function missionPage() {
                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="24" cy="20" r="12"/><path d="M18 36h12"/></svg>
               </div>
               <h4>아쿠아케어</h4>
-              <p>미세분말로 치아를 최소한으로 삭제하는 최소침습 치료 장비입니다.</p>
+              <p>수복 치료 전 치아 표면을 다듬어 접착 강도를 높이고, 치주 라인까지 정밀 관리합니다.</p>
             </div>
             <div class="equip-card" data-reveal>
               <div class="equip-icon">
                 <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M24 8v32M16 16l8-8 8 8M16 32l8 8 8-8"/></svg>
               </div>
               <h4>니트람</h4>
-              <p>정밀 근관치료 시스템. 복잡한 신경치료도 안전하고 정확하게 진행합니다.</p>
+              <p>핸드피스 전용 멸균기. 진료마다 드릴 내부 오일링과 고압증기 멸균으로 교차감염을 차단합니다.</p>
             </div>
           </div>
         </div>
