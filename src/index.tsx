@@ -42,8 +42,8 @@ const app = new Hono<HonoEnv>()
 // === SEO: www → non-www 301 리다이렉트 ===
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url)
-  if (url.hostname === 'www.eumdc.kr') {
-    url.hostname = 'eumdc.kr'
+  if (url.hostname === 'www.ieumdc.kr') {
+    url.hostname = 'ieumdc.kr'
     return c.redirect(url.toString(), 301)
   }
   await next()

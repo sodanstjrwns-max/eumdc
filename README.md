@@ -3,8 +3,8 @@
 부산 명지 이음치과의원 공식 홈페이지 — Hono + Cloudflare Pages + D1 + R2 기반 SSR 웹앱
 
 ## 🌐 Production URL
-- **공식 도메인**: https://eumdc.kr
-- **최신 배포**: https://f46953de.eumdc.pages.dev
+- **공식 도메인**: https://ieumdc.kr
+- **최신 배포**: https://f46953de.ieumdc.pages.dev
 
 ## ✅ 현재 완료된 기능
 
