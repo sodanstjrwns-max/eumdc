@@ -39,10 +39,14 @@ import {
 
 const app = new Hono<HonoEnv>()
 
-// === SEO: www → non-www 301 리다이렉트 ===
+// === SEO: 도메인 정규화 301 리다이렉트 ===
+// - 기존 도메인(eumdc.kr, www.eumdc.kr) → 신규 도메인(ieumdc.kr)
+// - www.ieumdc.kr → ieumdc.kr (non-www 통일)
+// - 경로/쿼리스트링은 그대로 보존 (SEO 자산 승계)
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url)
-  if (url.hostname === 'www.ieumdc.kr') {
+  const host = url.hostname.toLowerCase()
+  if (host === 'eumdc.kr' || host === 'www.eumdc.kr' || host === 'www.ieumdc.kr') {
     url.hostname = 'ieumdc.kr'
     return c.redirect(url.toString(), 301)
   }
