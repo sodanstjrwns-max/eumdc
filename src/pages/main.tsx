@@ -17,7 +17,7 @@ export function mainPage() {
         <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
           <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="40" height="44" loading="eager" />
           <span class="nav-brand-mark">이음치과</span>
-          <span class="nav-brand-sub">EUM · EST.2025</span>
+          <span class="nav-brand-sub">IEUM · EST.2025</span>
         </a>
         <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
@@ -27,8 +27,13 @@ export function mainPage() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
           <span>카카오 상담</span>
         </a>
-        <button class="nav-menu-btn" id="menuBtn" data-hover>
-          <span>MENU</span>
+        <button class="nav-menu-btn" id="menuBtn" data-hover aria-label="전체 메뉴 열기">
+          <span class="nav-menu-icon" aria-hidden="true">
+            <span class="nav-menu-line"></span>
+            <span class="nav-menu-line"></span>
+            <span class="nav-menu-line"></span>
+          </span>
+          <span class="nav-menu-label">MENU</span>
         </button>
         <div class="nav-progress" id="navProgress"></div>
       </nav>
@@ -109,7 +114,7 @@ export function mainPage() {
         <div class="hero-content">
           <div class="hero-tag">
             <span class="tag-line" aria-hidden="true"></span>
-            <span class="tag-text">EUM DENTAL CLINIC — BUSAN · 명지</span>
+            <span class="tag-text">IEUM DENTAL CLINIC — BUSAN · 명지</span>
           </div>
           <h1 class="hero-title">
             <span class="title-line"><span class="title-word" data-split>치과가</span></span>
@@ -144,7 +149,7 @@ export function mainPage() {
           <div class="hero-signature" aria-label="이음치과 시그니처">
             <span class="hero-signature-ko">이음치과</span>
             <span class="hero-signature-divider" aria-hidden="true"></span>
-            <span class="hero-signature-en">EUM DENTAL · MYEONGJI</span>
+            <span class="hero-signature-en">IEUM DENTAL · MYEONGJI</span>
           </div>
 
           <div class="hero-bottom">
@@ -281,7 +286,7 @@ export function mainPage() {
       <section class="story-brand" id="storyBrand" aria-label="이음치과 브랜드">
         <div class="container-wide">
           <div class="story-brand-inner" data-reveal>
-            <span class="story-brand-kicker">EUM DENTAL CLINIC</span>
+            <span class="story-brand-kicker">IEUM DENTAL CLINIC</span>
             <h2 class="story-brand-name">이음치과</h2>
             <span class="story-brand-divider" aria-hidden="true"></span>
             <p class="story-brand-tagline">
@@ -296,10 +301,10 @@ export function mainPage() {
       {/* MARQUEE */}
       <div class="marquee-band" aria-hidden="true">
         <div class="marquee-track">
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — EUM DENTAL — </span>
+          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
+          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
+          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
+          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
         </div>
       </div>
 

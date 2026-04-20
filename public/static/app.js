@@ -196,12 +196,17 @@
     btn.setAttribute('aria-controls', 'fullMenu');
     menu.setAttribute('aria-hidden', 'true');
 
+    // v2: label은 .nav-menu-label 에만 적용, 아이콘은 is-open 클래스로 모핑
+    var label = btn.querySelector('.nav-menu-label') || btn.querySelector('span');
+
     btn.addEventListener('click', function () {
       isOpen = !isOpen;
       if (isOpen) {
         menu.classList.add('open');
         menu.setAttribute('aria-hidden', 'false');
-        btn.querySelector('span').textContent = 'CLOSE';
+        btn.classList.add('is-open');
+        if (label) label.textContent = 'CLOSE';
+        btn.setAttribute('aria-label', '메뉴 닫기');
         btn.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
         var firstLink = menu.querySelector('.menu-link');
@@ -219,7 +224,9 @@
       isOpen = false;
       menu.classList.remove('open');
       menu.setAttribute('aria-hidden', 'true');
-      btn.querySelector('span').textContent = 'MENU';
+      btn.classList.remove('is-open');
+      if (label) label.textContent = 'MENU';
+      btn.setAttribute('aria-label', '전체 메뉴 열기');
       btn.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
       btn.focus();

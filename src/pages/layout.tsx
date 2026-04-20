@@ -29,8 +29,13 @@ export function subPageLayout(title: string, children: any) {
           <div class="nav-auth" id="navAuth" style="display:none">
             <a href="/login" class="nav-login-btn" data-hover>로그인</a>
           </div>
-          <button class="nav-menu-btn" id="menuBtn" data-hover>
-            <span>MENU</span>
+          <button class="nav-menu-btn" id="menuBtn" data-hover aria-label="전체 메뉴 열기">
+            <span class="nav-menu-icon" aria-hidden="true">
+              <span class="nav-menu-line"></span>
+              <span class="nav-menu-line"></span>
+              <span class="nav-menu-line"></span>
+            </span>
+            <span class="nav-menu-label">MENU</span>
           </button>
         </div>
       </nav>
