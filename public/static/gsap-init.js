@@ -287,7 +287,7 @@
           trigger: hero,
           start: 'top top',
           end: 'bottom top',
-          scrub: 1.5
+          scrub: 0.8
         },
         ease: 'none'
       });
@@ -347,9 +347,8 @@
       start: 'top 80%',
       end: 'bottom 20%',
       onEnter: function() { storyNarrative.classList.add('in-view'); },
-      onLeave: function() { storyNarrative.classList.remove('in-view'); },
-      onEnterBack: function() { storyNarrative.classList.add('in-view'); },
-      onLeaveBack: function() { storyNarrative.classList.remove('in-view'); }
+      onEnterBack: function() { storyNarrative.classList.add('in-view'); }
+      // onLeave / onLeaveBack 제거: 한번 드러난 섹션은 깜빡이지 않게 유지
     });
 
     document.querySelectorAll('.story-chapter').forEach(function(ch) {
@@ -358,9 +357,8 @@
         start: 'top 70%',
         end: 'bottom 30%',
         onEnter: function() { ch.classList.add('in-view'); },
-        onLeave: function() { ch.classList.remove('in-view'); },
-        onEnterBack: function() { ch.classList.add('in-view'); },
-        onLeaveBack: function() { ch.classList.remove('in-view'); }
+        onEnterBack: function() { ch.classList.add('in-view'); }
+        // onLeave / onLeaveBack 제거: 역스크롤 깜빡임 방지
       });
     });
 
@@ -444,7 +442,7 @@
         { y: 80, opacity: 0 },
         {
           y: -80, opacity: 1,
-          scrollTrigger: { trigger: chapter, start: 'top bottom', end: 'bottom top', scrub: 3 },
+          scrollTrigger: { trigger: chapter, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
           ease: 'none'
         }
       );
@@ -466,7 +464,7 @@
       if (fog) {
         gsap.to(fog, {
           x: '5%', y: '-4%', scale: 1.08,
-          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 2.5 },
+          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 1.0 },
           ease: 'none'
         });
       }
@@ -474,7 +472,7 @@
       if (fog2) {
         gsap.to(fog2, {
           x: '-4%', y: '3%', scale: 1.05,
-          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 3.5 },
+          scrollTrigger: { trigger: ch3, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
           ease: 'none'
         });
       }
@@ -489,7 +487,7 @@
         { height: '0%', opacity: 0, filter: 'blur(8px)' },
         {
           height: '100%', opacity: 0.85, filter: 'blur(0px)',
-          scrollTrigger: { trigger: ch4El, start: 'top 60%', end: 'center center', scrub: 1.5 },
+          scrollTrigger: { trigger: ch4El, start: 'top 60%', end: 'center center', scrub: 0.8 },
           ease: 'none'
         }
       );
@@ -499,7 +497,7 @@
         { width: '0%', opacity: 0 },
         {
           width: '100%', opacity: 0.9,
-          scrollTrigger: { trigger: ch4El, start: 'top 50%', end: '60% center', scrub: 2 },
+          scrollTrigger: { trigger: ch4El, start: 'top 50%', end: '60% center', scrub: 0.9 },
           ease: 'none'
         }
       );
@@ -512,7 +510,7 @@
         { opacity: 0, rotation: -5 },
         {
           opacity: 1, rotation: 5,
-          scrollTrigger: { trigger: document.getElementById('storyChapter5'), start: 'top 70%', end: 'bottom 30%', scrub: 2 },
+          scrollTrigger: { trigger: document.getElementById('storyChapter5'), start: 'top 70%', end: 'bottom 30%', scrub: 0.9 },
           ease: 'none'
         }
       );
@@ -527,7 +525,7 @@
           { opacity: 0.15, scale: 0.9 },
           {
             opacity: 1, scale: 1.1,
-            scrollTrigger: { trigger: ch6, start: 'top 60%', end: 'bottom 40%', scrub: 2 },
+            scrollTrigger: { trigger: ch6, start: 'top 60%', end: 'bottom 40%', scrub: 0.9 },
             ease: 'none'
           }
         );
@@ -538,7 +536,7 @@
           { opacity: 0, scale: 0.8 },
           {
             opacity: 0.8, scale: 1.1,
-            scrollTrigger: { trigger: ch6, start: 'top 70%', end: 'center center', scrub: 2 },
+            scrollTrigger: { trigger: ch6, start: 'top 70%', end: 'center center', scrub: 0.9 },
             ease: 'none'
           }
         );
@@ -557,7 +555,7 @@
     document.querySelectorAll('.chapter-orb').forEach(function(orb) {
       gsap.to(orb, {
         y: -100,
-        scrollTrigger: { trigger: orb.closest('.story-chapter'), start: 'top bottom', end: 'bottom top', scrub: 2.5 },
+        scrollTrigger: { trigger: orb.closest('.story-chapter'), start: 'top bottom', end: 'bottom top', scrub: 1.0 },
         ease: 'none'
       });
     });
@@ -567,7 +565,7 @@
     if (ambientGlow) {
       gsap.to(ambientGlow, {
         y: function() { return -storyNarrative.offsetHeight * 0.3; },
-        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 3 },
+        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
         ease: 'none'
       });
     }
@@ -575,7 +573,7 @@
     if (ambientPulse) {
       gsap.to(ambientPulse, {
         y: function() { return -storyNarrative.offsetHeight * 0.2; },
-        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 4 },
+        scrollTrigger: { trigger: storyNarrative, start: 'top bottom', end: 'bottom top', scrub: 1.2 },
         ease: 'none'
       });
     }
@@ -597,7 +595,7 @@
         trigger: ch3,
         start: 'top 65%',
         end: 'bottom 25%',
-        scrub: 1.5,
+        scrub: 0.8,
         onLeave: function() { gsap.set(overlay, { opacity: 1 }); },
         onEnterBack: function() { gsap.set(overlay, { opacity: 1 }); }
       }
@@ -613,7 +611,7 @@
         { opacity: 0.3 },
         {
           opacity: 0.9, scale: 1.05,
-          scrollTrigger: { trigger: ch3, start: 'top 50%', end: 'bottom 30%', scrub: 2 },
+          scrollTrigger: { trigger: ch3, start: 'top 50%', end: 'bottom 30%', scrub: 0.9 },
           ease: 'none'
         }
       );
