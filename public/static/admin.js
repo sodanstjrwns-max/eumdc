@@ -640,6 +640,7 @@
       if (cmd === 'table') { openTablePicker(btn, textarea, start, end); return; }
       if (cmd === 'img') { var fi = document.getElementById('blogFiles'); if (fi) fi.click(); return; }
       if (cmd === 'link') { openLinkDialog(textarea, start, end, selected); return; }
+      if (cmd === 'youtube') { openYoutubeDialog(textarea, start, end, selected); return; }
       if (cmd === 'undo') { doUndo(); return; }
       if (cmd === 'redo') { doRedo(); return; }
       if (cmd === 'toc') {
@@ -773,9 +774,121 @@
       }
       try {
         preview.innerHTML = markdownToHtml(raw);
+        // 프리뷰 내 표에 드래그 핸들 + 드롭존 부착
+        attachTableRowDragHandles(preview, ta);
       } catch (err) {
         preview.innerHTML = '<p class="editor-preview-error">미리보기 오류: ' + (err && err.message ? err.message : err) + '</p>';
       }
+    }
+
+    // ─── 표 행 드래그 재정렬 ───
+    // 프리뷰 내 각 <tbody> <tr> 앞에 ⋮⋮ 핸들을 삽입, 드롭 시
+    // textarea의 해당 표 블록에서 markdown 행 순서를 재작성한다.
+    function attachTableRowDragHandles(previewEl, textarea) {
+      var tables = previewEl.querySelectorAll('.md-table-wrap .md-table');
+      tables.forEach(function (table, tableIndex) {
+        var tbody = table.querySelector('tbody');
+        if (!tbody) return;
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        rows.forEach(function (tr, rowIdx) {
+          // 첫 칸에 드래그 핸들 삽입 (최초 1회만)
+          if (tr.querySelector('.row-drag-handle')) return;
+          var handle = document.createElement('td');
+          handle.className = 'row-drag-handle';
+          handle.setAttribute('draggable', 'true');
+          handle.setAttribute('title', '드래그해서 행 순서를 바꿉니다');
+          handle.innerHTML = '<span aria-hidden="true">⋮⋮</span>';
+          tr.insertBefore(handle, tr.firstChild);
+
+          tr.dataset.tableIndex = tableIndex;
+          tr.dataset.rowIndex = rowIdx;
+
+          handle.addEventListener('dragstart', function (e) {
+            tr.classList.add('row-dragging');
+            if (e.dataTransfer) {
+              e.dataTransfer.effectAllowed = 'move';
+              // Firefox 드래그 필수
+              e.dataTransfer.setData('text/plain', 'row-' + tableIndex + '-' + rowIdx);
+            }
+            window.__dragRowCtx = { tableIndex: tableIndex, fromRow: rowIdx, tbody: tbody };
+          });
+          handle.addEventListener('dragend', function () {
+            tr.classList.remove('row-dragging');
+            tbody.querySelectorAll('.row-drop-target').forEach(function (x) { x.classList.remove('row-drop-target'); });
+          });
+
+          tr.addEventListener('dragover', function (e) {
+            var ctx = window.__dragRowCtx;
+            if (!ctx || ctx.tbody !== tbody) return;
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+            tbody.querySelectorAll('.row-drop-target').forEach(function (x) { x.classList.remove('row-drop-target'); });
+            tr.classList.add('row-drop-target');
+          });
+          tr.addEventListener('dragleave', function () { tr.classList.remove('row-drop-target'); });
+
+          tr.addEventListener('drop', function (e) {
+            var ctx = window.__dragRowCtx;
+            if (!ctx || ctx.tbody !== tbody) return;
+            e.preventDefault();
+            tr.classList.remove('row-drop-target');
+            var fromIdx = ctx.fromRow;
+            var toIdx = parseInt(tr.dataset.rowIndex, 10);
+            if (isNaN(fromIdx) || isNaN(toIdx) || fromIdx === toIdx) return;
+            reorderMarkdownTableRow(textarea, tableIndex, fromIdx, toIdx);
+            window.__dragRowCtx = null;
+          });
+        });
+      });
+    }
+
+    // textarea 원본 markdown의 N번째 표에서 행을 이동시킴
+    function reorderMarkdownTableRow(textarea, tableIndex, fromIdx, toIdx) {
+      var raw = textarea.value || '';
+      var lines = raw.split('\n');
+
+      // 모든 표 블록의 [시작라인, 끝라인, 데이터행 시작] 을 수집
+      // 표 = 연속된 |...| 라인 그룹 중, 2번째 라인이 |---|... 형식
+      var tables = [];
+      var idx = 0;
+      while (idx < lines.length) {
+        var t = lines[idx].trim();
+        if (t.charAt(0) === '|' && t.charAt(t.length - 1) === '|' && idx + 1 < lines.length) {
+          var next = (lines[idx + 1] || '').trim();
+          if (/^\|[\s:|-]+\|$/.test(next) && /-/.test(next)) {
+            // 표 시작
+            var start = idx;
+            var dataStart = idx + 2;
+            var end = dataStart;
+            while (end < lines.length) {
+              var lt = lines[end].trim();
+              if (lt.charAt(0) === '|' && lt.charAt(lt.length - 1) === '|') end++;
+              else break;
+            }
+            tables.push({ start: start, dataStart: dataStart, end: end });
+            idx = end;
+            continue;
+          }
+        }
+        idx++;
+      }
+
+      if (tableIndex < 0 || tableIndex >= tables.length) return;
+      var tbl = tables[tableIndex];
+      var dataRows = lines.slice(tbl.dataStart, tbl.end);
+      if (fromIdx < 0 || fromIdx >= dataRows.length || toIdx < 0 || toIdx >= dataRows.length) return;
+
+      // 배열 재정렬 (splice 이동)
+      var moved = dataRows.splice(fromIdx, 1)[0];
+      dataRows.splice(toIdx, 0, moved);
+
+      var newLines = lines.slice(0, tbl.dataStart).concat(dataRows).concat(lines.slice(tbl.end));
+      pushUndoSnapshot(textarea.value);
+      textarea.value = newLines.join('\n');
+      schedulePreview();
+      updateStatusBar();
+      scheduleAutosave();
+      showToast('📦 행 순서가 바뀌었습니다');
     }
 
     // ─── 뷰 모드 ───
@@ -927,6 +1040,42 @@
       insertAtCursor(ta, md, s, e);
       closeLinkDialog();
     }
+
+    // ─── YouTube 삽입 다이얼로그 ───
+    function openYoutubeDialog(textarea, start, end, selected) {
+      var url = window.prompt(
+        '유튜브 URL을 붙여넣으세요\n\n예) https://youtu.be/dQw4w9WgXcQ\n예) https://www.youtube.com/watch?v=dQw4w9WgXcQ\n예) https://www.youtube.com/shorts/ABC123',
+        selected && /youtu/.test(selected) ? selected : ''
+      );
+      if (!url) return;
+      var vid = extractYouTubeId(url);
+      if (!vid) {
+        alert('❌ 유튜브 URL을 인식하지 못했어요.\nwatch?v=, youtu.be/, shorts/, embed/ 형식을 지원합니다.');
+        return;
+      }
+      var caption = window.prompt('영상 설명(캡션)을 넣고 싶으면 입력하세요.\n(원장 특강, 환자 후기, 시술 영상 등 — 비워도 됩니다)', '');
+      var md = '\n\n:::youtube https://www.youtube.com/watch?v=' + vid
+        + (caption ? ' | ' + caption : '')
+        + '\n:::\n\n';
+      insertAtCursor(textarea, md, start, end);
+    }
+
+    function extractYouTubeId(url) {
+      if (!url) return null;
+      var s = String(url).trim();
+      var patterns = [
+        /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([\w-]{6,})/i,
+        /youtu\.be\/([\w-]{6,})/i,
+        /^([\w-]{11})$/
+      ];
+      for (var i = 0; i < patterns.length; i++) {
+        var m = s.match(patterns[i]);
+        if (m && m[1]) return m[1].split(/[?&#]/)[0];
+      }
+      return null;
+    }
+    // 외부 스코프에서도 쓰도록 노출
+    window.__extractYouTubeId = extractYouTubeId;
 
     // ─── 표 크기 피커 ───
     function openTablePicker(anchorBtn, textarea, start, end) {
@@ -1232,6 +1381,37 @@
       return '\u0000CODE' + (codeBlocks.length - 1) + '\u0000';
     });
 
+    // YouTube 블록 치환
+    var embeds = [];
+    var _ytId = (window.__extractYouTubeId) || function (u) {
+      var m;
+      if ((m = u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([\w-]{6,})/i))) return m[1].split(/[?&#]/)[0];
+      if ((m = u.match(/youtu\.be\/([\w-]{6,})/i))) return m[1].split(/[?&#]/)[0];
+      if ((m = u.match(/^([\w-]{11})$/))) return m[1];
+      return null;
+    };
+    text = text.replace(/:::youtube\s+([\s\S]*?):::/gi, function (_, body) {
+      var raw = String(body || '').trim();
+      var pipeIdx = raw.indexOf('|');
+      var urlPart = (pipeIdx >= 0 ? raw.slice(0, pipeIdx) : raw).trim();
+      var caption = pipeIdx >= 0 ? raw.slice(pipeIdx + 1).trim() : '';
+      var vid = _ytId(urlPart);
+      if (!vid) {
+        embeds.push('<div class="md-youtube-error">⚠ 유튜브 URL을 인식하지 못했습니다: ' + _esc(urlPart) + '</div>');
+      } else {
+        var cap = caption ? '<figcaption class="md-yt-caption">' + _esc(caption) + '</figcaption>' : '';
+        embeds.push('<figure class="md-yt"><div class="md-yt-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + _escAttr(vid) + '" title="YouTube 영상" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>' + cap + '</figure>');
+      }
+      return '\u0000YT' + (embeds.length - 1) + '\u0000';
+    });
+    // 라인 단독 YouTube URL → 자동 임베드
+    text = text.replace(/^[ \t]*((?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)[\w-]{6,}(?:[^\s]*)?)[ \t]*$/gm, function (whole, url) {
+      var vid = _ytId(url);
+      if (!vid) return whole;
+      embeds.push('<figure class="md-yt"><div class="md-yt-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + _escAttr(vid) + '" title="YouTube 영상" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></figure>');
+      return '\u0000YT' + (embeds.length - 1) + '\u0000';
+    });
+
     // 콜아웃 치환 (재귀)
     var callouts = [];
     text = text.replace(/:::(info|warn|tip|note|success|danger)\s+([\s\S]*?):::/g, function (_, kind, body) {
@@ -1261,6 +1441,8 @@
       if (!tr) { i++; continue; }
       if (/^(---|\*\*\*|___)$/.test(tr)) { out.push('<hr class="md-hr"/>'); i++; continue; }
       if (/^\[\[TOC\]\]$/i.test(tr)) { out.push('\u0000TOCMARKER\u0000'); i++; continue; }
+      // YT / CALLOUT 플레이스홀더 단독 라인 — 문단 감싸기 방지
+      if (/^\u0000(YT|CALLOUT)\d+\u0000$/.test(tr)) { out.push(tr); i++; continue; }
       var hm = tr.match(/^(#{1,4})\s+(.+)$/);
       if (hm) {
         var lvl = hm[1].length, raw = hm[2].trim();
@@ -1329,10 +1511,15 @@
       }
       // 일반 문단
       var para = [];
-      while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim())) {
+      while (
+        i < lines.length &&
+        lines[i].trim() &&
+        !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim()) &&
+        !/^\u0000(YT|CALLOUT|TOCMARKER)/.test(lines[i].trim())
+      ) {
         para.push(lines[i].trim()); i++;
       }
-      out.push('<p class="md-p">' + _inline(para.join(' ')) + '</p>');
+      if (para.length) out.push('<p class="md-p">' + _inline(para.join(' ')) + '</p>');
     }
 
     var html = out.filter(function (l) { return l !== ''; }).join('\n');
@@ -1360,8 +1547,13 @@
     }
 
     html = html.replace(/\u0000CALLOUT(\d+)\u0000/g, function (_, idx) { return callouts[+idx] || ''; });
+    html = html.replace(/\u0000YT(\d+)\u0000/g, function (_, idx) { return embeds[+idx] || ''; });
     html = html.replace(/\u0000IC(\d+)\u0000/g, function (_, idx) { return inlineCodes[+idx] || ''; });
     html = html.replace(/\u0000CODE(\d+)\u0000/g, function (_, idx) { return codeBlocks[+idx] || ''; });
+
+    // <p> 안에 figure/callout이 잘못 들어가면 풀어주기
+    html = html.replace(/<p class="md-p">\s*(<figure class="md-yt">[\s\S]*?<\/figure>)\s*<\/p>/g, '$1');
+    html = html.replace(/<p class="md-p">\s*(<div class="md-callout[\s\S]*?<\/div>)\s*<\/p>/g, '$1');
 
     return html;
   }

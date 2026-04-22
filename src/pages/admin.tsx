@@ -12,7 +12,7 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260422o" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260422p" rel="stylesheet" />
       </head>
       <body>
         <div id="adminApp">
@@ -310,6 +310,7 @@ export function adminPage() {
                         <button type="button" class="toolbar-btn" data-cmd="link" title="링크 (Ctrl+K)">🔗 링크</button>
                         <button type="button" class="toolbar-btn" data-cmd="table" title="표 삽입">▦ 표</button>
                         <button type="button" class="toolbar-btn" data-cmd="img" title="이미지 업로드">📷 이미지</button>
+                        <button type="button" class="toolbar-btn" data-cmd="youtube" title="유튜브 영상 삽입">▶ 유튜브</button>
                         <button type="button" class="toolbar-btn" data-cmd="hr" title="구분선">— 구분</button>
                         <button type="button" class="toolbar-btn" data-cmd="toc" title="목차 자동생성">☰ 목차</button>
                       </div>
@@ -518,7 +519,7 @@ export function adminPage() {
           </div>
         </div>
 
-        <script src="/static/admin.js?v=20260422o"></script>
+        <script src="/static/admin.js?v=20260422p"></script>
       </body>
     </html>
   )

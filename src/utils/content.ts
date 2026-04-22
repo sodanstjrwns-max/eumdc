@@ -39,6 +39,40 @@ function _markdownToHtmlImpl(md: string): string {
     return `\u0000CODE${codeBlocks.length - 1}\u0000`
   })
 
+  // YouTube 블록: :::youtube URL 또는 :::youtube URL | 캡션 :::
+  // 단일 URL도 허용: :::youtube https://youtu.be/ID :::
+  const embeds: string[] = []
+  text = text.replace(/:::youtube\s+([\s\S]*?):::/gi, (_, body) => {
+    const raw = String(body || '').trim()
+    // "URL | 캡션" 분리
+    const pipeIdx = raw.indexOf('|')
+    const urlPart = (pipeIdx >= 0 ? raw.slice(0, pipeIdx) : raw).trim()
+    const caption = pipeIdx >= 0 ? raw.slice(pipeIdx + 1).trim() : ''
+    const vid = extractYouTubeId(urlPart)
+    if (!vid) {
+      // 잘못된 URL은 플레인 박스로 안내
+      embeds.push(`<div class="md-youtube-error">⚠ 유튜브 URL을 인식하지 못했습니다: ${escapeHtml(urlPart)}</div>`)
+    } else {
+      const cap = caption
+        ? `<figcaption class="md-yt-caption">${escapeHtml(caption)}</figcaption>`
+        : ''
+      embeds.push(
+        `<figure class="md-yt"><div class="md-yt-frame"><iframe src="https://www.youtube-nocookie.com/embed/${escapeAttr(vid)}" title="YouTube 영상" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>${cap}</figure>`
+      )
+    }
+    return `\u0000YT${embeds.length - 1}\u0000`
+  })
+
+  // 자동 감지: 한 줄 전체가 YouTube URL인 경우 자동 임베드
+  text = text.replace(/^[ \t]*((?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)[\w-]{6,}(?:[^\s]*)?)[ \t]*$/gm, (_, url) => {
+    const vid = extractYouTubeId(url)
+    if (!vid) return _
+    embeds.push(
+      `<figure class="md-yt"><div class="md-yt-frame"><iframe src="https://www.youtube-nocookie.com/embed/${escapeAttr(vid)}" title="YouTube 영상" loading="lazy" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div></figure>`
+    )
+    return `\u0000YT${embeds.length - 1}\u0000`
+  })
+
   // 콜아웃 블록 (:::info / :::warn / :::tip / :::note ... :::) 임시 치환
   const callouts: string[] = []
   text = text.replace(/:::(info|warn|tip|note|success|danger)\s+([\s\S]*?):::/g, (_, kind, body) => {
@@ -92,6 +126,13 @@ function _markdownToHtmlImpl(md: string): string {
     // 목차 마커 [[TOC]] — 나중에 치환
     if (/^\[\[TOC\]\]$/i.test(trimmed)) {
       out.push('\u0000TOCMARKER\u0000')
+      i++
+      continue
+    }
+
+    // YT 플레이스홀더 (단독 라인) — 문단 감싸기 방지
+    if (/^\u0000YT\d+\u0000$/.test(trimmed) || /^\u0000CALLOUT\d+\u0000$/.test(trimmed)) {
+      out.push(trimmed)
       i++
       continue
     }
@@ -218,7 +259,8 @@ function _markdownToHtmlImpl(md: string): string {
     while (
       i < lines.length &&
       lines[i].trim() &&
-      !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim())
+      !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim()) &&
+      !/^\u0000(YT|CALLOUT|TOCMARKER)/.test(lines[i].trim())
     ) {
       para.push(lines[i].trim())
       i++
@@ -236,12 +278,43 @@ function _markdownToHtmlImpl(md: string): string {
     html = html.replace(/\u0000TOCMARKER\u0000/g, toc)
   }
 
-  // 콜아웃/코드블록/인라인코드 복원
+  // 콜아웃/YouTube/코드블록/인라인코드 복원
   html = html.replace(/\u0000CALLOUT(\d+)\u0000/g, (_, idx) => callouts[+idx] || '')
+  html = html.replace(/\u0000YT(\d+)\u0000/g, (_, idx) => embeds[+idx] || '')
   html = html.replace(/\u0000IC(\d+)\u0000/g, (_, idx) => inlineCodes[+idx] || '')
   html = html.replace(/\u0000CODE(\d+)\u0000/g, (_, idx) => codeBlocks[+idx] || '')
 
+  // <p> 안에 embed/콜아웃이 잘못 들어가면 풀어주기 (<p><figure>... 방지)
+  html = html.replace(/<p class="md-p">\s*(<figure class="md-yt">[\s\S]*?<\/figure>)\s*<\/p>/g, '$1')
+  html = html.replace(/<p class="md-p">\s*(<div class="md-callout[\s\S]*?<\/div>)\s*<\/p>/g, '$1')
+
   return html
+}
+
+/** YouTube URL에서 videoId 추출 (다양한 포맷 지원) */
+function extractYouTubeId(url: string): string | null {
+  if (!url) return null
+  const s = String(url).trim()
+  // 포맷들:
+  //  - https://www.youtube.com/watch?v=ID
+  //  - https://youtu.be/ID
+  //  - https://www.youtube.com/embed/ID
+  //  - https://www.youtube.com/shorts/ID
+  //  - https://www.youtube.com/v/ID
+  //  - 그냥 ID만 (11자)
+  const patterns = [
+    /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([\w-]{6,})/i,
+    /youtu\.be\/([\w-]{6,})/i,
+    /^([\w-]{11})$/,
+  ]
+  for (const re of patterns) {
+    const m = s.match(re)
+    if (m && m[1]) {
+      // 쿼리스트링 잔존 제거
+      return m[1].split(/[?&#]/)[0]
+    }
+  }
+  return null
 }
 
 /** 목차 HTML 생성 */
