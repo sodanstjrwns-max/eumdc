@@ -106,9 +106,13 @@ app.use('*', async (c, next) => {
 
 // === Auth routes (public, before admin middleware) ===
 app.route('', authRoutes)
-app.route('', uploadRoutes)
 
 // === Admin auth middleware ===
+// /api/upload은 R2 보호 - 관리자만 업로드 가능
+app.use('/api/upload', requireAdmin())
+app.use('/api/upload/*', requireAdmin())
+app.route('', uploadRoutes)
+
 app.use('/api/admin/cases/*', requireAdmin())
 app.use('/api/admin/cases', requireAdmin())
 app.use('/api/admin/blogs/*', requireAdmin())

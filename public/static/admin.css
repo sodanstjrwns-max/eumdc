@@ -593,3 +593,56 @@ a { text-decoration:none; color:inherit; }
   .admin-row:active { transform: scale(0.995); background: var(--surface-2); }
   button:active, .btn:active { transform: scale(0.97); }
 }
+
+/* ═══════════════════════════════════════════════
+   업로드 진행 상태 UI (v2 - 버그 수정)
+   ═══════════════════════════════════════════════ */
+.upload-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 2px dashed #3b82f6;
+  border-radius: 8px;
+  color: #1e40af;
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 120px;
+}
+.upload-loading .spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #3b82f6;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: upload-spin 0.8s linear infinite;
+}
+@keyframes upload-spin {
+  to { transform: rotate(360deg); }
+}
+.upload-error {
+  padding: 20px;
+  background: #fee2e2;
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  color: #991b1b;
+  font-size: 13px;
+  text-align: center;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+}
+.upload-error small {
+  opacity: 0.8;
+  font-size: 11px;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

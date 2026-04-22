@@ -137,18 +137,59 @@
   }
 
   // === Upload helpers ===
+  // 업로드 진행 중인 파일 카운터 (폼 저장 시 대기 용도)
+  window.__uploadingCount = 0;
+
   function uploadFile(file) {
+    window.__uploadingCount++;
     var fd = new FormData();
     fd.append('file', file);
-    return fetch('/api/upload', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
+    return fetch('/api/upload', { method: 'POST', body: fd })
+      .then(function (r) {
+        if (!r.ok) throw new Error('업로드 실패 (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .then(function (data) {
+        if (!data || !data.url) throw new Error('업로드 응답 오류');
+        return data;
+      })
+      .finally(function () {
+        window.__uploadingCount = Math.max(0, window.__uploadingCount - 1);
+      });
   }
 
   function uploadMulti(files) {
+    window.__uploadingCount++;
     var fd = new FormData();
     for (var i = 0; i < files.length; i++) {
       fd.append('files', files[i]);
     }
-    return fetch('/api/upload/multi', { method: 'POST', body: fd }).then(function (r) { return r.json(); });
+    return fetch('/api/upload/multi', { method: 'POST', body: fd })
+      .then(function (r) {
+        if (!r.ok) throw new Error('업로드 실패 (HTTP ' + r.status + ')');
+        return r.json();
+      })
+      .finally(function () {
+        window.__uploadingCount = Math.max(0, window.__uploadingCount - 1);
+      });
+  }
+
+  // 모든 업로드가 끝날 때까지 대기 (폼 저장 직전 호출)
+  function waitForUploads() {
+    return new Promise(function (resolve) {
+      if (window.__uploadingCount === 0) return resolve();
+      var checkInterval = setInterval(function () {
+        if (window.__uploadingCount === 0) {
+          clearInterval(checkInterval);
+          resolve();
+        }
+      }, 100);
+      // 최대 60초 타임아웃
+      setTimeout(function () {
+        clearInterval(checkInterval);
+        resolve();
+      }, 60000);
+    });
   }
 
   function formatDate(d) {
@@ -247,51 +288,110 @@
       document.getElementById('caseModal').style.display = '';
     });
 
-    // File inputs
+    // File inputs - 업로드 진행상태 표시 + 에러처리
     document.querySelectorAll('.case-file-input').forEach(function (input) {
       input.addEventListener('change', function () {
         if (!this.files[0]) return;
         var target = this.dataset.target;
         var preview = document.getElementById('preview-' + target);
-        uploadFile(this.files[0]).then(function (data) {
-          document.getElementById('val-' + target).value = data.url;
-          preview.innerHTML = '<img src="' + data.url + '" /><button type="button" class="remove-img" onclick="this.parentElement.innerHTML=\'\';document.getElementById(\'val-' + target + '\').value=\'\'">&times;</button>';
-        });
+        // 업로드 시작: 로딩 UI 표시
+        preview.innerHTML = '<div class="upload-loading"><span class="spinner"></span><span>업로드 중…</span></div>';
+        var fileInput = this;
+        uploadFile(this.files[0])
+          .then(function (data) {
+            document.getElementById('val-' + target).value = data.url;
+            preview.innerHTML = '<img src="' + data.url + '" /><button type="button" class="remove-img" onclick="this.parentElement.innerHTML=\'\';document.getElementById(\'val-' + target + '\').value=\'\'">&times;</button>';
+          })
+          .catch(function (err) {
+            preview.innerHTML = '<div class="upload-error">❌ 업로드 실패<br><small>' + (err.message || '다시 시도해주세요') + '</small></div>';
+            fileInput.value = '';
+            alert('사진 업로드에 실패했습니다: ' + (err.message || '네트워크 오류') + '\n다시 시도해주세요.');
+          });
       });
     });
 
-    // Form submit with expanded fields
+    // Form submit with expanded fields - 업로드 완료 대기 + 검증 + 에러처리
     document.getElementById('caseForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var id = document.getElementById('caseId').value;
-      var payload = {
-        title: document.getElementById('caseTitle').value,
-        category: document.getElementById('caseCategory').value,
-        description: document.getElementById('caseDesc').value,
-        pano_before: document.getElementById('val-pano_before').value || null,
-        pano_after: document.getElementById('val-pano_after').value || null,
-        intra_before: document.getElementById('val-intra_before').value || null,
-        intra_after: document.getElementById('val-intra_after').value || null,
-        patient_age_group: document.getElementById('caseAgeGroup').value || '',
-        patient_gender: document.getElementById('caseGender').value || '',
-        treatment_duration: document.getElementById('caseDuration').value || '',
-        doctor_id: document.getElementById('caseDoctorId').value || null,
-        region_text: document.getElementById('caseRegionText').value || document.getElementById('caseRegionInput').value || '',
-      };
+      var submitBtn = this.querySelector('button[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.textContent : '';
 
-      var url = id ? '/api/admin/cases/' + id : '/api/admin/cases';
-      var method = id ? 'PUT' : 'POST';
+      // 업로드 중이면 대기 안내
+      if (window.__uploadingCount > 0) {
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '업로드 완료 대기 중…'; }
+      }
 
-      fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function () {
-        document.getElementById('caseModal').style.display = 'none';
-        loadCases();
-        loadStats();
+      waitForUploads().then(function () {
+        var id = document.getElementById('caseId').value;
+        var payload = {
+          title: document.getElementById('caseTitle').value,
+          category: document.getElementById('caseCategory').value,
+          description: document.getElementById('caseDesc').value,
+          pano_before: document.getElementById('val-pano_before').value || null,
+          pano_after: document.getElementById('val-pano_after').value || null,
+          intra_before: document.getElementById('val-intra_before').value || null,
+          intra_after: document.getElementById('val-intra_after').value || null,
+          patient_age_group: document.getElementById('caseAgeGroup').value || '',
+          patient_gender: document.getElementById('caseGender').value || '',
+          treatment_duration: document.getElementById('caseDuration').value || '',
+          doctor_id: document.getElementById('caseDoctorId').value || null,
+          region_text: document.getElementById('caseRegionText').value || document.getElementById('caseRegionInput').value || '',
+        };
+
+        // 제목 검증
+        if (!payload.title || !payload.title.trim()) {
+          alert('제목을 입력해주세요.');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+          return;
+        }
+
+        // 이미지가 하나도 없으면 경고 (저장은 가능)
+        var hasImage = payload.pano_before || payload.pano_after || payload.intra_before || payload.intra_after;
+        if (!hasImage && !id) {
+          if (!confirm('사진이 등록되지 않았습니다. 그래도 저장하시겠습니까?')) {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            return;
+          }
+        }
+
+        var url = id ? '/api/admin/cases/' + id : '/api/admin/cases';
+        var method = id ? 'PUT' : 'POST';
+
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '저장 중…'; }
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
+            return r.json();
+          })
+          .then(function () {
+            document.getElementById('caseModal').style.display = 'none';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            loadCases();
+            loadStats();
+            // 성공 피드백
+            showToast('✅ 케이스가 저장되었습니다');
+          })
+          .catch(function (err) {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            alert('저장 실패: ' + (err.message || '알 수 없는 오류') + '\n\n입력한 내용은 유지되니 다시 시도해주세요.');
+          });
       });
     });
+  }
+
+  // Toast 알림 (성공/실패 피드백)
+  function showToast(msg) {
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);background:#1b3a5c;color:#fff;padding:14px 24px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:99999;font-weight:500;font-size:14px;';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.style.transition = 'opacity 0.3s'; toast.style.opacity = '0'; }, 2500);
+    setTimeout(function() { toast.remove(); }, 3000);
   }
 
   function clearCasePreviews() {
@@ -461,44 +561,72 @@
     // Form submit
     document.getElementById('blogForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var id = document.getElementById('blogId').value;
+      var submitBtn = this.querySelector('button[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.textContent : '';
 
-      var rawContent = document.getElementById('blogContent').value;
-      var contentHtml = markdownToHtml(rawContent);
-
-      var authorSel = document.getElementById('blogAuthor');
-      var authorName = authorSel ? authorSel.value : '';
-      // Find doctor_id from author name
-      var doctorId = null;
-      if (authorName) {
-        var found = doctors.find(function (d) { return d.name === authorName; });
-        if (found) doctorId = found.id;
+      if (window.__uploadingCount > 0 && submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '업로드 완료 대기 중…';
       }
 
-      var payload = {
-        title: document.getElementById('blogTitle').value,
-        content: rawContent,
-        content_html: contentHtml,
-        thumbnail: blogImages.length > 0 ? blogImages[0] : null,
-        images: blogImages,
-        meta_title: document.getElementById('blogMetaTitle').value || null,
-        meta_description: document.getElementById('blogMetaDesc').value || null,
-        slug: document.getElementById('blogSlug').value || null,
-        author_name: authorName || '최효영',
-        doctor_id: doctorId
-      };
+      waitForUploads().then(function () {
+        var id = document.getElementById('blogId').value;
 
-      var url = id ? '/api/admin/blogs/' + id : '/api/admin/blogs';
-      var method = id ? 'PUT' : 'POST';
+        var rawContent = document.getElementById('blogContent').value;
+        var contentHtml = markdownToHtml(rawContent);
 
-      fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function () {
-        document.getElementById('blogModal').style.display = 'none';
-        loadBlogs();
-        loadStats();
+        var authorSel = document.getElementById('blogAuthor');
+        var authorName = authorSel ? authorSel.value : '';
+        var doctorId = null;
+        if (authorName) {
+          var found = doctors.find(function (d) { return d.name === authorName; });
+          if (found) doctorId = found.id;
+        }
+
+        var payload = {
+          title: document.getElementById('blogTitle').value,
+          content: rawContent,
+          content_html: contentHtml,
+          thumbnail: blogImages.length > 0 ? blogImages[0] : null,
+          images: blogImages,
+          meta_title: document.getElementById('blogMetaTitle').value || null,
+          meta_description: document.getElementById('blogMetaDesc').value || null,
+          slug: document.getElementById('blogSlug').value || null,
+          author_name: authorName || '최효영',
+          doctor_id: doctorId
+        };
+
+        if (!payload.title || !payload.title.trim()) {
+          alert('제목을 입력해주세요.');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+          return;
+        }
+
+        var url = id ? '/api/admin/blogs/' + id : '/api/admin/blogs';
+        var method = id ? 'PUT' : 'POST';
+
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '저장 중…'; }
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
+            return r.json();
+          })
+          .then(function () {
+            document.getElementById('blogModal').style.display = 'none';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            loadBlogs();
+            loadStats();
+            showToast('✅ 블로그가 저장되었습니다');
+          })
+          .catch(function (err) {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            alert('저장 실패: ' + (err.message || '알 수 없는 오류'));
+          });
       });
     });
   }
@@ -688,26 +816,55 @@
 
     document.getElementById('noticeForm').addEventListener('submit', function (e) {
       e.preventDefault();
-      var id = document.getElementById('noticeId').value;
-      var payload = {
-        title: document.getElementById('noticeTitle').value,
-        content: document.getElementById('noticeContent').value,
-        is_pinned: document.getElementById('noticePinned').checked,
-        thumbnail: document.getElementById('noticeThumbVal').value || null,
-        images: noticeImages
-      };
+      var submitBtn = this.querySelector('button[type="submit"]');
+      var originalBtnText = submitBtn ? submitBtn.textContent : '';
 
-      var url = id ? '/api/admin/notices/' + id : '/api/admin/notices';
-      var method = id ? 'PUT' : 'POST';
+      if (window.__uploadingCount > 0 && submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '업로드 완료 대기 중…';
+      }
 
-      fetch(url, {
-        method: method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function () {
-        document.getElementById('noticeModal').style.display = 'none';
-        loadNotices();
-        loadStats();
+      waitForUploads().then(function () {
+        var id = document.getElementById('noticeId').value;
+        var payload = {
+          title: document.getElementById('noticeTitle').value,
+          content: document.getElementById('noticeContent').value,
+          is_pinned: document.getElementById('noticePinned').checked,
+          thumbnail: document.getElementById('noticeThumbVal').value || null,
+          images: noticeImages
+        };
+
+        if (!payload.title || !payload.title.trim()) {
+          alert('제목을 입력해주세요.');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+          return;
+        }
+
+        var url = id ? '/api/admin/notices/' + id : '/api/admin/notices';
+        var method = id ? 'PUT' : 'POST';
+
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '저장 중…'; }
+
+        fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+          .then(function (r) {
+            if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
+            return r.json();
+          })
+          .then(function () {
+            document.getElementById('noticeModal').style.display = 'none';
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            loadNotices();
+            loadStats();
+            showToast('✅ 공지사항이 저장되었습니다');
+          })
+          .catch(function (err) {
+            if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            alert('저장 실패: ' + (err.message || '알 수 없는 오류'));
+          });
       });
     });
   }
