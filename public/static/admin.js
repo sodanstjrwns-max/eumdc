@@ -57,7 +57,7 @@
 
   // === AUTH ===
   function checkAuth() {
-    fetch('/api/admin/check').then(function (r) {
+    fetch('/api/admin/check', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) {
       if (r.ok) {
         showDashboard();
       } else {
@@ -106,7 +106,7 @@
     var btn = document.getElementById('logoutBtn');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      fetch('/api/admin/logout', { method: 'POST' }).then(function () { showLogin(); });
+      fetch('/api/admin/logout', { method: 'POST', cache: 'no-store' }).then(function () { showLogin(); });
     });
   }
 
@@ -264,7 +264,7 @@
   // DASHBOARD STATS
   // =============================
   function loadStats() {
-    fetch('/api/admin/stats').then(function (r) { return r.json(); }).then(function (s) {
+    fetch('/api/admin/stats', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (s) {
       document.getElementById('statUsers').textContent = s.users || 0;
       document.getElementById('statRecent').textContent = s.users_recent_7d || 0;
       document.getElementById('statMarketing').textContent = s.users_marketing || 0;
@@ -402,7 +402,7 @@
   }
 
   function loadCases() {
-    fetch('/api/admin/cases').then(function (r) { return r.json(); }).then(function (data) {
+    fetch('/api/admin/cases', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (data) {
       var list = document.getElementById('casesList');
       if (!data.cases || data.cases.length === 0) {
         list.innerHTML = '<div class="admin-empty">등록된 케이스가 없습니다</div>';
@@ -483,16 +483,33 @@
   // =============================
   var blogImages = [];
 
+  // 에디터 상태
+  var blogUndoStack = [];
+  var blogRedoStack = [];
+  var blogUndoTimer = null;
+  var blogAutosaveTimer = null;
+  var blogPreviewTimer = null;
+  var BLOG_DRAFT_KEY = 'ieum_blog_draft_v1';
+
   function initBlogsAdmin() {
     document.getElementById('newBlogBtn').addEventListener('click', function () {
       document.getElementById('blogModalTitle').textContent = '새 블로그 글';
       document.getElementById('blogForm').reset();
       document.getElementById('blogId').value = '';
       blogImages = [];
+      blogUndoStack = [];
+      blogRedoStack = [];
       renderBlogPreviews();
       updateCharCounts();
       document.getElementById('seoFields').style.display = 'none';
       document.getElementById('blogModal').style.display = '';
+      // 초안 복원 여부 물어보기
+      tryRestoreDraft();
+      setTimeout(function () {
+        updatePreview();
+        updateStatusBar();
+        setEditorViewMode('split');
+      }, 50);
     });
 
     // SEO toggle
@@ -502,15 +519,34 @@
         var fields = document.getElementById('seoFields');
         var isHidden = fields.style.display === 'none';
         fields.style.display = isHidden ? '' : 'none';
-        seoToggle.textContent = isHidden ? 'SEO 설정 ▲' : 'SEO 설정 ▼';
+        seoToggle.textContent = isHidden ? '⚙ SEO 고급 ▲' : '⚙ SEO 고급 ▼';
+      });
+    }
+
+    // 뷰 모드 전환 (분할 / 편집만 / 미리보기만)
+    document.querySelectorAll('.editor-view-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setEditorViewMode(btn.dataset.view);
+      });
+    });
+
+    // 초안 삭제 버튼
+    var clearDraftBtn = document.getElementById('clearDraftBtn');
+    if (clearDraftBtn) {
+      clearDraftBtn.addEventListener('click', function () {
+        if (!confirm('자동저장된 초안을 삭제할까요?')) return;
+        try { localStorage.removeItem(BLOG_DRAFT_KEY); } catch (e) {}
+        setAutosaveLabel('초안 삭제됨', 'warn');
       });
     }
 
     // Char counts
     var titleInput = document.getElementById('blogTitle');
     var metaDescInput = document.getElementById('blogMetaDesc');
-    if (titleInput) titleInput.addEventListener('input', updateCharCounts);
-    if (metaDescInput) metaDescInput.addEventListener('input', updateCharCounts);
+    if (titleInput) titleInput.addEventListener('input', function () { updateCharCounts(); scheduleAutosave(); updateSeoScore(); });
+    if (metaDescInput) metaDescInput.addEventListener('input', function () { updateCharCounts(); scheduleAutosave(); updateSeoScore(); });
+    var slugInput = document.getElementById('blogSlug');
+    if (slugInput) slugInput.addEventListener('input', scheduleAutosave);
 
     // Editor toolbar
     var toolbar = document.getElementById('editorToolbar');
@@ -519,29 +555,490 @@
         var btn = e.target.closest('.toolbar-btn');
         if (!btn) return;
         var cmd = btn.dataset.cmd;
-        var textarea = document.getElementById('blogContent');
-        var start = textarea.selectionStart;
-        var end = textarea.selectionEnd;
-        var text = textarea.value;
-        var selected = text.substring(start, end);
-
-        var insert = '';
-        switch (cmd) {
-          case 'h2': insert = '\n## ' + (selected || '소제목을 입력하세요') + '\n'; break;
-          case 'h3': insert = '\n### ' + (selected || '하위 제목') + '\n'; break;
-          case 'bold': insert = '**' + (selected || '굵은 텍스트') + '**'; break;
-          case 'ul': insert = '\n- ' + (selected || '목록 항목') + '\n'; break;
-          case 'img':
-            var fileInput = document.getElementById('blogFiles');
-            if (fileInput) fileInput.click();
-            return;
-          case 'hr': insert = '\n---\n'; break;
-        }
-
-        textarea.value = text.substring(0, start) + insert + text.substring(end);
-        textarea.focus();
-        textarea.selectionStart = textarea.selectionEnd = start + insert.length;
+        runEditorCommand(cmd, btn);
       });
+    }
+
+    // 본문 변경 감지 — 라이브 프리뷰 + 자동저장 + 상태바 + 언두 스냅샷
+    var contentArea = document.getElementById('blogContent');
+    if (contentArea) {
+      // 최초 스냅샷
+      pushUndoSnapshot(contentArea.value);
+
+      contentArea.addEventListener('input', function () {
+        schedulePreview();
+        updateStatusBar();
+        scheduleAutosave();
+        scheduleUndoSnapshot();
+        updateSeoScore();
+      });
+
+      // 키보드 단축키
+      contentArea.addEventListener('keydown', function (e) {
+        handleEditorShortcut(e, contentArea);
+      });
+
+      // 붙여넣기 이미지 지원
+      contentArea.addEventListener('paste', function (e) {
+        if (!e.clipboardData || !e.clipboardData.items) return;
+        var items = e.clipboardData.items;
+        var imageFiles = [];
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].type && items[i].type.indexOf('image/') === 0) {
+            var f = items[i].getAsFile();
+            if (f) imageFiles.push(f);
+          }
+        }
+        if (imageFiles.length > 0) {
+          e.preventDefault();
+          handleBlogFiles(imageFiles);
+        }
+      });
+
+      // 탭 들여쓰기 지원 (Tab/Shift+Tab)
+      contentArea.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {
+          e.preventDefault();
+          var ta = contentArea;
+          var s = ta.selectionStart, ed = ta.selectionEnd;
+          if (e.shiftKey) {
+            // 이전 줄 시작에서 공백/탭 2개까지 제거
+            var before = ta.value.substring(0, s).replace(/( {1,2}|\t)$/, '');
+            ta.value = before + ta.value.substring(s);
+            ta.selectionStart = ta.selectionEnd = before.length;
+          } else {
+            ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(ed);
+            ta.selectionStart = ta.selectionEnd = s + 2;
+          }
+          schedulePreview();
+        }
+      });
+    }
+
+    // 링크 다이얼로그
+    initLinkDialog();
+
+    // editBlog 등 외부에서 호출할 수 있도록 노출
+    window.__blogEditor = {
+      updatePreview: updatePreview,
+      updateStatusBar: updateStatusBar,
+      updateSeoScore: updateSeoScore,
+      setEditorViewMode: setEditorViewMode,
+      pushUndoSnapshot: pushUndoSnapshot
+    };
+
+    // ─── 에디터 커맨드 실행기 ───
+    function runEditorCommand(cmd, btn) {
+      var textarea = document.getElementById('blogContent');
+      if (!textarea) return;
+      var start = textarea.selectionStart;
+      var end = textarea.selectionEnd;
+      var text = textarea.value;
+      var selected = text.substring(start, end);
+
+      // 특수 커맨드 (insert 문자열이 아닌 액션)
+      if (cmd === 'table') { openTablePicker(btn, textarea, start, end); return; }
+      if (cmd === 'img') { var fi = document.getElementById('blogFiles'); if (fi) fi.click(); return; }
+      if (cmd === 'link') { openLinkDialog(textarea, start, end, selected); return; }
+      if (cmd === 'undo') { doUndo(); return; }
+      if (cmd === 'redo') { doRedo(); return; }
+      if (cmd === 'toc') {
+        insertAtCursor(textarea, '\n\n[[TOC]]\n\n');
+        return;
+      }
+
+      var insert = '';
+      var cursorShift = null; // null이면 insert.length 뒤
+      switch (cmd) {
+        case 'h2': insert = '\n## ' + (selected || '소제목') + '\n'; break;
+        case 'h3': insert = '\n### ' + (selected || '하위 제목') + '\n'; break;
+        case 'h4': insert = '\n#### ' + (selected || '세부 제목') + '\n'; break;
+        case 'bold': insert = '**' + (selected || '굵은 텍스트') + '**'; break;
+        case 'italic': insert = '*' + (selected || '기울임') + '*'; break;
+        case 'strike': insert = '~~' + (selected || '취소선') + '~~'; break;
+        case 'mark': insert = '==' + (selected || '형광펜') + '=='; break;
+        case 'code': insert = '`' + (selected || '코드') + '`'; break;
+        case 'ul': insert = '\n- ' + (selected || '목록 항목') + '\n'; break;
+        case 'ol': insert = '\n1. ' + (selected || '첫 번째 항목') + '\n2. 두 번째 항목\n'; break;
+        case 'task': insert = '\n- [ ] ' + (selected || '할 일') + '\n'; break;
+        case 'quote': insert = '\n> ' + (selected || '인용문') + '\n'; break;
+        case 'callout-info': insert = '\n:::info\n' + (selected || '알아두면 좋은 정보를 여기에 적으세요.') + '\n:::\n'; break;
+        case 'callout-warn': insert = '\n:::warn\n' + (selected || '주의해야 할 내용을 적어주세요.') + '\n:::\n'; break;
+        case 'callout-tip': insert = '\n:::tip\n' + (selected || '유용한 팁이나 조언을 적어주세요.') + '\n:::\n'; break;
+        case 'hr': insert = '\n---\n'; break;
+      }
+      if (!insert) return;
+
+      insertAtCursor(textarea, insert, start, end);
+    }
+
+    function insertAtCursor(textarea, insert, start, end) {
+      if (typeof start === 'undefined') start = textarea.selectionStart;
+      if (typeof end === 'undefined') end = textarea.selectionEnd;
+      pushUndoSnapshot(textarea.value);
+      var text = textarea.value;
+      textarea.value = text.substring(0, start) + insert + text.substring(end);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + insert.length;
+      schedulePreview();
+      updateStatusBar();
+      scheduleAutosave();
+      updateSeoScore();
+    }
+
+    // ─── 키보드 단축키 ───
+    function handleEditorShortcut(e, textarea) {
+      var isMac = /Mac/.test(navigator.platform);
+      var mod = isMac ? e.metaKey : e.ctrlKey;
+      if (!mod) return;
+      var key = (e.key || '').toLowerCase();
+
+      // Ctrl+S — 저장
+      if (key === 's') {
+        e.preventDefault();
+        var saveBtn = document.getElementById('blogSaveBtn');
+        if (saveBtn) saveBtn.click();
+        return;
+      }
+      // Ctrl+Z — 언두
+      if (key === 'z' && !e.shiftKey) { e.preventDefault(); doUndo(); return; }
+      // Ctrl+Shift+Z (or Ctrl+Y) — 리두
+      if ((key === 'z' && e.shiftKey) || key === 'y') { e.preventDefault(); doRedo(); return; }
+      // Ctrl+B — 굵게
+      if (key === 'b') { e.preventDefault(); runEditorCommand('bold'); return; }
+      // Ctrl+I — 기울임
+      if (key === 'i') { e.preventDefault(); runEditorCommand('italic'); return; }
+      // Ctrl+K — 링크
+      if (key === 'k') { e.preventDefault(); runEditorCommand('link'); return; }
+      // Ctrl+2/3/4 — 헤딩
+      if (key === '2') { e.preventDefault(); runEditorCommand('h2'); return; }
+      if (key === '3') { e.preventDefault(); runEditorCommand('h3'); return; }
+      if (key === '4') { e.preventDefault(); runEditorCommand('h4'); return; }
+      // Ctrl+Shift+P — 분할 뷰 토글
+      if (key === 'p' && e.shiftKey) {
+        e.preventDefault();
+        var split = document.getElementById('editorSplit');
+        var mode = split ? split.dataset.mode : 'split';
+        setEditorViewMode(mode === 'split' ? 'edit' : 'split');
+      }
+    }
+
+    // ─── 언두/리두 ───
+    function pushUndoSnapshot(value) {
+      if (blogUndoStack.length && blogUndoStack[blogUndoStack.length - 1] === value) return;
+      blogUndoStack.push(value);
+      if (blogUndoStack.length > 50) blogUndoStack.shift();
+      blogRedoStack = [];
+    }
+    function scheduleUndoSnapshot() {
+      clearTimeout(blogUndoTimer);
+      blogUndoTimer = setTimeout(function () {
+        var ta = document.getElementById('blogContent');
+        if (ta) pushUndoSnapshot(ta.value);
+      }, 600);
+    }
+    function doUndo() {
+      var ta = document.getElementById('blogContent');
+      if (!ta || blogUndoStack.length < 2) return;
+      var current = blogUndoStack.pop();
+      blogRedoStack.push(current);
+      var prev = blogUndoStack[blogUndoStack.length - 1];
+      ta.value = prev;
+      schedulePreview();
+      updateStatusBar();
+    }
+    function doRedo() {
+      var ta = document.getElementById('blogContent');
+      if (!ta || !blogRedoStack.length) return;
+      var next = blogRedoStack.pop();
+      blogUndoStack.push(next);
+      ta.value = next;
+      schedulePreview();
+      updateStatusBar();
+    }
+
+    // ─── 라이브 프리뷰 ───
+    function schedulePreview() {
+      clearTimeout(blogPreviewTimer);
+      blogPreviewTimer = setTimeout(updatePreview, 180);
+    }
+    function updatePreview() {
+      var ta = document.getElementById('blogContent');
+      var preview = document.getElementById('editorPreview');
+      if (!ta || !preview) return;
+      var raw = ta.value || '';
+      if (!raw.trim()) {
+        preview.innerHTML = '<p class="editor-preview-empty">글을 작성하면 여기에 미리보기가 나타납니다.</p>';
+        return;
+      }
+      try {
+        preview.innerHTML = markdownToHtml(raw);
+      } catch (err) {
+        preview.innerHTML = '<p class="editor-preview-error">미리보기 오류: ' + (err && err.message ? err.message : err) + '</p>';
+      }
+    }
+
+    // ─── 뷰 모드 ───
+    function setEditorViewMode(mode) {
+      var split = document.getElementById('editorSplit');
+      if (!split) return;
+      split.dataset.mode = mode;
+      document.querySelectorAll('.editor-view-btn').forEach(function (b) {
+        if (b.dataset.view === mode) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+    }
+
+    // ─── 상태바: 글자수, 단어수, 읽는 시간 ───
+    function updateStatusBar() {
+      var ta = document.getElementById('blogContent');
+      if (!ta) return;
+      var raw = ta.value || '';
+      var chars = raw.length;
+      var words = raw.trim() ? raw.trim().split(/\s+/).length : 0;
+      // 한국어는 평균 분당 500자, 이미지는 12초 추가
+      var imgCount = (raw.match(/!\[[^\]]*\]\([^)]+\)/g) || []).length;
+      var minutes = Math.max(1, Math.ceil(chars / 500 + imgCount * 0.2));
+      var setText = function (id, v) { var el = document.getElementById(id); if (el) el.textContent = v; };
+      setText('statChars', chars.toLocaleString());
+      setText('statWords', words.toLocaleString());
+      setText('statReadTime', minutes + '분');
+    }
+
+    // ─── SEO 점수 (휴리스틱) ───
+    function updateSeoScore() {
+      var title = (document.getElementById('blogTitle') || {}).value || '';
+      var desc = (document.getElementById('blogMetaDesc') || {}).value || '';
+      var body = (document.getElementById('blogContent') || {}).value || '';
+      var score = 0, total = 6;
+      if (title.length >= 15 && title.length <= 60) score++;
+      if (desc.length >= 70 && desc.length <= 150) score++;
+      if (/^##\s/m.test(body)) score++;                       // H2 하나 이상
+      if (body.length >= 500) score++;                         // 본문 500자 이상
+      if (/!\[[^\]]*\]\([^)]+\)/.test(body)) score++;          // 이미지 1개 이상
+      if (/\[[^\]]+\]\([^)]+\)/.test(body)) score++;           // 링크 1개 이상
+      var dot = document.getElementById('seoDot');
+      var txt = document.getElementById('seoScoreText');
+      var rating;
+      if (score >= 5) rating = { label: '우수', cls: 'good' };
+      else if (score >= 3) rating = { label: '양호', cls: 'ok' };
+      else rating = { label: '부족', cls: 'bad' };
+      if (dot) dot.setAttribute('data-score', rating.cls);
+      if (txt) txt.textContent = rating.label + ' (' + score + '/' + total + ')';
+    }
+
+    // ─── 자동저장 (localStorage) ───
+    function scheduleAutosave() {
+      clearTimeout(blogAutosaveTimer);
+      setAutosaveLabel('저장 중…', 'saving');
+      blogAutosaveTimer = setTimeout(doAutosave, 800);
+    }
+    function doAutosave() {
+      try {
+        var data = {
+          id: (document.getElementById('blogId') || {}).value || '',
+          title: (document.getElementById('blogTitle') || {}).value || '',
+          content: (document.getElementById('blogContent') || {}).value || '',
+          meta_title: (document.getElementById('blogMetaTitle') || {}).value || '',
+          meta_description: (document.getElementById('blogMetaDesc') || {}).value || '',
+          slug: (document.getElementById('blogSlug') || {}).value || '',
+          author: (document.getElementById('blogAuthor') || {}).value || '',
+          images: blogImages,
+          savedAt: Date.now()
+        };
+        if (!data.title && !data.content) {
+          setAutosaveLabel('', '');
+          return;
+        }
+        localStorage.setItem(BLOG_DRAFT_KEY, JSON.stringify(data));
+        var t = new Date();
+        var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+        setAutosaveLabel('자동저장됨 ' + pad(t.getHours()) + ':' + pad(t.getMinutes()) + ':' + pad(t.getSeconds()), 'saved');
+      } catch (e) {
+        setAutosaveLabel('자동저장 실패', 'warn');
+      }
+    }
+    function setAutosaveLabel(text, state) {
+      var el = document.getElementById('autosaveIndicator');
+      if (!el) return;
+      el.textContent = text || '';
+      el.setAttribute('data-state', state || '');
+    }
+    function tryRestoreDraft() {
+      try {
+        var raw = localStorage.getItem(BLOG_DRAFT_KEY);
+        if (!raw) return;
+        var d = JSON.parse(raw);
+        if (!d || (!d.title && !d.content)) return;
+        // 편집 중인 글이 아닌 '새 글' 상태에서만 복원 제안
+        var curId = (document.getElementById('blogId') || {}).value || '';
+        if (curId) return;
+        var age = Math.round((Date.now() - (d.savedAt || 0)) / 60000);
+        var label = age < 1 ? '방금 전' : (age < 60 ? age + '분 전' : (Math.floor(age / 60) + '시간 전'));
+        if (!confirm('📝 ' + label + '에 자동저장된 초안이 있습니다.\n\n제목: ' + (d.title || '(없음)') + '\n\n이어서 작성할까요?\n(취소하면 새 글로 시작합니다)')) {
+          localStorage.removeItem(BLOG_DRAFT_KEY);
+          return;
+        }
+        if (d.title) document.getElementById('blogTitle').value = d.title;
+        if (d.content) document.getElementById('blogContent').value = d.content;
+        if (d.meta_title) document.getElementById('blogMetaTitle').value = d.meta_title;
+        if (d.meta_description) document.getElementById('blogMetaDesc').value = d.meta_description;
+        if (d.slug) document.getElementById('blogSlug').value = d.slug;
+        if (d.images) blogImages = d.images.slice();
+        renderBlogPreviews();
+        updateCharCounts();
+        setAutosaveLabel('초안 복원됨', 'saved');
+      } catch (e) {}
+    }
+
+    // ─── 링크 삽입 다이얼로그 ───
+    function initLinkDialog() {
+      var cancelBtn = document.getElementById('linkDialogCancel');
+      var closeBtn = document.getElementById('linkDialogClose');
+      var insertBtn = document.getElementById('linkDialogInsert');
+      if (cancelBtn) cancelBtn.addEventListener('click', closeLinkDialog);
+      if (closeBtn) closeBtn.addEventListener('click', closeLinkDialog);
+      if (insertBtn) insertBtn.addEventListener('click', commitLinkDialog);
+    }
+    var _linkCtx = null;
+    function openLinkDialog(textarea, start, end, selected) {
+      _linkCtx = { textarea: textarea, start: start, end: end };
+      var dlg = document.getElementById('linkDialog');
+      if (!dlg) return;
+      var tIn = document.getElementById('linkDialogText');
+      var uIn = document.getElementById('linkDialogUrl');
+      if (tIn) tIn.value = selected || '';
+      if (uIn) uIn.value = 'https://';
+      dlg.style.display = 'flex';
+      setTimeout(function () { (uIn || tIn).focus(); }, 50);
+    }
+    function closeLinkDialog() {
+      var dlg = document.getElementById('linkDialog');
+      if (dlg) dlg.style.display = 'none';
+      _linkCtx = null;
+    }
+    function commitLinkDialog() {
+      if (!_linkCtx) return;
+      var text = (document.getElementById('linkDialogText') || {}).value || '';
+      var url = (document.getElementById('linkDialogUrl') || {}).value || '';
+      if (!url || url === 'https://') { alert('URL을 입력해주세요'); return; }
+      var md = '[' + (text || url) + '](' + url + ')';
+      var ta = _linkCtx.textarea, s = _linkCtx.start, e = _linkCtx.end;
+      insertAtCursor(ta, md, s, e);
+      closeLinkDialog();
+    }
+
+    // ─── 표 크기 피커 ───
+    function openTablePicker(anchorBtn, textarea, start, end) {
+      var picker = document.getElementById('tablePicker');
+      var grid = document.getElementById('tablePickerGrid');
+      var sizeLabel = document.getElementById('tablePickerSize');
+      var closeBtn = document.getElementById('tablePickerClose');
+      if (!picker || !grid) return;
+
+      var MAX_COLS = 10;
+      var MAX_ROWS = 8;
+
+      // 그리드 셀 빌드 (최초 한 번만)
+      if (!grid.dataset.built) {
+        for (var r = 1; r <= MAX_ROWS; r++) {
+          for (var c = 1; c <= MAX_COLS; c++) {
+            var cell = document.createElement('div');
+            cell.className = 'table-picker-cell';
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            grid.appendChild(cell);
+          }
+        }
+        grid.dataset.built = '1';
+      }
+
+      // 위치: 버튼 아래
+      var rect = anchorBtn.getBoundingClientRect();
+      picker.style.display = 'block';
+      picker.style.position = 'fixed';
+      picker.style.top = (rect.bottom + 6) + 'px';
+      picker.style.left = rect.left + 'px';
+      picker.style.zIndex = '10000';
+
+      var currentRow = 1, currentCol = 1;
+
+      function highlight(r, c) {
+        currentRow = r; currentCol = c;
+        sizeLabel.textContent = c + ' × ' + r;
+        var cells = grid.querySelectorAll('.table-picker-cell');
+        cells.forEach(function (cell) {
+          var cr = parseInt(cell.dataset.row, 10);
+          var cc = parseInt(cell.dataset.col, 10);
+          if (cr <= r && cc <= c) cell.classList.add('hot');
+          else cell.classList.remove('hot');
+        });
+      }
+
+      function onMouseOver(e) {
+        var cell = e.target.closest('.table-picker-cell');
+        if (!cell) return;
+        highlight(parseInt(cell.dataset.row, 10), parseInt(cell.dataset.col, 10));
+      }
+
+      function onClick(e) {
+        var cell = e.target.closest('.table-picker-cell');
+        if (!cell) return;
+        var rows = parseInt(cell.dataset.row, 10);
+        var cols = parseInt(cell.dataset.col, 10);
+        insertTableMarkdown(textarea, start, end, rows, cols);
+        close();
+      }
+
+      function onKey(e) {
+        if (e.key === 'Escape') close();
+      }
+
+      function onDocClick(e) {
+        if (!picker.contains(e.target) && e.target !== anchorBtn) close();
+      }
+
+      function close() {
+        picker.style.display = 'none';
+        grid.removeEventListener('mouseover', onMouseOver);
+        grid.removeEventListener('click', onClick);
+        document.removeEventListener('keydown', onKey);
+        document.removeEventListener('click', onDocClick);
+        var cells = grid.querySelectorAll('.table-picker-cell.hot');
+        cells.forEach(function (c) { c.classList.remove('hot'); });
+      }
+
+      closeBtn.onclick = close;
+      grid.addEventListener('mouseover', onMouseOver);
+      grid.addEventListener('click', onClick);
+      document.addEventListener('keydown', onKey);
+      // 다음 tick에 바인딩(현재 클릭 이벤트가 닫아버리는 것 방지)
+      setTimeout(function () { document.addEventListener('click', onDocClick); }, 0);
+
+      highlight(1, 1);
+    }
+
+    function insertTableMarkdown(textarea, start, end, rows, cols) {
+      // 예: rows=3, cols=2 → 헤더 1줄 + 데이터 2줄 (총 3줄)
+      var header = '|';
+      var sep = '|';
+      for (var c = 0; c < cols; c++) {
+        header += ' 제목 ' + (c + 1) + ' |';
+        sep += ' --- |';
+      }
+      var bodyLines = [];
+      var dataRows = Math.max(1, rows - 1); // 최소 1개 데이터 행
+      for (var r = 0; r < dataRows; r++) {
+        var line = '|';
+        for (var c2 = 0; c2 < cols; c2++) line += '   |';
+        bodyLines.push(line);
+      }
+      var block = '\n' + header + '\n' + sep + '\n' + bodyLines.join('\n') + '\n';
+
+      var text = textarea.value;
+      textarea.value = text.substring(0, start) + block + text.substring(end);
+      textarea.focus();
+      textarea.selectionStart = textarea.selectionEnd = start + block.length;
     }
 
     // Dropzone
@@ -619,6 +1116,8 @@
           .then(function () {
             document.getElementById('blogModal').style.display = 'none';
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
+            // 저장 성공 시 자동저장 초안 삭제
+            try { localStorage.removeItem(BLOG_DRAFT_KEY); } catch (e) {}
             loadBlogs();
             loadStats();
             showToast('✅ 블로그가 저장되었습니다');
@@ -649,32 +1148,222 @@
     }
   }
 
+  // ──────────────────────────────────────────────────────────────
+  // 클라이언트 마크다운 파서 (라이브 프리뷰 + 저장 시 content_html 생성용)
+  // 서버(content.ts)의 markdownToHtml과 출력을 맞춤:
+  //  - 헤딩 H2~H4 (id 자동)
+  //  - 인용(>) / 수평선(---)
+  //  - 리스트(-, 1.), 체크박스(- [ ]/[x])
+  //  - GFM 표(|...|---|), 코드블록(```), 인라인 코드(`)
+  //  - 콜아웃 :::info/warn/tip:::, 목차 [[TOC]]
+  //  - 인라인: **굵게**, *기울임*, ==형광==, ~~취소~~, [링크], ![이미지]
+  // ──────────────────────────────────────────────────────────────
   function markdownToHtml(md) {
     if (!md) return '';
-    var html = md
-      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/^---$/gm, '<hr/>')
-      .replace(/^- (.+)$/gm, '<li>$1</li>');
+    try { return _mdParse(md); }
+    catch (e) { return '<p>' + _esc(md) + '</p>'; }
+  }
 
-    html = html.replace(/(<li>.*<\/li>\n?)+/g, function (match) {
-      return '<ul>' + match + '</ul>';
+  function _esc(s) {
+    return String(s || '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function _escAttr(s) { return String(s || '').replace(/"/g, '&quot;'); }
+  function _stripInline(s) {
+    return String(s || '')
+      .replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/==([^=]+)==/g, '$1').replace(/~~([^~]+)~~/g, '$1');
+  }
+  function _slug(s) {
+    return (s || '').toLowerCase().trim()
+      .replace(/[\s\u00A0]+/g, '-')
+      .replace(/[^\w가-힣ㄱ-ㅎㅏ-ㅣ\-]+/g, '')
+      .replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 80) || 'section';
+  }
+  function _inline(s) {
+    // 이미지
+    s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function (_, alt, url) {
+      if (alt && alt.trim()) return '<figure class="md-figure"><img src="' + _escAttr(url) + '" alt="' + _escAttr(alt) + '" class="md-img" loading="lazy"/><figcaption class="md-figcaption">' + _esc(alt) + '</figcaption></figure>';
+      return '<img src="' + _escAttr(url) + '" alt="" class="md-img" loading="lazy"/>';
+    });
+    // 링크
+    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, t, u) {
+      var ext = /^https?:/i.test(u) ? ' target="_blank" rel="noopener"' : '';
+      return '<a href="' + _escAttr(u) + '" class="md-link"' + ext + '>' + _esc(t) + '</a>';
+    });
+    // **굵게**
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    // ==하이라이트==
+    s = s.replace(/==([^=\n]+)==/g, '<mark class="md-mark">$1</mark>');
+    // ~~취소선~~
+    s = s.replace(/~~([^~\n]+)~~/g, '<del class="md-del">$1</del>');
+    // *기울임*
+    s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+    return s;
+  }
+  function _tableRow(line) {
+    var inner = line.replace(/^\|/, '').replace(/\|$/, '');
+    var cells = [], buf = '', esc = false;
+    for (var j = 0; j < inner.length; j++) {
+      var ch = inner[j];
+      if (esc) { buf += ch; esc = false; }
+      else if (ch === '\\') esc = true;
+      else if (ch === '|') { cells.push(buf.trim()); buf = ''; }
+      else buf += ch;
+    }
+    cells.push(buf.trim());
+    return cells;
+  }
+  function _tableAligns(line) {
+    return _tableRow(line).map(function (c) {
+      var t = c.trim(), s = t.indexOf(':') === 0, e = t.lastIndexOf(':') === t.length - 1 && t.length > 0;
+      if (s && e) return 'center'; if (e) return 'right'; if (s) return 'left'; return null;
+    });
+  }
+  function _mdParse(md) {
+    var text = md.replace(/\r\n/g, '\n');
+
+    // 코드블록 치환
+    var codeBlocks = [];
+    text = text.replace(/```([\w]*)\n([\s\S]*?)```/g, function (_, lang, code) {
+      codeBlocks.push('<pre class="md-pre"><code class="md-code' + (lang ? ' lang-' + _esc(lang) : '') + '">' + _esc(code) + '</code></pre>');
+      return '\u0000CODE' + (codeBlocks.length - 1) + '\u0000';
     });
 
-    var lines = html.split('\n');
-    var result = [];
-    lines.forEach(function (line) {
-      var trimmed = line.trim();
-      if (!trimmed) return;
-      if (trimmed.startsWith('<h') || trimmed.startsWith('<ul') || trimmed.startsWith('<hr') || trimmed.startsWith('<li')) {
-        result.push(trimmed);
-      } else {
-        result.push('<p>' + trimmed + '</p>');
+    // 콜아웃 치환 (재귀)
+    var callouts = [];
+    text = text.replace(/:::(info|warn|tip|note|success|danger)\s+([\s\S]*?):::/g, function (_, kind, body) {
+      var icons = { info: 'ℹ', warn: '⚠', tip: '💡', note: '📝', success: '✅', danger: '🚫' };
+      var inner = _mdParse(body.trim());
+      callouts.push('<div class="md-callout md-callout-' + kind + '"><div class="md-callout-icon" aria-hidden="true">' + (icons[kind] || 'ℹ') + '</div><div class="md-callout-body">' + inner + '</div></div>');
+      return '\u0000CALLOUT' + (callouts.length - 1) + '\u0000';
+    });
+
+    // 인라인 코드 치환
+    var inlineCodes = [];
+    text = text.replace(/`([^`\n]+)`/g, function (_, c) {
+      inlineCodes.push('<code class="md-inline-code">' + _esc(c) + '</code>');
+      return '\u0000IC' + (inlineCodes.length - 1) + '\u0000';
+    });
+
+    var lines = text.split('\n'), out = [], i = 0, headings = [];
+    var used = {};
+    function uniq(base) {
+      var s = base || 'section', n = 1;
+      while (used[s]) { n++; s = base + '-' + n; }
+      used[s] = 1; return s;
+    }
+
+    while (i < lines.length) {
+      var line = lines[i], tr = line.trim();
+      if (!tr) { i++; continue; }
+      if (/^(---|\*\*\*|___)$/.test(tr)) { out.push('<hr class="md-hr"/>'); i++; continue; }
+      if (/^\[\[TOC\]\]$/i.test(tr)) { out.push('\u0000TOCMARKER\u0000'); i++; continue; }
+      var hm = tr.match(/^(#{1,4})\s+(.+)$/);
+      if (hm) {
+        var lvl = hm[1].length, raw = hm[2].trim();
+        var slug = uniq(_slug(_stripInline(raw)));
+        headings.push({ level: lvl, text: _stripInline(raw), slug: slug });
+        out.push('<h' + lvl + ' class="md-h' + lvl + '" id="' + slug + '">' + _inline(raw) + '</h' + lvl + '>');
+        i++; continue;
       }
-    });
+      // 표
+      if (tr.charAt(0) === '|' && tr.charAt(tr.length - 1) === '|' && i + 1 < lines.length) {
+        var nxt = (lines[i + 1] || '').trim();
+        if (/^\|[\s:|-]+\|$/.test(nxt) && /-/.test(nxt)) {
+          var head = _tableRow(tr), al = _tableAligns(nxt), bodyRows = [];
+          i += 2;
+          while (i < lines.length && lines[i].trim().charAt(0) === '|' && lines[i].trim().charAt(lines[i].trim().length - 1) === '|') {
+            bodyRows.push(_tableRow(lines[i].trim())); i++;
+          }
+          var thead = '<thead><tr>' + head.map(function (c, idx) {
+            return '<th' + (al[idx] ? ' style="text-align:' + al[idx] + '"' : '') + '>' + _inline(c) + '</th>';
+          }).join('') + '</tr></thead>';
+          var tbody = '<tbody>' + bodyRows.map(function (r) {
+            return '<tr>' + r.map(function (c, idx) {
+              return '<td' + (al[idx] ? ' style="text-align:' + al[idx] + '"' : '') + '>' + _inline(c) + '</td>';
+            }).join('') + '</tr>';
+          }).join('') + '</tbody>';
+          out.push('<div class="md-table-wrap"><table class="md-table">' + thead + tbody + '</table></div>');
+          continue;
+        }
+      }
+      // 인용
+      if (tr.indexOf('> ') === 0) {
+        var q = [];
+        while (i < lines.length && lines[i].trim().indexOf('> ') === 0) { q.push(lines[i].trim().slice(2)); i++; }
+        out.push('<blockquote class="md-blockquote">' + _inline(q.join(' ')) + '</blockquote>');
+        continue;
+      }
+      // 체크박스 리스트
+      if (/^[-*+]\s+\[[ xX]\]\s+/.test(tr)) {
+        var items = [];
+        while (i < lines.length && /^[-*+]\s+\[[ xX]\]\s+/.test(lines[i].trim())) {
+          var m = lines[i].trim().match(/^[-*+]\s+\[([ xX])\]\s+(.+)$/);
+          items.push({ checked: /[xX]/.test(m[1]), text: m[2] }); i++;
+        }
+        out.push('<ul class="md-tasklist">' + items.map(function (it) {
+          return '<li class="md-task' + (it.checked ? ' md-task-done' : '') + '"><span class="md-task-check" aria-hidden="true">' + (it.checked ? '✓' : '') + '</span><span class="md-task-text">' + _inline(it.text) + '</span></li>';
+        }).join('') + '</ul>');
+        continue;
+      }
+      // 무순서 리스트
+      if (/^[-*+]\s+/.test(tr)) {
+        var arr = [];
+        while (i < lines.length && /^[-*+]\s+/.test(lines[i].trim()) && !/^[-*+]\s+\[[ xX]\]\s+/.test(lines[i].trim())) {
+          arr.push(lines[i].trim().replace(/^[-*+]\s+/, '')); i++;
+        }
+        out.push('<ul class="md-ul">' + arr.map(function (it) { return '<li>' + _inline(it) + '</li>'; }).join('') + '</ul>');
+        continue;
+      }
+      // 순서 리스트
+      if (/^\d+\.\s+/.test(tr)) {
+        var arr2 = [];
+        while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+          arr2.push(lines[i].trim().replace(/^\d+\.\s+/, '')); i++;
+        }
+        out.push('<ol class="md-ol">' + arr2.map(function (it) { return '<li>' + _inline(it) + '</li>'; }).join('') + '</ol>');
+        continue;
+      }
+      // 일반 문단
+      var para = [];
+      while (i < lines.length && lines[i].trim() && !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim())) {
+        para.push(lines[i].trim()); i++;
+      }
+      out.push('<p class="md-p">' + _inline(para.join(' ')) + '</p>');
+    }
 
-    return result.join('\n');
+    var html = out.filter(function (l) { return l !== ''; }).join('\n');
+
+    // 목차 생성
+    if (html.indexOf('\u0000TOCMARKER\u0000') !== -1) {
+      var toc = '';
+      var tocItems = headings.filter(function (h) { return h.level >= 2 && h.level <= 3; });
+      if (tocItems.length) {
+        toc = '<nav class="md-toc" aria-label="목차"><div class="md-toc-title">목차</div><ol class="md-toc-list">';
+        var inSub = false;
+        tocItems.forEach(function (h) {
+          if (h.level === 2) {
+            if (inSub) { toc += '</ol></li>'; inSub = false; }
+            toc += '<li class="md-toc-item md-toc-h2"><a href="#' + h.slug + '">' + _esc(h.text) + '</a>';
+          } else {
+            if (!inSub) { toc += '<ol class="md-toc-sublist">'; inSub = true; }
+            toc += '<li class="md-toc-item md-toc-h3"><a href="#' + h.slug + '">' + _esc(h.text) + '</a></li>';
+          }
+        });
+        if (inSub) toc += '</ol></li>';
+        toc += '</ol></nav>';
+      }
+      html = html.replace(/\u0000TOCMARKER\u0000/g, toc);
+    }
+
+    html = html.replace(/\u0000CALLOUT(\d+)\u0000/g, function (_, idx) { return callouts[+idx] || ''; });
+    html = html.replace(/\u0000IC(\d+)\u0000/g, function (_, idx) { return inlineCodes[+idx] || ''; });
+    html = html.replace(/\u0000CODE(\d+)\u0000/g, function (_, idx) { return codeBlocks[+idx] || ''; });
+
+    return html;
   }
 
   function handleBlogFiles(files) {
@@ -711,7 +1400,7 @@
   }
 
   function loadBlogs() {
-    fetch('/api/admin/blogs').then(function (r) { return r.json(); }).then(function (data) {
+    fetch('/api/admin/blogs', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (data) {
       var list = document.getElementById('blogsList');
       if (!data.blogs || data.blogs.length === 0) {
         list.innerHTML = '<div class="admin-empty">등록된 블로그 글이 없습니다</div>';
@@ -762,9 +1451,20 @@
       var authorSel = document.getElementById('blogAuthor');
       if (authorSel) authorSel.value = b.author_name || '';
       blogImages = (b.images || []).map(function (img) { return img.image_url; });
+      blogUndoStack = [];
+      blogRedoStack = [];
       renderBlogPreviews();
       updateCharCounts();
       document.getElementById('blogModal').style.display = '';
+      setTimeout(function () {
+        if (window.__blogEditor) {
+          window.__blogEditor.pushUndoSnapshot(document.getElementById('blogContent').value);
+          window.__blogEditor.updatePreview();
+          window.__blogEditor.updateStatusBar();
+          window.__blogEditor.updateSeoScore();
+          window.__blogEditor.setEditorViewMode('split');
+        }
+      }, 50);
     });
   }
 
@@ -897,7 +1597,7 @@
   }
 
   function loadNotices() {
-    fetch('/api/admin/notices').then(function (r) { return r.json(); }).then(function (data) {
+    fetch('/api/admin/notices', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (data) {
       var list = document.getElementById('noticesList2');
       if (!data.notices || data.notices.length === 0) {
         list.innerHTML = '<div class="admin-empty">등록된 공지사항이 없습니다</div>';
@@ -988,7 +1688,7 @@
   }
 
   function loadFaq() {
-    fetch('/api/admin/faq').then(function (r) { return r.json(); }).then(function (data) {
+    fetch('/api/admin/faq', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (data) {
       faqCategories = data.categories || [];
       populateFaqCategorySelect();
 

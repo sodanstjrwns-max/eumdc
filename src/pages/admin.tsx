@@ -4,12 +4,15 @@ export function adminPage() {
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
         <title>이음치과 관리자</title>
         <link rel="icon" type="image/svg+xml" href="/static/favicon.svg" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260422o" rel="stylesheet" />
       </head>
       <body>
         <div id="adminApp">
@@ -226,78 +229,176 @@ export function adminPage() {
 
               {/* Blog Form Modal (SEO enhanced) */}
               <div class="modal-overlay" id="blogModal" style="display:none">
-                <div class="modal-card modal-large">
-                  <div class="modal-header">
+                <div class="modal-card modal-xl editor-modal">
+                  <div class="modal-header editor-modal-header">
                     <h3 id="blogModalTitle">새 블로그 글</h3>
-                    <button class="modal-close" data-close="blogModal">&times;</button>
+                    <div class="editor-header-actions">
+                      <span class="autosave-indicator" id="autosaveIndicator"></span>
+                      <button type="button" class="editor-view-btn" data-view="split" title="편집+미리보기 (Ctrl+Shift+P)">⊞ 분할</button>
+                      <button type="button" class="editor-view-btn" data-view="edit" title="편집만">✎ 편집</button>
+                      <button type="button" class="editor-view-btn" data-view="preview" title="미리보기만">👁 미리보기</button>
+                      <button class="modal-close" data-close="blogModal">&times;</button>
+                    </div>
                   </div>
-                  <form id="blogForm" class="admin-form">
+
+                  <form id="blogForm" class="admin-form editor-form">
                     <input type="hidden" id="blogId" />
 
-                    {/* SEO Fields */}
-                    <div class="form-group">
-                      <label>제목 (H1 - SEO 메인 키워드 포함 권장)</label>
-                      <input type="text" id="blogTitle" placeholder="예: 부산 명지 임플란트 비용과 치료 과정 A to Z" required />
+                    {/* 제목 */}
+                    <div class="form-group editor-title-group">
+                      <input type="text" id="blogTitle" class="editor-title-input" placeholder="글 제목을 입력하세요 (SEO 메인 키워드 포함 권장)" required />
                       <span class="form-char-count" id="titleCount">0/60자</span>
                     </div>
 
-                    <div class="seo-toggle">
-                      <button type="button" class="btn-seo-toggle" id="seoToggle">SEO 설정 ▼</button>
+                    {/* 메타 정보 1줄 요약 바 */}
+                    <div class="editor-meta-bar">
+                      <div class="editor-meta-field">
+                        <label>작성자</label>
+                        <select id="blogAuthor">
+                          <option value="">자동 선택</option>
+                        </select>
+                      </div>
+                      <div class="editor-meta-field">
+                        <label>URL 슬러그</label>
+                        <input type="text" id="blogSlug" placeholder="auto-generated" />
+                      </div>
+                      <button type="button" class="btn-seo-toggle" id="seoToggle">⚙ SEO 고급 ▼</button>
                     </div>
+
                     <div class="seo-fields" id="seoFields" style="display:none">
                       <div class="form-group">
-                        <label>META 제목 (검색 결과 제목, 비워두면 제목 사용)</label>
+                        <label>META 제목 <span class="field-hint">비워두면 글 제목 사용</span></label>
                         <input type="text" id="blogMetaTitle" placeholder="검색 결과에 표시될 제목" />
                       </div>
                       <div class="form-group">
-                        <label>META 설명 (검색 결과 미리보기, 150자 이내)</label>
+                        <label>META 설명 <span class="field-hint">검색 결과 미리보기, 150자 이내</span></label>
                         <textarea id="blogMetaDesc" rows={2} placeholder="검색 결과에 보이는 미리보기 텍스트"></textarea>
                         <span class="form-char-count" id="metaDescCount">0/150자</span>
                       </div>
-                      <div class="form-group">
-                        <label>URL 슬러그 (영문, 비워두면 자동생성)</label>
-                        <input type="text" id="blogSlug" placeholder="busan-myeongji-implant-cost" />
+                    </div>
+
+                    {/* 슈퍼 툴바 — 그룹별로 정리 */}
+                    <div class="editor-supertoolbar" id="editorToolbar">
+                      <div class="toolbar-group" data-group="heading">
+                        <button type="button" class="toolbar-btn" data-cmd="h2" title="제목 H2 (Ctrl+2)"><b>H</b><sub>2</sub></button>
+                        <button type="button" class="toolbar-btn" data-cmd="h3" title="소제목 H3 (Ctrl+3)"><b>H</b><sub>3</sub></button>
+                        <button type="button" class="toolbar-btn" data-cmd="h4" title="소소제목 H4 (Ctrl+4)"><b>H</b><sub>4</sub></button>
+                      </div>
+                      <span class="toolbar-sep"></span>
+                      <div class="toolbar-group" data-group="format">
+                        <button type="button" class="toolbar-btn" data-cmd="bold" title="굵게 (Ctrl+B)"><b>B</b></button>
+                        <button type="button" class="toolbar-btn" data-cmd="italic" title="기울임 (Ctrl+I)"><i>I</i></button>
+                        <button type="button" class="toolbar-btn" data-cmd="strike" title="취소선"><s>S</s></button>
+                        <button type="button" class="toolbar-btn" data-cmd="mark" title="형광펜 하이라이트"><span style="background:#fff3a0;padding:0 3px;border-radius:2px;color:#0f1b2d;">H</span></button>
+                        <button type="button" class="toolbar-btn" data-cmd="code" title="인라인 코드"><code>{`<>`}</code></button>
+                      </div>
+                      <span class="toolbar-sep"></span>
+                      <div class="toolbar-group" data-group="list">
+                        <button type="button" class="toolbar-btn" data-cmd="ul" title="글머리 목록">• 목록</button>
+                        <button type="button" class="toolbar-btn" data-cmd="ol" title="번호 목록">1. 목록</button>
+                        <button type="button" class="toolbar-btn" data-cmd="task" title="체크박스 목록">☑ 체크</button>
+                      </div>
+                      <span class="toolbar-sep"></span>
+                      <div class="toolbar-group" data-group="block">
+                        <button type="button" class="toolbar-btn" data-cmd="quote" title="인용구">❝ 인용</button>
+                        <button type="button" class="toolbar-btn" data-cmd="callout-info" title="정보 박스">ℹ 정보</button>
+                        <button type="button" class="toolbar-btn" data-cmd="callout-warn" title="경고 박스">⚠ 주의</button>
+                        <button type="button" class="toolbar-btn" data-cmd="callout-tip" title="팁 박스">💡 팁</button>
+                      </div>
+                      <span class="toolbar-sep"></span>
+                      <div class="toolbar-group" data-group="insert">
+                        <button type="button" class="toolbar-btn" data-cmd="link" title="링크 (Ctrl+K)">🔗 링크</button>
+                        <button type="button" class="toolbar-btn" data-cmd="table" title="표 삽입">▦ 표</button>
+                        <button type="button" class="toolbar-btn" data-cmd="img" title="이미지 업로드">📷 이미지</button>
+                        <button type="button" class="toolbar-btn" data-cmd="hr" title="구분선">— 구분</button>
+                        <button type="button" class="toolbar-btn" data-cmd="toc" title="목차 자동생성">☰ 목차</button>
+                      </div>
+                      <span class="toolbar-sep"></span>
+                      <div class="toolbar-group" data-group="edit">
+                        <button type="button" class="toolbar-btn" data-cmd="undo" title="되돌리기 (Ctrl+Z)">↶</button>
+                        <button type="button" class="toolbar-btn" data-cmd="redo" title="다시실행 (Ctrl+Shift+Z)">↷</button>
                       </div>
                     </div>
 
-                    <div class="form-group">
-                      <label>작성자</label>
-                      <select id="blogAuthor">
-                        <option value="">자동 (의료진 목록에서 선택)</option>
-                      </select>
-                    </div>
-
-                    {/* Rich Content Editor */}
-                    <div class="form-group">
-                      <label>본문 (H2, H3 소제목 활용 + 이미지 삽입 권장)</label>
-                      <div class="editor-toolbar" id="editorToolbar">
-                        <button type="button" class="toolbar-btn" data-cmd="h2" title="H2 소제목">H2</button>
-                        <button type="button" class="toolbar-btn" data-cmd="h3" title="H3 소제목">H3</button>
-                        <button type="button" class="toolbar-btn" data-cmd="bold" title="굵게">B</button>
-                        <button type="button" class="toolbar-btn" data-cmd="ul" title="목록">• 목록</button>
-                        <button type="button" class="toolbar-btn" data-cmd="img" title="이미지 삽입">📷 이미지</button>
-                        <button type="button" class="toolbar-btn" data-cmd="hr" title="구분선">—</button>
+                    {/* ═══ 스플릿 뷰: 편집 | 프리뷰 ═══ */}
+                    <div class="editor-split" id="editorSplit" data-mode="split">
+                      <div class="editor-pane editor-pane-edit">
+                        <textarea id="blogContent" class="editor-textarea"
+                          placeholder="# 제목은 상단 입력란에&#10;&#10;## 소제목을 활용하면 SEO에 유리합니다&#10;&#10;본문을 작성하세요. 우측 미리보기로 실시간 확인할 수 있습니다.&#10;&#10;- **굵게** 나 *기울임* 또는 ==형광펜== 표시&#10;- [링크](https://example.com)&#10;- `인라인 코드`&#10;&#10;> 인용구는 이렇게&#10;&#10;| 표 | 문법 |&#10;|---|---|&#10;| 지원 | 가능 |&#10;&#10;- [ ] 체크박스 목록&#10;- [x] 완료된 항목&#10;&#10;:::info 정보 박스도 됩니다 :::&#10;:::warn 주의 박스 :::&#10;:::tip 팁 박스 :::"></textarea>
                       </div>
-                      <textarea id="blogContent" rows={12} placeholder="## 소제목을 활용하면 SEO에 유리합니다&#10;&#10;본문 내용을 작성하세요.&#10;&#10;마크다운 문법을 지원합니다:&#10;## H2 소제목&#10;### H3 소제목&#10;**굵게** 표시&#10;- 목록 항목"></textarea>
-                      <span class="editor-help">마크다운 문법 지원: ## H2, ### H3, **굵게**, - 목록</span>
+                      <div class="editor-split-divider" aria-hidden="true"></div>
+                      <div class="editor-pane editor-pane-preview" id="editorPreviewPane">
+                        <div class="editor-preview-header">실시간 미리보기</div>
+                        <div class="editor-preview" id="editorPreview">
+                          <p class="editor-preview-empty">글을 작성하면 여기에 미리보기가 나타납니다.</p>
+                        </div>
+                      </div>
                     </div>
 
-                    <div class="form-group">
-                      <label>사진 업로드 (드래그 앤 드롭, 글 중간에 삽입됨)</label>
+                    {/* 상태바: 글자수 · 단어수 · 읽는시간 · 자동저장 */}
+                    <div class="editor-statusbar">
+                      <span class="stat-item">📝 <b id="statChars">0</b>자</span>
+                      <span class="stat-item">📖 약 <b id="statReadTime">1분</b> 읽기</span>
+                      <span class="stat-item">🔤 <b id="statWords">0</b> 단어</span>
+                      <span class="stat-item seo-score-item">
+                        <span class="seo-dot" id="seoDot" data-score="neutral"></span>
+                        SEO <b id="seoScoreText">-</b>
+                      </span>
+                      <span class="stat-item stat-push">⌨ Ctrl+B / Ctrl+I / Ctrl+K / Ctrl+S</span>
+                    </div>
+
+                    {/* 표 크기 선택 팝오버 */}
+                    <div class="table-picker" id="tablePicker" style="display:none">
+                      <div class="table-picker-card">
+                        <div class="table-picker-header">
+                          <span id="tablePickerSize">1 × 1</span>
+                          <button type="button" class="table-picker-close" id="tablePickerClose">&times;</button>
+                        </div>
+                        <div class="table-picker-grid" id="tablePickerGrid"></div>
+                        <p class="table-picker-hint">원하는 크기 위에서 클릭하세요 (최대 10×8)</p>
+                      </div>
+                    </div>
+
+                    {/* 링크 삽입 다이얼로그 */}
+                    <div class="link-dialog" id="linkDialog" style="display:none">
+                      <div class="link-dialog-card">
+                        <div class="link-dialog-header">
+                          <span>🔗 링크 삽입</span>
+                          <button type="button" class="link-dialog-close" id="linkDialogClose">&times;</button>
+                        </div>
+                        <div class="link-dialog-body">
+                          <label>표시 텍스트</label>
+                          <input type="text" id="linkDialogText" placeholder="예: 이음치과 홈" />
+                          <label>URL</label>
+                          <input type="url" id="linkDialogUrl" placeholder="https://..." />
+                          <div class="link-dialog-actions">
+                            <button type="button" class="btn-secondary" id="linkDialogCancel">취소</button>
+                            <button type="button" class="btn-primary" id="linkDialogInsert">삽입</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 이미지 드롭존 */}
+                    <div class="form-group editor-dropzone-group">
+                      <label>📁 사진 업로드 <span class="field-hint">드래그/붙여넣기/클릭 — 마크다운 삽입</span></label>
                       <div class="dropzone" id="blogDropzone">
                         <div class="dropzone-msg">
-                          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                          <p>여기에 이미지를 드래그하거나 클릭하세요</p>
-                          <span>JPG, PNG, WebP (최대 10장, 본문 중간에 자동 배치)</span>
+                          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                          <p>여기에 이미지를 드래그하거나 클릭</p>
+                          <span>JPG · PNG · WebP (최대 10장) — 본문 커서 위치에 자동 삽입</span>
                         </div>
                         <input type="file" id="blogFiles" accept="image/*" multiple style="display:none" />
                       </div>
                       <div class="blog-preview-grid" id="blogPreviewGrid"></div>
                     </div>
 
-                    <div class="form-actions">
-                      <button type="button" class="btn-secondary" data-close="blogModal">취소</button>
-                      <button type="submit" class="btn-primary">저장</button>
+                    <div class="form-actions editor-actions">
+                      <button type="button" class="btn-ghost" id="clearDraftBtn" title="자동저장된 초안 삭제">🗑 초안 삭제</button>
+                      <div class="editor-actions-right">
+                        <button type="button" class="btn-secondary" data-close="blogModal">취소</button>
+                        <button type="submit" class="btn-primary" id="blogSaveBtn">💾 저장</button>
+                      </div>
                     </div>
                   </form>
                 </div>
@@ -417,7 +518,7 @@ export function adminPage() {
           </div>
         </div>
 
-        <script src="/static/admin.js"></script>
+        <script src="/static/admin.js?v=20260422o"></script>
       </body>
     </html>
   )

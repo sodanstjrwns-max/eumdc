@@ -95,6 +95,11 @@ app.use('*', async (c, next) => {
   } else if (path === '/cases' || path.startsWith('/cases/')) {
     // 비포애프터: 로그인 여부에 따라 응답이 달라짐 → 캐시 금지
     c.header('Cache-Control', 'private, no-store, no-cache, must-revalidate')
+  } else if (path === '/admin' || path.startsWith('/admin/')) {
+    // 관리자 페이지: 절대 캐시 금지 (버그 수정 즉시 반영)
+    c.header('Cache-Control', 'private, no-store, no-cache, must-revalidate, max-age=0')
+    c.header('Pragma', 'no-cache')
+    c.header('Expires', '0')
   } else if (status === 200 && c.req.method === 'GET') {
     // 공개 HTML 페이지: 브라우저 5분, CF 엣지 1시간 (stale-while-revalidate로 끊김 없음)
     c.header('Cache-Control', 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400')

@@ -368,7 +368,16 @@
      ═══════════════════════════════════════════ */
   function initScrollReveals() {
     setTimeout(function() {
-      if (document.body.classList.contains('gsap-active')) return;
+      if (document.body.classList.contains('gsap-active')) {
+        // GSAP 활성 페이지라도 — GSAP이 안 챙겨주는 data-reveal 요소 구제
+        // 2초 뒤 아직 .visible 없으면 강제 표시 (예: /cases 의 case-card)
+        setTimeout(function () {
+          document.querySelectorAll('[data-reveal]:not(.visible)').forEach(function (el) {
+            el.classList.add('visible');
+          });
+        }, 2000);
+        return;
+      }
       _initScrollRevealsCore();
     }, 300);
   }
@@ -389,6 +398,14 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
 
     elements.forEach(function (el) { observer.observe(el); });
+
+    // Safety net: 2초 뒤에도 .visible 클래스 없는 [data-reveal] 요소는 강제 표시
+    // (IntersectionObserver 타이밍 실패 / 슈퍼 구형 브라우저 대비)
+    setTimeout(function () {
+      document.querySelectorAll('[data-reveal]:not(.visible)').forEach(function (el) {
+        el.classList.add('visible');
+      });
+    }, 2000);
   }
 
   /* ═══════════════════════════════════════════

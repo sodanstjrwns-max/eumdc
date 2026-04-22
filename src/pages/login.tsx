@@ -14,14 +14,14 @@ export function loginPage() {
       <section class="login-section">
         <div class="container-wide">
           <div class="login-page-card">
-            <form id="userLoginForm" class="login-page-form" autocomplete="off">
+            <form id="userLoginForm" class="login-page-form" method="post" action="/api/user/login">
               <div class="form-group">
                 <label for="loginPhone">전화번호</label>
-                <input type="tel" id="loginPhone" placeholder="010-1234-5678" required autocomplete="tel" />
+                <input type="tel" id="loginPhone" name="username" placeholder="010-1234-5678" required autocomplete="username" inputmode="tel" />
               </div>
               <div class="form-group">
                 <label for="loginPwUser">비밀번호</label>
-                <input type="password" id="loginPwUser" placeholder="비밀번호 입력" required autocomplete="current-password" />
+                <input type="password" id="loginPwUser" name="password" placeholder="비밀번호 입력" required autocomplete="current-password" />
               </div>
               <p id="userLoginError" class="form-error" style="display:none"></p>
               <button type="submit" class="btn-signup">

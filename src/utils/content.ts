@@ -39,6 +39,19 @@ function _markdownToHtmlImpl(md: string): string {
     return `\u0000CODE${codeBlocks.length - 1}\u0000`
   })
 
+  // 콜아웃 블록 (:::info / :::warn / :::tip / :::note ... :::) 임시 치환
+  const callouts: string[] = []
+  text = text.replace(/:::(info|warn|tip|note|success|danger)\s+([\s\S]*?):::/g, (_, kind, body) => {
+    const icons: Record<string, string> = {
+      info: 'ℹ', warn: '⚠', tip: '💡', note: '📝', success: '✅', danger: '🚫',
+    }
+    const inner = _markdownToHtmlImpl(body.trim()) // 재귀: 콜아웃 안에 마크다운 허용
+    callouts.push(
+      `<div class="md-callout md-callout-${kind}"><div class="md-callout-icon" aria-hidden="true">${icons[kind] || 'ℹ'}</div><div class="md-callout-body">${inner}</div></div>`
+    )
+    return `\u0000CALLOUT${callouts.length - 1}\u0000`
+  })
+
   // 인라인 코드 (`...`) 임시 치환
   const inlineCodes: string[] = []
   text = text.replace(/`([^`\n]+)`/g, (_, c) => {
@@ -50,6 +63,20 @@ function _markdownToHtmlImpl(md: string): string {
   const lines = text.split('\n')
   const out: string[] = []
   let i = 0
+  const headings: Array<{ level: number; text: string; slug: string }> = []
+
+  // 헤딩 슬러그 중복 방지
+  const usedSlugs = new Set<string>()
+  function uniqueSlug(base: string): string {
+    let s = base || 'section'
+    let n = 1
+    while (usedSlugs.has(s)) {
+      n++
+      s = `${base}-${n}`
+    }
+    usedSlugs.add(s)
+    return s
+  }
 
   while (i < lines.length) {
     const line = lines[i]
@@ -62,12 +89,22 @@ function _markdownToHtmlImpl(md: string): string {
       continue
     }
 
-    // 헤딩 H4~H1
+    // 목차 마커 [[TOC]] — 나중에 치환
+    if (/^\[\[TOC\]\]$/i.test(trimmed)) {
+      out.push('\u0000TOCMARKER\u0000')
+      i++
+      continue
+    }
+
+    // 헤딩 H4~H1 (SEO용 id 자동 생성)
     const hMatch = trimmed.match(/^(#{1,4})\s+(.+)$/)
     if (hMatch) {
       const level = hMatch[1].length
-      const content = inlineFormat(hMatch[2])
-      out.push(`<h${level} class="md-h${level}">${content}</h${level}>`)
+      const rawText = hMatch[2].trim()
+      const content = inlineFormat(rawText)
+      const slug = uniqueSlug(slugifyKoEn(stripMdInline(rawText)))
+      headings.push({ level, text: stripMdInline(rawText), slug })
+      out.push(`<h${level} class="md-h${level}" id="${slug}">${content}</h${level}>`)
       i++
       continue
     }
@@ -77,6 +114,51 @@ function _markdownToHtmlImpl(md: string): string {
       out.push('<hr class="md-hr"/>')
       i++
       continue
+    }
+
+    // 표 (GFM): | 헤더1 | 헤더2 |   다음줄이 |---|---| 형식이면
+    if (trimmed.startsWith('|') && trimmed.endsWith('|') && i + 1 < lines.length) {
+      const next = (lines[i + 1] || '').trim()
+      // 구분 라인: | --- | :---: | ---: | 등 허용
+      if (/^\|[\s:|-]+\|$/.test(next) && /-/.test(next)) {
+        const headerCells = parseTableRow(trimmed)
+        const aligns = parseTableAligns(next)
+        const bodyRows: string[][] = []
+        i += 2 // 헤더 + 구분선 스킵
+        while (
+          i < lines.length &&
+          lines[i].trim().startsWith('|') &&
+          lines[i].trim().endsWith('|')
+        ) {
+          bodyRows.push(parseTableRow(lines[i].trim()))
+          i++
+        }
+        // HTML 조립
+        const thead =
+          '<thead><tr>' +
+          headerCells
+            .map((c, idx) => `<th${aligns[idx] ? ` style="text-align:${aligns[idx]}"` : ''}>${inlineFormat(c)}</th>`)
+            .join('') +
+          '</tr></thead>'
+        const tbody =
+          '<tbody>' +
+          bodyRows
+            .map(
+              row =>
+                '<tr>' +
+                row
+                  .map(
+                    (c, idx) =>
+                      `<td${aligns[idx] ? ` style="text-align:${aligns[idx]}"` : ''}>${inlineFormat(c)}</td>`
+                  )
+                  .join('') +
+                '</tr>'
+            )
+            .join('') +
+          '</tbody>'
+        out.push(`<div class="md-table-wrap"><table class="md-table">${thead}${tbody}</table></div>`)
+        continue
+      }
     }
 
     // 인용
@@ -90,10 +172,29 @@ function _markdownToHtmlImpl(md: string): string {
       continue
     }
 
+    // 체크박스 목록 (- [ ] / - [x])
+    if (/^[-*+]\s+\[[ xX]\]\s+/.test(trimmed)) {
+      const items: Array<{ checked: boolean; text: string }> = []
+      while (i < lines.length && /^[-*+]\s+\[[ xX]\]\s+/.test(lines[i].trim())) {
+        const m = lines[i].trim().match(/^[-*+]\s+\[([ xX])\]\s+(.+)$/)!
+        items.push({ checked: /[xX]/.test(m[1]), text: m[2] })
+        i++
+      }
+      out.push(
+        `<ul class="md-tasklist">${items
+          .map(
+            it =>
+              `<li class="md-task${it.checked ? ' md-task-done' : ''}"><span class="md-task-check" aria-hidden="true">${it.checked ? '✓' : ''}</span><span class="md-task-text">${inlineFormat(it.text)}</span></li>`
+          )
+          .join('')}</ul>`
+      )
+      continue
+    }
+
     // 순서 없는 리스트 (- , * , + )
     if (/^[-*+]\s+/.test(trimmed)) {
       const items: string[] = []
-      while (i < lines.length && /^[-*+]\s+/.test(lines[i].trim())) {
+      while (i < lines.length && /^[-*+]\s+/.test(lines[i].trim()) && !/^[-*+]\s+\[[ xX]\]\s+/.test(lines[i].trim())) {
         items.push(lines[i].trim().replace(/^[-*+]\s+/, ''))
         i++
       }
@@ -117,7 +218,7 @@ function _markdownToHtmlImpl(md: string): string {
     while (
       i < lines.length &&
       lines[i].trim() &&
-      !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___)/.test(lines[i].trim())
+      !/^(#{1,4}\s|>|[-*+]\s|\d+\.\s|---|\*\*\*|___|\|)/.test(lines[i].trim())
     ) {
       para.push(lines[i].trim())
       i++
@@ -129,25 +230,90 @@ function _markdownToHtmlImpl(md: string): string {
 
   let html = out.filter(l => l !== '').join('\n')
 
-  // 코드블록/인라인코드 복원
+  // TOC 마커 치환
+  if (html.includes('\u0000TOCMARKER\u0000')) {
+    const toc = buildToc(headings)
+    html = html.replace(/\u0000TOCMARKER\u0000/g, toc)
+  }
+
+  // 콜아웃/코드블록/인라인코드 복원
+  html = html.replace(/\u0000CALLOUT(\d+)\u0000/g, (_, idx) => callouts[+idx] || '')
   html = html.replace(/\u0000IC(\d+)\u0000/g, (_, idx) => inlineCodes[+idx] || '')
   html = html.replace(/\u0000CODE(\d+)\u0000/g, (_, idx) => codeBlocks[+idx] || '')
 
   return html
 }
 
-/** 인라인 포맷 (굵게, 기울임, 링크, 이미지) */
+/** 목차 HTML 생성 */
+function buildToc(headings: Array<{ level: number; text: string; slug: string }>): string {
+  if (!headings.length) return ''
+  // H2, H3만 목차에 포함
+  const items = headings.filter(h => h.level >= 2 && h.level <= 3)
+  if (!items.length) return ''
+  let html = '<nav class="md-toc" aria-label="목차"><div class="md-toc-title">목차</div><ol class="md-toc-list">'
+  let inSub = false
+  for (const h of items) {
+    if (h.level === 2) {
+      if (inSub) {
+        html += '</ol></li>'
+        inSub = false
+      }
+      html += `<li class="md-toc-item md-toc-h2"><a href="#${h.slug}">${escapeHtml(h.text)}</a>`
+    } else {
+      if (!inSub) {
+        html += '<ol class="md-toc-sublist">'
+        inSub = true
+      }
+      html += `<li class="md-toc-item md-toc-h3"><a href="#${h.slug}">${escapeHtml(h.text)}</a></li>`
+    }
+  }
+  if (inSub) html += '</ol></li>'
+  html += '</ol></nav>'
+  return html
+}
+
+/** 마크다운 인라인 문법 제거 (목차/슬러그용 plain text) */
+function stripMdInline(s: string): string {
+  return s
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/==([^=]+)==/g, '$1')
+    .replace(/~~([^~]+)~~/g, '$1')
+}
+
+/** 한글 + 영문 허용하는 슬러그 */
+function slugifyKoEn(s: string): string {
+  return (s || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[\s\u00A0]+/g, '-')
+    .replace(/[^\w가-힣ㄱ-ㅎㅏ-ㅣ\-]+/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 80) || 'section'
+}
+
+/** 인라인 포맷 (굵게, 기울임, 하이라이트, 취소선, 링크, 이미지) */
 function inlineFormat(s: string): string {
-  // 이미지 ![alt](url)
-  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) =>
-    `<img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" class="md-img" loading="lazy"/>`
-  )
+  // 이미지 ![alt](url) — 캡션 지원 (alt가 있으면 figure로 감쌈)
+  s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
+    if (alt && alt.trim()) {
+      return `<figure class="md-figure"><img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" class="md-img" loading="lazy"/><figcaption class="md-figcaption">${escapeHtml(alt)}</figcaption></figure>`
+    }
+    return `<img src="${escapeAttr(url)}" alt="" class="md-img" loading="lazy"/>`
+  })
   // 링크 [text](url)
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) =>
     `<a href="${escapeAttr(url)}" class="md-link" ${url.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>${escapeHtml(text)}</a>`
   )
   // **굵게**
   s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>')
+  // ==하이라이트==
+  s = s.replace(/==([^=\n]+)==/g, '<mark class="md-mark">$1</mark>')
+  // ~~취소선~~
+  s = s.replace(/~~([^~\n]+)~~/g, '<del class="md-del">$1</del>')
   // *기울임*
   s = s.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>')
   return s
@@ -155,6 +321,44 @@ function inlineFormat(s: string): string {
 
 function escapeAttr(s: string): string {
   return s.replace(/"/g, '&quot;')
+}
+
+/** 표 한 줄 파싱: "| a | b | c |" → ["a", "b", "c"] */
+function parseTableRow(line: string): string[] {
+  // 양끝 | 제거 후 | 로 split. escape된 \| 는 유지
+  const inner = line.replace(/^\|/, '').replace(/\|$/, '')
+  const cells: string[] = []
+  let buf = ''
+  let esc = false
+  for (let j = 0; j < inner.length; j++) {
+    const ch = inner[j]
+    if (esc) {
+      buf += ch
+      esc = false
+    } else if (ch === '\\') {
+      esc = true
+    } else if (ch === '|') {
+      cells.push(buf.trim())
+      buf = ''
+    } else {
+      buf += ch
+    }
+  }
+  cells.push(buf.trim())
+  return cells
+}
+
+/** 표 정렬 행 파싱: |:---|:---:|---:| → ['left', 'center', 'right'] */
+function parseTableAligns(line: string): (string | null)[] {
+  return parseTableRow(line).map(c => {
+    const trimmed = c.trim()
+    const starts = trimmed.startsWith(':')
+    const ends = trimmed.endsWith(':')
+    if (starts && ends) return 'center'
+    if (ends) return 'right'
+    if (starts) return 'left'
+    return null
+  })
 }
 
 /**

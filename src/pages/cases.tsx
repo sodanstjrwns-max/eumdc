@@ -72,42 +72,55 @@ export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
           ) : (
             <div class="cases-grid" id="casesGrid">
               {items.map((cs: any) => (
-                <article class="case-card" data-reveal data-cat={cs.category}>
+                <article class="case-card" data-cat={cs.category}>
                   <a href={`/cases/${cs.id}`} class="case-card-link" data-hover>
-                    <div class="case-card-thumbs">
-                      <div class="case-thumb-pair">
-                        <div class="case-thumb">
-                          <span class="case-label">BEFORE</span>
-                          {cs.pano_before || cs.intra_before ? (
-                            <img src={cs.pano_before || cs.intra_before} alt={`${cs.title} Before`} loading="lazy" />
-                          ) : <div class="case-thumb-placeholder">No Image</div>}
+                    <div class="case-card-hero">
+                      {cs.pano_before || cs.intra_before ? (
+                        <img class="case-hero-img" src={cs.pano_before || cs.intra_before} alt={`${cs.title} Before`} loading="lazy" />
+                      ) : <div class="case-thumb-placeholder">No Image</div>}
+                      <span class="case-hero-label">BEFORE</span>
+                      {isLoggedIn ? (
+                        (cs.pano_after || cs.intra_after) && (
+                          <div class="case-hero-after">
+                            <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
+                            <span class="case-hero-after-label">AFTER</span>
+                          </div>
+                        )
+                      ) : (
+                        <div class="case-hero-lock" aria-label="AFTER는 회원 전용">
+                          <svg class="lock-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          <span>AFTER 회원공개</span>
                         </div>
-                        <div class={`case-thumb${!isLoggedIn ? ' locked' : ''}`}>
-                          <span class="case-label after">AFTER</span>
-                          {isLoggedIn ? (
-                            cs.pano_after || cs.intra_after ? (
-                              <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
-                            ) : <div class="case-thumb-placeholder">No Image</div>
-                          ) : (
-                            <div class="case-thumb-lock">
-                              <svg class="lock-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                              <span class="lock-text">로그인 후 열람</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      )}
                     </div>
                     <div class="case-card-body">
                       <span class="case-card-category">{CATEGORY_NAMES[cs.category] || cs.category}</span>
                       <h2 class="case-card-title">{cs.title}</h2>
                       {cs.description && (
-                        <p class="case-card-desc">{cs.description.substring(0, 80)}{cs.description.length > 80 ? '…' : ''}</p>
+                        <p class="case-card-desc">{cs.description.substring(0, 70)}{cs.description.length > 70 ? '…' : ''}</p>
                       )}
-                      <div class="case-card-meta">
-                        {cs.patient_age_group && <span>{cs.patient_age_group}</span>}
-                        {cs.patient_gender && <span>{cs.patient_gender}</span>}
-                        {cs.treatment_duration && <span>{cs.treatment_duration}</span>}
-                      </div>
+                      {(cs.patient_age_group || cs.patient_gender || cs.treatment_duration) && (
+                        <div class="case-card-meta">
+                          {cs.patient_age_group && (
+                            <span class="case-meta-chip">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                              {cs.patient_age_group}
+                            </span>
+                          )}
+                          {cs.patient_gender && (
+                            <span class="case-meta-chip">
+                              {cs.patient_gender === 'M' || cs.patient_gender === '남' ? '남성' : cs.patient_gender === 'F' || cs.patient_gender === '여' ? '여성' : cs.patient_gender}
+                            </span>
+                          )}
+                          {cs.treatment_duration && (
+                            <span class="case-meta-chip accent">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                              {cs.treatment_duration}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <span class="case-card-cta">자세히 보기 →</span>
                     </div>
                   </a>
                 </article>

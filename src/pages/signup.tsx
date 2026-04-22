@@ -14,40 +14,40 @@ export function signupPage() {
       <section class="signup-section">
         <div class="container-wide">
           <div class="signup-card">
-            <form id="signupForm" class="signup-form" autocomplete="off">
+            <form id="signupForm" class="signup-form" method="post" action="/api/user/signup">
               {/* 기본정보 */}
               <div class="form-section">
                 <h3 class="form-section-title">기본 정보</h3>
 
                 <div class="form-group">
                   <label for="signupName">이름 <span class="required">*</span></label>
-                  <input type="text" id="signupName" placeholder="홍길동" required autocomplete="name" />
+                  <input type="text" id="signupName" name="name" placeholder="홍길동" required autocomplete="name" />
                 </div>
 
                 <div class="form-group">
                   <label for="signupPhone">전화번호 <span class="required">*</span></label>
-                  <input type="tel" id="signupPhone" placeholder="010-1234-5678" required autocomplete="tel" />
+                  <input type="tel" id="signupPhone" name="username" placeholder="010-1234-5678" required autocomplete="username" inputmode="tel" />
                   <span class="form-hint">로그인 시 아이디로 사용됩니다</span>
                 </div>
 
                 <div class="form-group">
                   <label for="signupPw">비밀번호 <span class="required">*</span></label>
-                  <input type="password" id="signupPw" placeholder="6자 이상" required minlength={6} autocomplete="new-password" />
+                  <input type="password" id="signupPw" name="new-password" placeholder="6자 이상" required minlength={6} autocomplete="new-password" />
                 </div>
 
                 <div class="form-group">
                   <label for="signupPw2">비밀번호 확인 <span class="required">*</span></label>
-                  <input type="password" id="signupPw2" placeholder="비밀번호 재입력" required minlength={6} autocomplete="new-password" />
+                  <input type="password" id="signupPw2" name="new-password-confirm" placeholder="비밀번호 재입력" required minlength={6} autocomplete="new-password" />
                 </div>
 
                 <div class="form-row-2">
                   <div class="form-group">
                     <label for="signupEmail">이메일</label>
-                    <input type="email" id="signupEmail" placeholder="example@email.com" autocomplete="email" />
+                    <input type="email" id="signupEmail" name="email" placeholder="example@email.com" autocomplete="email" />
                   </div>
                   <div class="form-group">
                     <label for="signupBirth">생년월일</label>
-                    <input type="date" id="signupBirth" />
+                    <input type="date" id="signupBirth" name="birth" autocomplete="bday" />
                   </div>
                 </div>
 
