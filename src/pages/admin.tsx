@@ -12,7 +12,7 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260422p" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260423a" rel="stylesheet" />
       </head>
       <body>
         <div id="adminApp">
@@ -229,7 +229,27 @@ export function adminPage() {
 
               {/* Blog Form Modal (SEO enhanced) */}
               <div class="modal-overlay" id="blogModal" style="display:none">
-                <div class="modal-card modal-xl editor-modal">
+                <div class="modal-card modal-xl editor-modal editor-modal-workspace">
+                  {/* ── LEFT SIDEBAR: 작성된 글 목록 ── */}
+                  <aside class="editor-sidebar" id="editorSidebar">
+                    <div class="editor-sidebar-header">
+                      <span class="editor-sidebar-title">📚 블로그 목록</span>
+                      <button type="button" class="editor-sidebar-new" id="sidebarNewBlog" title="새 글 작성">+ 새 글</button>
+                    </div>
+                    <input
+                      type="text"
+                      class="editor-sidebar-search"
+                      id="editorSidebarSearch"
+                      placeholder="제목으로 검색…"
+                    />
+                    <div class="editor-sidebar-list" id="editorSidebarList">
+                      <p class="editor-sidebar-empty">불러오는 중…</p>
+                    </div>
+                    <button type="button" class="editor-sidebar-toggle" id="editorSidebarToggle" aria-label="사이드바 접기">◀</button>
+                  </aside>
+
+                  {/* ── RIGHT MAIN: 에디터 ── */}
+                  <div class="editor-main">
                   <div class="modal-header editor-modal-header">
                     <h3 id="blogModalTitle">새 블로그 글</h3>
                     <div class="editor-header-actions">
@@ -402,6 +422,7 @@ export function adminPage() {
                       </div>
                     </div>
                   </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -519,7 +540,7 @@ export function adminPage() {
           </div>
         </div>
 
-        <script src="/static/admin.js?v=20260422p"></script>
+        <script src="/static/admin.js?v=20260423a"></script>
       </body>
     </html>
   )

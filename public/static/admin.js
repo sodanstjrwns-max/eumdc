@@ -491,26 +491,58 @@
   var blogPreviewTimer = null;
   var BLOG_DRAFT_KEY = 'ieum_blog_draft_v1';
 
+  function openNewBlogModal() {
+    document.getElementById('blogModalTitle').textContent = '새 블로그 글';
+    document.getElementById('blogForm').reset();
+    document.getElementById('blogId').value = '';
+    blogImages = [];
+    blogUndoStack = [];
+    blogRedoStack = [];
+    renderBlogPreviews();
+    updateCharCounts();
+    document.getElementById('seoFields').style.display = 'none';
+    document.getElementById('blogModal').style.display = '';
+    // 사이드바 active 초기화
+    renderEditorSidebar(
+      (document.getElementById('editorSidebarSearch') || {}).value || ''
+    );
+    // 초안 복원 여부 물어보기
+    tryRestoreDraft();
+    setTimeout(function () {
+      updatePreview();
+      updateStatusBar();
+      setEditorViewMode('split');
+    }, 50);
+  }
+
   function initBlogsAdmin() {
-    document.getElementById('newBlogBtn').addEventListener('click', function () {
-      document.getElementById('blogModalTitle').textContent = '새 블로그 글';
-      document.getElementById('blogForm').reset();
-      document.getElementById('blogId').value = '';
-      blogImages = [];
-      blogUndoStack = [];
-      blogRedoStack = [];
-      renderBlogPreviews();
-      updateCharCounts();
-      document.getElementById('seoFields').style.display = 'none';
-      document.getElementById('blogModal').style.display = '';
-      // 초안 복원 여부 물어보기
-      tryRestoreDraft();
-      setTimeout(function () {
-        updatePreview();
-        updateStatusBar();
-        setEditorViewMode('split');
-      }, 50);
-    });
+    document.getElementById('newBlogBtn').addEventListener('click', openNewBlogModal);
+
+    // 사이드바 + 새 글 버튼
+    var sidebarNewBtn = document.getElementById('sidebarNewBlog');
+    if (sidebarNewBtn) sidebarNewBtn.addEventListener('click', openNewBlogModal);
+
+    // 사이드바 검색
+    var sidebarSearch = document.getElementById('editorSidebarSearch');
+    if (sidebarSearch) {
+      sidebarSearch.addEventListener('input', function () {
+        renderEditorSidebar(sidebarSearch.value);
+      });
+    }
+
+    // 사이드바 접기 토글
+    var sidebarToggle = document.getElementById('editorSidebarToggle');
+    var sidebar = document.getElementById('editorSidebar');
+    if (sidebarToggle && sidebar) {
+      sidebarToggle.addEventListener('click', function () {
+        // 모바일은 expanded 토글, 데스크탑은 collapsed 토글
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          sidebar.classList.toggle('expanded');
+        } else {
+          sidebar.classList.toggle('collapsed');
+        }
+      });
+    }
 
     // SEO toggle
     var seoToggle = document.getElementById('seoToggle');
@@ -1591,15 +1623,21 @@
     });
   }
 
+  // 사이드바용: 전체 글 캐시
+  var __blogsCache = [];
+
   function loadBlogs() {
     fetch('/api/admin/blogs', { cache: 'no-store', credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (data) {
+      __blogsCache = data.blogs || [];
+
       var list = document.getElementById('blogsList');
-      if (!data.blogs || data.blogs.length === 0) {
+      if (!__blogsCache.length) {
         list.innerHTML = '<div class="admin-empty">등록된 블로그 글이 없습니다</div>';
+        renderEditorSidebar('');
         return;
       }
       list.innerHTML = '';
-      data.blogs.forEach(function (b) {
+      __blogsCache.forEach(function (b) {
         var row = document.createElement('div');
         row.className = 'admin-row';
         row.innerHTML =
@@ -1628,6 +1666,49 @@
           fetch('/api/admin/blogs/' + btn.dataset.delBlog, { method: 'DELETE' }).then(function () { loadBlogs(); loadStats(); });
         });
       });
+
+      // 에디터 모달 좌측 사이드바도 갱신
+      renderEditorSidebar('');
+    });
+  }
+
+  // ─── 에디터 사이드바 렌더링 ───
+  function renderEditorSidebar(searchQuery) {
+    var listEl = document.getElementById('editorSidebarList');
+    if (!listEl) return;
+    var q = (searchQuery || '').trim().toLowerCase();
+    var filtered = q ? __blogsCache.filter(function (b) {
+      return (b.title || '').toLowerCase().indexOf(q) !== -1;
+    }) : __blogsCache;
+
+    if (!filtered.length) {
+      listEl.innerHTML = '<p class="editor-sidebar-empty">' + (q ? '검색 결과가 없습니다' : '작성된 글이 없습니다') + '</p>';
+      return;
+    }
+
+    var currentId = document.getElementById('blogId') ? document.getElementById('blogId').value : '';
+    var html = '';
+    filtered.forEach(function (b) {
+      var active = String(b.id) === String(currentId) ? ' active' : '';
+      var title = (b.title || '(제목 없음)').replace(/[<>&]/g, function (m) {
+        return m === '<' ? '&lt;' : m === '>' ? '&gt;' : '&amp;';
+      });
+      html += '<div class="editor-sidebar-item' + active + '" data-sidebar-blog="' + b.id + '">' +
+        '<span class="editor-sidebar-item-title">' + title + '</span>' +
+        '<span class="editor-sidebar-item-meta">' +
+          '<span>👁 ' + (b.views || 0) + '</span>' +
+          '<span class="dot">·</span>' +
+          '<span>' + formatDate(b.created_at) + '</span>' +
+        '</span>' +
+      '</div>';
+    });
+    listEl.innerHTML = html;
+
+    listEl.querySelectorAll('[data-sidebar-blog]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var id = el.dataset.sidebarBlog;
+        editBlog(id);
+      });
     });
   }
 
@@ -1648,6 +1729,20 @@
       renderBlogPreviews();
       updateCharCounts();
       document.getElementById('blogModal').style.display = '';
+
+      // 사이드바 active 표시
+      var listEl = document.getElementById('editorSidebarList');
+      if (listEl) {
+        listEl.querySelectorAll('.editor-sidebar-item').forEach(function (el) {
+          el.classList.toggle('active', String(el.dataset.sidebarBlog) === String(b.id));
+        });
+        // 모바일에선 사이드바 접기
+        if (window.matchMedia('(max-width: 900px)').matches) {
+          var sb = document.getElementById('editorSidebar');
+          if (sb) sb.classList.remove('expanded');
+        }
+      }
+
       setTimeout(function () {
         if (window.__blogEditor) {
           window.__blogEditor.pushUndoSnapshot(document.getElementById('blogContent').value);
