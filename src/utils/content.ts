@@ -28,9 +28,24 @@ export function markdownToHtml(md: string): string {
   }
 }
 
-function _markdownToHtmlImpl(md: string): string {
+function _markdownToHtmlImpl(md: string, opts?: { autoToc?: boolean }): string {
   // 줄바꿈 정규화
   let text = md.replace(/\r\n?/g, '\n')
+
+  // ═══ 자동 TOC 삽입 (옵션 B) ═══
+  // - 호출자(최상위)에서만 적용. 재귀(콜아웃 내부)에선 건너뜀.
+  // - 사용자가 [[TOC]]를 명시적으로 넣은 경우엔 자동 삽입하지 않음 (수동 우선)
+  // - H2가 3개 이상일 때만 첫 H2 앞에 자동 삽입
+  if (opts?.autoToc !== false) {
+    const hasManualToc = /^\s*\[\[TOC\]\]\s*$/im.test(text)
+    if (!hasManualToc) {
+      const h2Count = (text.match(/^##\s+.+$/gm) || []).length
+      if (h2Count >= 3) {
+        // 첫 H2 라인 앞에 [[TOC]] 자동 삽입
+        text = text.replace(/^(##\s+.+)$/m, '[[TOC]]\n\n$1')
+      }
+    }
+  }
 
   // 코드 블록 (```...```) 임시 치환
   const codeBlocks: string[] = []
@@ -79,7 +94,7 @@ function _markdownToHtmlImpl(md: string): string {
     const icons: Record<string, string> = {
       info: 'ℹ', warn: '⚠', tip: '💡', note: '📝', success: '✅', danger: '🚫',
     }
-    const inner = _markdownToHtmlImpl(body.trim()) // 재귀: 콜아웃 안에 마크다운 허용
+    const inner = _markdownToHtmlImpl(body.trim(), { autoToc: false }) // 재귀: 콜아웃 안에 마크다운 허용 (TOC 중복 방지)
     callouts.push(
       `<div class="md-callout md-callout-${kind}"><div class="md-callout-icon" aria-hidden="true">${icons[kind] || 'ℹ'}</div><div class="md-callout-body">${inner}</div></div>`
     )
@@ -317,27 +332,50 @@ function extractYouTubeId(url: string): string | null {
   return null
 }
 
-/** 목차 HTML 생성 */
+/** 목차 HTML 생성 — 카드형 디자인, 접기/펼치기, 스크롤 스파이용 data 속성 포함 */
 function buildToc(headings: Array<{ level: number; text: string; slug: string }>): string {
   if (!headings.length) return ''
   // H2, H3만 목차에 포함
   const items = headings.filter(h => h.level >= 2 && h.level <= 3)
   if (!items.length) return ''
-  let html = '<nav class="md-toc" aria-label="목차"><div class="md-toc-title">목차</div><ol class="md-toc-list">'
+
+  const h2Count = items.filter(h => h.level === 2).length
+
+  let html =
+    '<nav class="md-toc" aria-label="목차" data-toc>' +
+    '<button type="button" class="md-toc-header" data-toc-toggle aria-expanded="true">' +
+    '<span class="md-toc-icon" aria-hidden="true">📑</span>' +
+    '<span class="md-toc-title">목차</span>' +
+    `<span class="md-toc-count">${h2Count}개 항목</span>` +
+    '<span class="md-toc-chevron" aria-hidden="true">▾</span>' +
+    '</button>' +
+    '<ol class="md-toc-list" data-toc-list>'
+
   let inSub = false
+  let idx = 0
   for (const h of items) {
     if (h.level === 2) {
       if (inSub) {
         html += '</ol></li>'
         inSub = false
       }
-      html += `<li class="md-toc-item md-toc-h2"><a href="#${h.slug}">${escapeHtml(h.text)}</a>`
+      idx++
+      html +=
+        `<li class="md-toc-item md-toc-h2">` +
+        `<a href="#${h.slug}" data-toc-link="${h.slug}">` +
+        `<span class="md-toc-num">${idx}.</span>` +
+        `<span class="md-toc-text">${escapeHtml(h.text)}</span>` +
+        `</a>`
     } else {
       if (!inSub) {
         html += '<ol class="md-toc-sublist">'
         inSub = true
       }
-      html += `<li class="md-toc-item md-toc-h3"><a href="#${h.slug}">${escapeHtml(h.text)}</a></li>`
+      html +=
+        `<li class="md-toc-item md-toc-h3">` +
+        `<a href="#${h.slug}" data-toc-link="${h.slug}">` +
+        `<span class="md-toc-text">${escapeHtml(h.text)}</span>` +
+        `</a></li>`
     }
   }
   if (inSub) html += '</ol></li>'

@@ -307,6 +307,8 @@
 
       el.innerHTML = html;
       autoLinkDictTerms(el.querySelector('.blog-article-body'));
+      // 목차 초기화 (스크롤 스파이 + 스무스 스크롤 + 모바일 플로팅 버튼)
+      if (window.__initToc) window.__initToc(el.querySelector('.blog-article-body'));
     }).catch(function () {
       el.innerHTML = '<div class="empty-state"><p>글을 찾을 수 없습니다.</p></div>';
     });
@@ -391,7 +393,9 @@
           '<div class="notice-meta"><span>' + formatDate(n.created_at) + '</span><span>조회 ' + (n.views || 0) + '</span></div>' +
         '</div>' +
         imgHtml +
-        '<div class="notice-detail-content">' + (n.content_html || ('<p>' + (n.content || '').replace(/\n/g, '<br/>') + '</p>')) + '</div>';
+        '<div class="notice-detail-content notice-article-body">' + (n.content_html || ('<p>' + (n.content || '').replace(/\n/g, '<br/>') + '</p>')) + '</div>';
+      // 목차 초기화
+      if (window.__initToc) window.__initToc(el.querySelector('.notice-article-body'));
     }).catch(function () {
       el.innerHTML = '<div class="empty-state"><p>공지사항을 찾을 수 없습니다.</p></div>';
     });
@@ -705,5 +709,175 @@
         });
     });
   }
+
+  // ========================================
+  // TOC (목차) — 스크롤 스파이 + 스무스 스크롤 + 모바일 플로팅
+  // ========================================
+  window.__initToc = function (container) {
+    if (!container) return;
+    var toc = container.querySelector('.md-toc[data-toc]');
+    if (!toc) return;
+
+    // ─── 1. 접기/펼치기 토글 ───
+    var header = toc.querySelector('[data-toc-toggle]');
+    if (header) {
+      header.addEventListener('click', function () {
+        var collapsed = toc.getAttribute('data-collapsed') === 'true';
+        toc.setAttribute('data-collapsed', collapsed ? 'false' : 'true');
+        header.setAttribute('aria-expanded', collapsed ? 'true' : 'false');
+      });
+    }
+
+    // ─── 2. 스무스 스크롤 + 하이라이트 ───
+    var links = toc.querySelectorAll('[data-toc-link]');
+    links.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var slug = a.getAttribute('data-toc-link');
+        var target = document.getElementById(slug);
+        if (!target) return;
+        e.preventDefault();
+        var offset = 90; // 고정 헤더 고려
+        var y = target.getBoundingClientRect().top + window.pageYOffset - offset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        // URL 해시 갱신 (뒤로가기 호환)
+        if (history.pushState) history.pushState(null, '', '#' + slug);
+        // 모바일 오버레이가 열려있으면 닫기
+        var overlay = document.querySelector('.md-toc-mobile-overlay.is-open');
+        var panel = document.querySelector('.md-toc-mobile-panel.is-open');
+        if (overlay) overlay.classList.remove('is-open');
+        if (panel) panel.classList.remove('is-open');
+        // 타겟 헤딩 펄스 하이라이트
+        target.classList.remove('md-heading-highlight');
+        void target.offsetWidth; // 리플로우 강제 (애니메이션 재시작)
+        target.classList.add('md-heading-highlight');
+        setTimeout(function () { target.classList.remove('md-heading-highlight'); }, 1800);
+      });
+    });
+
+    // ─── 3. 스크롤 스파이 (IntersectionObserver) ───
+    var headingEls = [];
+    links.forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('data-toc-link'));
+      if (el) headingEls.push(el);
+    });
+
+    if (headingEls.length && 'IntersectionObserver' in window) {
+      var linkBySlug = {};
+      links.forEach(function (a) { linkBySlug[a.getAttribute('data-toc-link')] = a; });
+      var activeSet = new Set();
+
+      function updateActive() {
+        // 마지막으로 지나간(문서 상 가장 위에 있는 active) 섹션만 하이라이트
+        var list = Array.from(activeSet);
+        if (!list.length) return;
+        list.sort(function (a, b) {
+          var ea = document.getElementById(a);
+          var eb = document.getElementById(b);
+          return (ea ? ea.getBoundingClientRect().top : 0) - (eb ? eb.getBoundingClientRect().top : 0);
+        });
+        var currentSlug = list[0];
+        Object.keys(linkBySlug).forEach(function (s) {
+          linkBySlug[s].classList.toggle('is-active', s === currentSlug);
+        });
+      }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var slug = entry.target.id;
+          if (!slug) return;
+          if (entry.isIntersecting) activeSet.add(slug);
+          else activeSet.delete(slug);
+        });
+        updateActive();
+      }, {
+        rootMargin: '-90px 0px -65% 0px',
+        threshold: 0
+      });
+
+      headingEls.forEach(function (h) { io.observe(h); });
+    }
+
+    // ─── 4. 모바일 플로팅 버튼 + 슬라이드업 패널 ───
+    // 기존 플로팅 UI 있으면 제거 (다른 글로 이동 시)
+    var oldFab = document.querySelector('.md-toc-float-btn');
+    var oldOv = document.querySelector('.md-toc-mobile-overlay');
+    var oldPn = document.querySelector('.md-toc-mobile-panel');
+    if (oldFab) oldFab.remove();
+    if (oldOv) oldOv.remove();
+    if (oldPn) oldPn.remove();
+
+    var fab = document.createElement('button');
+    fab.type = 'button';
+    fab.className = 'md-toc-float-btn is-available';
+    fab.setAttribute('aria-label', '목차 열기');
+    fab.innerHTML = '📑';
+    document.body.appendChild(fab);
+
+    var overlay = document.createElement('div');
+    overlay.className = 'md-toc-mobile-overlay';
+    document.body.appendChild(overlay);
+
+    var panel = document.createElement('div');
+    panel.className = 'md-toc-mobile-panel';
+    panel.innerHTML =
+      '<div class="md-toc-mobile-handle"></div>' +
+      '<div class="md-toc-mobile-header">' +
+        '<h4>📑 이 글의 목차</h4>' +
+        '<button type="button" class="md-toc-mobile-close" aria-label="닫기">&times;</button>' +
+      '</div>' +
+      '<div class="md-toc-mobile-body"></div>';
+    document.body.appendChild(panel);
+
+    // 본문 TOC를 복제해서 모바일 패널에 삽입
+    var cloned = toc.cloneNode(true);
+    cloned.setAttribute('data-collapsed', 'false');
+    panel.querySelector('.md-toc-mobile-body').appendChild(cloned);
+
+    // 복제본 링크에도 스무스 스크롤 연결
+    cloned.querySelectorAll('[data-toc-link]').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var slug = a.getAttribute('data-toc-link');
+        var target = document.getElementById(slug);
+        if (!target) return;
+        e.preventDefault();
+        var y = target.getBoundingClientRect().top + window.pageYOffset - 90;
+        overlay.classList.remove('is-open');
+        panel.classList.remove('is-open');
+        setTimeout(function () {
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          target.classList.remove('md-heading-highlight');
+          void target.offsetWidth;
+          target.classList.add('md-heading-highlight');
+          setTimeout(function () { target.classList.remove('md-heading-highlight'); }, 1800);
+        }, 280);
+      });
+    });
+
+    function openMobile() {
+      overlay.classList.add('is-open');
+      panel.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMobile() {
+      overlay.classList.remove('is-open');
+      panel.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+    fab.addEventListener('click', openMobile);
+    overlay.addEventListener('click', closeMobile);
+    panel.querySelector('.md-toc-mobile-close').addEventListener('click', closeMobile);
+
+    // ─── 5. 초기 URL 해시 있으면 자동 스크롤 ───
+    if (location.hash) {
+      var hashSlug = decodeURIComponent(location.hash.slice(1));
+      var hashTarget = document.getElementById(hashSlug);
+      if (hashTarget) {
+        setTimeout(function () {
+          var y = hashTarget.getBoundingClientRect().top + window.pageYOffset - 90;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }, 300);
+      }
+    }
+  };
 
 })();

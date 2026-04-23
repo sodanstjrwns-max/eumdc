@@ -519,6 +519,27 @@
         ['ul', 'ol', 'task', 'indent', 'outdent'],
         ['table', 'image', 'link'],
         ['code', 'codeblock'],
+        [
+          (function () {
+            // 📑 목차 삽입 버튼 — [[TOC]] 마커 삽입
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'toastui-editor-toolbar-icons toc-custom-btn';
+            btn.style.cssText = 'background-image:none;font-size:16px;line-height:1;';
+            btn.innerHTML = '📑';
+            btn.setAttribute('aria-label', '목차 삽입');
+            btn.addEventListener('click', function () {
+              if (!toastEditor) return;
+              // 새 줄에 [[TOC]] 삽입 (현재 커서 위치)
+              toastEditor.insertText('\n\n[[TOC]]\n\n');
+            });
+            return {
+              name: 'toc',
+              tooltip: '목차 삽입 (자동으로 H2/H3 추출)',
+              el: btn
+            };
+          })()
+        ],
         ['scrollSync']
       ],
       // 이미지 업로드 → 기존 R2 업로드 API 연결

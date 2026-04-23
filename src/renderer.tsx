@@ -40,8 +40,8 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
         {/* CSS — versioned to bust edge cache */}
-        <link href="/static/style.css?v=20260423f" rel="stylesheet" />
-        <link href="/static/style-patch.css?v=20260423f" rel="stylesheet" />
+        <link href="/static/style.css?v=20260423g" rel="stylesheet" />
+        <link href="/static/style-patch.css?v=20260423g" rel="stylesheet" />
 
         {/* GSAP for advanced animations */}
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
