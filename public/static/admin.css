@@ -1266,9 +1266,12 @@ button:disabled {
    ============================================================ */
 
 /* ─── 표 크기 피커 ─── */
+/* 기본 숨김 — JS가 인라인 style.display='block'으로 열고 'none'으로 닫음.
+   따라서 display 속성에는 !important 를 절대 붙이지 말 것. */
 .table-picker {
-  position: absolute !important;
-  z-index: 10002 !important;
+  display: none;
+  position: fixed;
+  z-index: 10002;
 }
 .table-picker-card {
   background: #fff !important;
@@ -1327,14 +1330,20 @@ button:disabled {
 }
 
 /* ─── 링크 다이얼로그 ─── */
+/* 기본 숨김 — JS가 인라인 style.display='flex'로 열고 'none'으로 닫음.
+   따라서 display 속성에는 !important 를 절대 붙이지 말 것. */
 .link-dialog {
+  display: none;
   position: fixed !important;
   inset: 0 !important;
   background: rgba(0,0,0,0.6) !important;
   z-index: 10001 !important;
-  display: flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+.link-dialog[style*="display: flex"],
+.link-dialog[style*="display:flex"] {
+  display: flex !important;
 }
 .link-dialog-card {
   background: #1a2234 !important;
