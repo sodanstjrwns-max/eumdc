@@ -12,7 +12,9 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260423e" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260423f" rel="stylesheet" />
+        {/* Toast UI Editor — WYSIWYG with markdown compatibility, Excel-like table editing */}
+        <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
       </head>
       <body>
         <div id="adminApp">
@@ -254,9 +256,10 @@ export function adminPage() {
                     <h3 id="blogModalTitle">새 블로그 글</h3>
                     <div class="editor-header-actions">
                       <span class="autosave-indicator" id="autosaveIndicator"></span>
-                      <button type="button" class="editor-view-btn" data-view="split" title="편집+미리보기 (Ctrl+Shift+P)">⊞ 분할</button>
-                      <button type="button" class="editor-view-btn" data-view="edit" title="편집만">✎ 편집</button>
-                      <button type="button" class="editor-view-btn" data-view="preview" title="미리보기만">👁 미리보기</button>
+                      {/* 뷰 모드 버튼: Toast UI가 자체 토글 제공하므로 숨김 */}
+                      <button type="button" class="editor-view-btn" data-view="split" title="편집+미리보기" style="display:none">⊞ 분할</button>
+                      <button type="button" class="editor-view-btn" data-view="edit" title="편집만" style="display:none">✎ 편집</button>
+                      <button type="button" class="editor-view-btn" data-view="preview" title="미리보기만" style="display:none">👁 미리보기</button>
                       <button class="modal-close" data-close="blogModal">&times;</button>
                     </div>
                   </div>
@@ -297,8 +300,11 @@ export function adminPage() {
                       </div>
                     </div>
 
-                    {/* 슈퍼 툴바 — 그룹별로 정리 */}
-                    <div class="editor-supertoolbar" id="editorToolbar">
+                    {/* ═══ Toast UI WYSIWYG 에디터 컨테이너 ═══ */}
+                    <div id="toastEditor" class="toast-editor-host"></div>
+
+                    {/* 레거시 툴바 — Toast UI로 대체됨, 호환성을 위해 숨김 유지 */}
+                    <div class="editor-supertoolbar" id="editorToolbar" style="display:none">
                       <div class="toolbar-group" data-group="heading">
                         <button type="button" class="toolbar-btn" data-cmd="h2" title="제목 H2 (Ctrl+2)"><b>H</b><sub>2</sub></button>
                         <button type="button" class="toolbar-btn" data-cmd="h3" title="소제목 H3 (Ctrl+3)"><b>H</b><sub>3</sub></button>
@@ -341,19 +347,10 @@ export function adminPage() {
                       </div>
                     </div>
 
-                    {/* ═══ 스플릿 뷰: 편집 | 프리뷰 ═══ */}
-                    <div class="editor-split" id="editorSplit" data-mode="split">
-                      <div class="editor-pane editor-pane-edit">
-                        <textarea id="blogContent" class="editor-textarea"
-                          placeholder="# 제목은 상단 입력란에&#10;&#10;## 소제목을 활용하면 SEO에 유리합니다&#10;&#10;본문을 작성하세요. 우측 미리보기로 실시간 확인할 수 있습니다.&#10;&#10;- **굵게** 나 *기울임* 또는 ==형광펜== 표시&#10;- [링크](https://example.com)&#10;- `인라인 코드`&#10;&#10;> 인용구는 이렇게&#10;&#10;| 표 | 문법 |&#10;|---|---|&#10;| 지원 | 가능 |&#10;&#10;- [ ] 체크박스 목록&#10;- [x] 완료된 항목&#10;&#10;:::info 정보 박스도 됩니다 :::&#10;:::warn 주의 박스 :::&#10;:::tip 팁 박스 :::"></textarea>
-                      </div>
-                      <div class="editor-split-divider" aria-hidden="true"></div>
-                      <div class="editor-pane editor-pane-preview" id="editorPreviewPane">
-                        <div class="editor-preview-header">실시간 미리보기</div>
-                        <div class="editor-preview" id="editorPreview">
-                          <p class="editor-preview-empty">글을 작성하면 여기에 미리보기가 나타납니다.</p>
-                        </div>
-                      </div>
+                    {/* 레거시 textarea — Toast UI가 내용 동기화 용도로 유지 (숨김) */}
+                    <div class="editor-split" id="editorSplit" data-mode="split" style="display:none">
+                      <textarea id="blogContent" class="editor-textarea"></textarea>
+                      <div class="editor-preview" id="editorPreview"></div>
                     </div>
 
                     {/* 상태바: 글자수 · 단어수 · 읽는시간 · 자동저장 */}
@@ -540,7 +537,10 @@ export function adminPage() {
           </div>
         </div>
 
-        <script src="/static/admin.js?v=20260423e"></script>
+        {/* Toast UI Editor (WYSIWYG + 마크다운 + 엑셀식 표 편집) */}
+        <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+        <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.min.js"></script>
+        <script src="/static/admin.js?v=20260423f"></script>
       </body>
     </html>
   )

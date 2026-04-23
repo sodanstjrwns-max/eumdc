@@ -491,6 +491,96 @@
   var blogPreviewTimer = null;
   var BLOG_DRAFT_KEY = 'ieum_blog_draft_v1';
 
+  // ═══════════════════════════════════════════════════════════════
+  // Toast UI Editor 인스턴스 (전역 1개 — 모달 열 때 초기화)
+  // ═══════════════════════════════════════════════════════════════
+  var toastEditor = null;
+
+  function initToastEditor() {
+    if (toastEditor) return toastEditor;
+    var host = document.getElementById('toastEditor');
+    if (!host || !window.toastui || !window.toastui.Editor) return null;
+
+    toastEditor = new window.toastui.Editor({
+      el: host,
+      height: '60vh',
+      initialEditType: 'wysiwyg', // 기본은 엑셀처럼 편집 가능한 WYSIWYG
+      previewStyle: 'vertical',
+      language: 'ko-KR',
+      usageStatistics: false,
+      placeholder:
+        '본문을 작성하세요.\n\n' +
+        '• 툴바의 표 아이콘으로 엑셀처럼 표 편집 (탭/엔터/화살표 이동, 행·열 추가/삭제, 셀 병합)\n' +
+        '• 이미지 드래그·복사붙여넣기 지원\n' +
+        '• 상단 툴바에서 WYSIWYG ↔ 마크다운 모드 전환 가능',
+      toolbarItems: [
+        ['heading', 'bold', 'italic', 'strike'],
+        ['hr', 'quote'],
+        ['ul', 'ol', 'task', 'indent', 'outdent'],
+        ['table', 'image', 'link'],
+        ['code', 'codeblock'],
+        ['scrollSync']
+      ],
+      // 이미지 업로드 → 기존 R2 업로드 API 연결
+      hooks: {
+        addImageBlobHook: function (blob, callback) {
+          var fd = new FormData();
+          fd.append('file', blob);
+          fetch('/api/upload', { method: 'POST', body: fd })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (data && data.url) {
+                // 업로드된 이미지를 blogImages 배열에도 추가 (썸네일 로직 호환)
+                if (typeof blogImages !== 'undefined' && blogImages.indexOf(data.url) === -1) {
+                  blogImages.push(data.url);
+                  if (typeof renderBlogPreviews === 'function') renderBlogPreviews();
+                }
+                callback(data.url, blob.name || 'image');
+              } else {
+                alert('이미지 업로드 실패: ' + (data && data.error ? data.error : '알 수 없는 오류'));
+              }
+            })
+            .catch(function (err) {
+              console.error('[ToastEditor] upload failed', err);
+              alert('이미지 업로드 실패');
+            });
+          return false; // 기본 동작 취소
+        }
+      }
+    });
+
+    // 변경 이벤트 → 숨은 textarea에 마크다운 동기화 (기존 저장/자동저장/SEO/상태바 로직 호환)
+    toastEditor.on('change', function () {
+      var ta = document.getElementById('blogContent');
+      if (!ta) return;
+      var md = toastEditor.getMarkdown();
+      if (ta.value !== md) {
+        ta.value = md;
+        // 기존 파이프라인 트리거
+        if (typeof updateStatusBar === 'function') updateStatusBar();
+        if (typeof scheduleAutosave === 'function') scheduleAutosave();
+        if (typeof updateSeoScore === 'function') updateSeoScore();
+      }
+    });
+
+    return toastEditor;
+  }
+
+  // textarea → Toast UI (편집 기존 글 불러올 때)
+  function syncToastFromTextarea() {
+    if (!toastEditor) return;
+    var ta = document.getElementById('blogContent');
+    if (!ta) return;
+    var md = ta.value || '';
+    if (toastEditor.getMarkdown() !== md) {
+      toastEditor.setMarkdown(md, false);
+    }
+  }
+
+  // 외부 노출 (editBlog 등에서 호출)
+  window.__toastSync = syncToastFromTextarea;
+  window.__toastInit = initToastEditor;
+
   function openNewBlogModal() {
     document.getElementById('blogModalTitle').textContent = '새 블로그 글';
     document.getElementById('blogForm').reset();
@@ -506,13 +596,16 @@
     renderEditorSidebar(
       (document.getElementById('editorSidebarSearch') || {}).value || ''
     );
+    // Toast UI 초기화 + 내용 비우기
+    initToastEditor();
+    if (toastEditor) toastEditor.setMarkdown('', false);
     // 초안 복원 여부 물어보기
     tryRestoreDraft();
     setTimeout(function () {
-      updatePreview();
+      // 초안 복원된 경우 textarea → Toast 동기화
+      syncToastFromTextarea();
       updateStatusBar();
-      setEditorViewMode('split');
-    }, 50);
+    }, 80);
   }
 
   function initBlogsAdmin() {
@@ -1758,15 +1851,17 @@
         }
       }
 
+      // Toast UI 초기화 + 기존 글 내용 로드
+      if (typeof window.__toastInit === 'function') window.__toastInit();
+      if (typeof window.__toastSync === 'function') window.__toastSync();
+
       setTimeout(function () {
         if (window.__blogEditor) {
           window.__blogEditor.pushUndoSnapshot(document.getElementById('blogContent').value);
-          window.__blogEditor.updatePreview();
           window.__blogEditor.updateStatusBar();
           window.__blogEditor.updateSeoScore();
-          window.__blogEditor.setEditorViewMode('split');
         }
-      }, 50);
+      }, 80);
     });
   }
 

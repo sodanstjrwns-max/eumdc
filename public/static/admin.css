@@ -1508,3 +1508,148 @@ button:disabled {
   tab-size: 2;
   letter-spacing: 0;
 }
+
+/* ============================================================
+   TOAST UI EDITOR — WYSIWYG with Excel-like table editing
+   ============================================================ */
+.toast-editor-host {
+  margin: 12px 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  min-height: 60vh;
+}
+
+/* Toast 에디터의 루트 박스 */
+.toastui-editor-defaultUI {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 10px !important;
+  min-height: 60vh !important;
+}
+
+/* Toast 툴바 */
+.toastui-editor-toolbar {
+  background: #f8f9fa !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+.toastui-editor-toolbar-icons {
+  background-color: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 4px !important;
+}
+.toastui-editor-toolbar-icons:hover:not(:disabled) {
+  background-color: #fee500 !important;
+  border-color: #d4af37 !important;
+}
+
+/* WYSIWYG 편집 영역 — 엑셀식 표 포함 */
+.toastui-editor-ww-container .toastui-editor {
+  background: #fff !important;
+  color: #1a2234 !important;
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 15px !important;
+  line-height: 1.7 !important;
+  padding: 20px !important;
+}
+
+/* 마크다운 모드 편집 영역 */
+.toastui-editor-md-container .toastui-editor {
+  background: #1a2234 !important;
+}
+.toastui-editor-md-container .CodeMirror {
+  background: #1a2234 !important;
+  color: #e5e7eb !important;
+  font-family: 'D2Coding', 'Menlo', 'Consolas', monospace !important;
+  font-size: 14px !important;
+}
+.toastui-editor-md-container .CodeMirror-cursor { border-color: #fee500 !important; }
+.toastui-editor-md-container .CodeMirror-selected { background: rgba(254, 229, 0, 0.25) !important; }
+
+/* 마크다운 프리뷰 영역 */
+.toastui-editor-md-preview {
+  background: #fff !important;
+  color: #1a2234 !important;
+  padding: 20px !important;
+}
+
+/* 편집 영역 내부 표 — 엑셀스러운 스타일 */
+.toastui-editor-contents table,
+.toastui-editor-md-preview table {
+  border-collapse: collapse !important;
+  border: 1px solid #d4af37 !important;
+  width: auto !important;
+  min-width: 50% !important;
+  margin: 14px 0 !important;
+}
+.toastui-editor-contents th,
+.toastui-editor-md-preview th {
+  background: linear-gradient(180deg, #fff8d4 0%, #fee500 100%) !important;
+  color: #0f1b2e !important;
+  font-weight: 700 !important;
+  padding: 10px 14px !important;
+  border: 1px solid #d4af37 !important;
+  text-align: left !important;
+}
+.toastui-editor-contents td,
+.toastui-editor-md-preview td {
+  padding: 8px 14px !important;
+  border: 1px solid #e5e7eb !important;
+  color: #222 !important;
+  background: #fff !important;
+}
+.toastui-editor-contents tbody tr:nth-child(even) td { background: #fafbfc !important; }
+
+/* 편집 시 현재 선택 셀 표시 */
+.toastui-editor-contents td.te-cell-selected,
+.toastui-editor-contents th.te-cell-selected {
+  background: rgba(254, 229, 0, 0.3) !important;
+}
+
+/* 표 편집 팝업(행/열 추가/삭제/셀 병합 등) */
+.toastui-editor-popup {
+  background: #fff !important;
+  border: 1px solid #d4af37 !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 8px !important;
+  z-index: 10001 !important;
+}
+.toastui-editor-popup-body button {
+  color: #1a2234 !important;
+}
+.toastui-editor-popup-body button:hover {
+  background: #fff8d4 !important;
+}
+
+/* 헤딩/링크/인용 — 편집 영역 */
+.toastui-editor-contents h1,
+.toastui-editor-md-preview h1 {
+  color: #0f1b2e !important;
+  border-bottom: 2px solid #fee500 !important;
+  padding-bottom: 6px !important;
+}
+.toastui-editor-contents h2,
+.toastui-editor-md-preview h2 {
+  color: #0f1b2e !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  padding-bottom: 4px !important;
+}
+.toastui-editor-contents blockquote,
+.toastui-editor-md-preview blockquote {
+  border-left: 3px solid #fee500 !important;
+  background: #fffbea !important;
+  color: #374151 !important;
+}
+.toastui-editor-contents a,
+.toastui-editor-md-preview a {
+  color: #c78c22 !important;
+  text-decoration: underline !important;
+}
+.toastui-editor-contents img { max-width: 100% !important; height: auto !important; border-radius: 6px !important; }
+
+/* 모바일: 에디터 높이 적응 */
+@media (max-width: 900px) {
+  .toast-editor-host { min-height: 55vh; }
+  .toastui-editor-defaultUI { min-height: 55vh !important; }
+  .toastui-editor-ww-container .toastui-editor { padding: 14px !important; font-size: 14px !important; }
+}
