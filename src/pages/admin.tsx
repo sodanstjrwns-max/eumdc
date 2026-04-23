@@ -12,7 +12,7 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260423b" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260423c" rel="stylesheet" />
       </head>
       <body>
         <div id="adminApp">
@@ -540,7 +540,7 @@ export function adminPage() {
           </div>
         </div>
 
-        <script src="/static/admin.js?v=20260423b"></script>
+        <script src="/static/admin.js?v=20260423c"></script>
       </body>
     </html>
   )

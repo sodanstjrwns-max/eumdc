@@ -1259,3 +1259,131 @@ button:disabled {
   .editor-modal-header h3 { font-size: 1rem; }
   .editor-form { padding: 14px !important; gap: 10px !important; }
 }
+
+/* ============================================================
+   BLOG EDITOR — 표 크기 피커 & 링크 다이얼로그
+   (admin 페이지는 style-patch.css를 로드하지 않으므로 여기 배치)
+   ============================================================ */
+
+/* ─── 표 크기 피커 ─── */
+.table-picker {
+  position: absolute !important;
+  z-index: 10002 !important;
+}
+.table-picker-card {
+  background: #fff !important;
+  border: 1px solid rgba(15, 27, 46, 0.12) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35) !important;
+  padding: 14px !important;
+  width: max-content !important;
+  color: rgb(20, 30, 50) !important;
+}
+.table-picker-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 10px !important;
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  color: rgb(110, 85, 40) !important;
+  letter-spacing: 0.03em !important;
+  gap: 12px !important;
+}
+.table-picker-close {
+  background: transparent !important;
+  border: 0 !important;
+  font-size: 1.3rem !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  color: #888 !important;
+  padding: 0 4px !important;
+}
+.table-picker-close:hover { color: #000 !important; }
+.table-picker-grid {
+  display: grid !important;
+  grid-template-columns: repeat(10, 22px) !important;
+  grid-auto-rows: 22px !important;
+  gap: 3px !important;
+}
+.table-picker-cell {
+  background: #f3f5f8 !important;
+  border: 1px solid #e0e4ea !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  transition: background 0.12s, border-color 0.12s !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+}
+.table-picker-cell.hot {
+  background: rgba(212, 175, 55, 0.4) !important;
+  border-color: rgb(182, 149, 88) !important;
+}
+.table-picker-hint {
+  margin: 10px 0 0 !important;
+  font-size: 0.72rem !important;
+  color: #8a93a0 !important;
+  text-align: center !important;
+}
+
+/* ─── 링크 다이얼로그 ─── */
+.link-dialog {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,0.6) !important;
+  z-index: 10001 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.link-dialog-card {
+  background: #1a2234 !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  border-radius: 10px !important;
+  width: min(420px, 92vw) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5) !important;
+}
+.link-dialog-header {
+  padding: 14px 18px !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+.link-dialog-close {
+  background: transparent !important;
+  border: none !important;
+  color: #8a93a0 !important;
+  font-size: 1.3rem !important;
+  cursor: pointer !important;
+}
+.link-dialog-body { padding: 16px 18px !important; }
+.link-dialog-body label {
+  display: block !important;
+  font-size: 0.76rem !important;
+  color: #8a93a0 !important;
+  margin: 8px 0 4px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.03em !important;
+}
+.link-dialog-body input {
+  width: 100% !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #fff !important;
+  border-radius: 6px !important;
+  padding: 9px 11px !important;
+  font-size: 0.9rem !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+}
+.link-dialog-body input:focus { border-color: #fee500 !important; }
+.link-dialog-actions {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  margin-top: 18px !important;
+}
