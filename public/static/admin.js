@@ -1201,17 +1201,32 @@
 
     function insertTableMarkdown(textarea, start, end, rows, cols) {
       // 예: rows=3, cols=2 → 헤더 1줄 + 데이터 2줄 (총 3줄)
+      // 입력칸에서도 파이프(|)가 수직으로 정렬돼 보이도록 모든 셀을 동일 너비로 패딩
+      var labels = [];
+      var widths = [];
+      for (var c = 0; c < cols; c++) {
+        var label = '제목 ' + (c + 1);
+        labels.push(label);
+        // '제목 N' = 4자(공백+숫자). 최소 5칸 확보해서 여유를 줌
+        widths.push(Math.max(5, label.length));
+      }
+      function pad(text, w) {
+        var diff = w - text.length;
+        return text + (diff > 0 ? new Array(diff + 1).join(' ') : '');
+      }
       var header = '|';
       var sep = '|';
-      for (var c = 0; c < cols; c++) {
-        header += ' 제목 ' + (c + 1) + ' |';
-        sep += ' --- |';
+      for (var i = 0; i < cols; i++) {
+        header += ' ' + pad(labels[i], widths[i]) + ' |';
+        sep += ' ' + new Array(widths[i] + 1).join('-') + ' |';
       }
       var bodyLines = [];
-      var dataRows = Math.max(1, rows - 1); // 최소 1개 데이터 행
+      var dataRows = Math.max(1, rows - 1);
       for (var r = 0; r < dataRows; r++) {
         var line = '|';
-        for (var c2 = 0; c2 < cols; c2++) line += '   |';
+        for (var c2 = 0; c2 < cols; c2++) {
+          line += ' ' + pad('', widths[c2]) + ' |';
+        }
         bodyLines.push(line);
       }
       var block = '\n' + header + '\n' + sep + '\n' + bodyLines.join('\n') + '\n';
