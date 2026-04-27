@@ -12,7 +12,7 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260423g" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260423h" rel="stylesheet" />
         {/* Toast UI Editor — WYSIWYG with markdown compatibility, Excel-like table editing */}
         <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
       </head>
@@ -540,7 +540,7 @@ export function adminPage() {
         {/* Toast UI Editor (WYSIWYG + 마크다운 + 엑셀식 표 편집) */}
         <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
         <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.min.js"></script>
-        <script src="/static/admin.js?v=20260423g"></script>
+        <script src="/static/admin.js?v=20260423h"></script>
       </body>
     </html>
   )

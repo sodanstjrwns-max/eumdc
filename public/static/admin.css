@@ -1653,3 +1653,189 @@ button:disabled {
   .toastui-editor-defaultUI { min-height: 55vh !important; }
   .toastui-editor-ww-container .toastui-editor { padding: 14px !important; font-size: 14px !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   목차(TOC) 내부 <ol> — 블로그 본문의 ::before 원형 카운터 무력화
+   ─ 원인: .blog-article-body ol li::before가 모든 <ol>에 적용되어
+     목차 항목 첫 글자 위에 골드 원이 겹쳐 글자가 안 보였음
+   ═══════════════════════════════════════════════════════════════ */
+.blog-article-body .md-toc ol,
+.blog-article-body .md-toc ol li,
+.notice-article-body .md-toc ol,
+.notice-article-body .md-toc ol li,
+.editor-preview .md-toc ol,
+.editor-preview .md-toc ol li {
+  counter-reset: none !important;
+  counter-increment: none !important;
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+}
+.blog-article-body .md-toc li::before,
+.blog-article-body .md-toc li::after,
+.notice-article-body .md-toc li::before,
+.notice-article-body .md-toc li::after,
+.editor-preview .md-toc li::before,
+.editor-preview .md-toc li::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: none !important;
+}
+
+/* 목차 항목 정렬 정리 — 번호와 텍스트 줄맞춤 */
+.md-toc .md-toc-list {
+  list-style: none !important;
+}
+.md-toc-h2 > a {
+  align-items: baseline !important;
+}
+.md-toc-num {
+  display: inline-block !important;
+  min-width: 1.8em !important;
+  text-align: right !important;
+  margin-right: 4px !important;
+}
+/* H3는 번호 없이 들여쓰기만 — 텍스트 시작 위치를 H2 텍스트와 정렬 */
+.md-toc-h3 > a {
+  padding-left: calc(10px + 1.8em + 4px + 8px) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Toast UI Editor v3 — 마크다운 모드 다크테마 가시성 전체 재정의
+   ─ 원인: .toastui-editor만 타겟해서 실제 텍스트 노드(.ProseMirror,
+     .toastui-editor-md-heading 등)에 색이 안 먹어 검정 배경+검정 글씨
+   ═══════════════════════════════════════════════════════════════ */
+.toastui-editor-md-mode .toastui-editor-md-container,
+.toastui-editor-md-mode .ProseMirror,
+.toastui-editor-md-container .toastui-editor-contents {
+  background: #1a2234 !important;
+  color: #e5e7eb !important;
+}
+.toastui-editor-md-container .ProseMirror {
+  font-family: 'D2Coding', 'Menlo', 'Consolas', 'Courier New', monospace !important;
+  font-size: 14.5px !important;
+  line-height: 1.7 !important;
+  caret-color: #fee500 !important;
+}
+.toastui-editor-md-container .ProseMirror::selection,
+.toastui-editor-md-container .ProseMirror *::selection {
+  background: rgba(254, 229, 0, 0.3) !important;
+}
+
+/* 일반 텍스트 (단락) */
+.toastui-editor-md-container .ProseMirror p,
+.toastui-editor-md-container .ProseMirror div,
+.toastui-editor-md-container .toastui-editor-md-paragraph {
+  color: #e5e7eb !important;
+}
+
+/* 헤딩 (#, ##, ### 텍스트) — 핵심: 헤딩 색이 까매서 안 보였음 */
+.toastui-editor-md-heading,
+.toastui-editor-md-container .toastui-editor-md-heading {
+  color: #fee500 !important;
+  font-weight: 700 !important;
+}
+.toastui-editor-md-heading.toastui-editor-md-heading1 { font-size: 1.4em !important; }
+.toastui-editor-md-heading.toastui-editor-md-heading2 { font-size: 1.25em !important; color: #ffd966 !important; }
+.toastui-editor-md-heading.toastui-editor-md-heading3 { font-size: 1.12em !important; color: #ffe999 !important; }
+.toastui-editor-md-heading.toastui-editor-md-heading4,
+.toastui-editor-md-heading.toastui-editor-md-heading5,
+.toastui-editor-md-heading.toastui-editor-md-heading6 {
+  font-size: 1em !important; color: #ffe999 !important;
+}
+
+/* 마크다운 구분자 (#, *, _, ` 등) */
+.toastui-editor-md-delimiter,
+.toastui-editor-md-meta,
+.toastui-editor-md-thematic-break {
+  color: #9ca3af !important;
+  opacity: 0.85 !important;
+}
+
+/* 강조 (bold, italic) */
+.toastui-editor-md-strong,
+.toastui-editor-md-marked-text {
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+.toastui-editor-md-emph {
+  color: #fbbf77 !important;
+  font-style: italic !important;
+}
+.toastui-editor-md-strikethrough,
+.toastui-editor-md-del {
+  color: #9ca3af !important;
+  text-decoration: line-through !important;
+}
+
+/* 인용문 */
+.toastui-editor-md-block-quote {
+  color: #c4d4e8 !important;
+  border-left: 3px solid #fee500 !important;
+  padding-left: 8px !important;
+  font-style: italic !important;
+}
+
+/* 링크 */
+.toastui-editor-md-link,
+.toastui-editor-md-link-desc {
+  color: #7dd3fc !important;
+  text-decoration: underline !important;
+}
+.toastui-editor-md-link-url {
+  color: #94a3b8 !important;
+}
+
+/* 인라인 코드 / 코드 블록 */
+.toastui-editor-md-code,
+.toastui-editor-md-code-block {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #fbbf77 !important;
+  padding: 1px 4px !important;
+  border-radius: 3px !important;
+}
+.toastui-editor-md-code-block-line-background {
+  background: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* 리스트 마커 */
+.toastui-editor-md-list-item-style,
+.toastui-editor-md-list-item {
+  color: #fee500 !important;
+}
+
+/* HTML 태그 */
+.toastui-editor-md-html {
+  color: #c4b5fd !important;
+}
+
+/* 표 (마크다운 모드) */
+.toastui-editor-md-table {
+  color: #e5e7eb !important;
+}
+
+/* 이미지 텍스트 */
+.toastui-editor-md-image,
+.toastui-editor-md-image-link {
+  color: #86efac !important;
+}
+
+/* 플레이스홀더 */
+.toastui-editor-md-container .ProseMirror p.placeholder::before,
+.toastui-editor-md-container .ProseMirror[data-placeholder]::before {
+  color: #6b7280 !important;
+}
+
+/* 스크롤바 다크 테마 */
+.toastui-editor-md-container ::-webkit-scrollbar {
+  width: 10px; height: 10px;
+}
+.toastui-editor-md-container ::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+.toastui-editor-md-container ::-webkit-scrollbar-thumb {
+  background: #334155; border-radius: 5px;
+}
+.toastui-editor-md-container ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
