@@ -4573,3 +4573,60 @@ article.case-card:hover .case-card-cta {
   background: rgba(255,0,0,0.08);
   border-color: rgba(255,0,0,0.25);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   목차(TOC) 카운터 원형 마커 무력화 — 최종 수정
+   ─ style.css의 .blog-article-body ol li::before가 목차 항목 첫 글자
+     위에 골드 원을 absolute로 찍어서 "이","임","티","금" 글자 가림
+   ─ 명시도 더 높은 셀렉터로 강제 무력화
+   ═══════════════════════════════════════════════════════════════ */
+.blog-article-body .md-toc ol,
+.blog-article-body .md-toc ol li,
+.notice-article-body .md-toc ol,
+.notice-article-body .md-toc ol li,
+.editor-preview .md-toc ol,
+.editor-preview .md-toc ol li {
+  counter-reset: none !important;
+  counter-increment: none !important;
+  padding-left: 0 !important;
+  margin-bottom: 0 !important;
+  list-style: none !important;
+}
+.blog-article-body .md-toc ol li::before,
+.blog-article-body .md-toc ol li::after,
+.blog-article-body .md-toc ul li::before,
+.blog-article-body .md-toc ul li::after,
+.notice-article-body .md-toc ol li::before,
+.notice-article-body .md-toc ol li::after,
+.notice-article-body .md-toc ul li::before,
+.notice-article-body .md-toc ul li::after,
+.editor-preview .md-toc ol li::before,
+.editor-preview .md-toc ol li::after,
+.editor-preview .md-toc ul li::before,
+.editor-preview .md-toc ul li::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  border: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: static !important;
+}
+
+/* 목차 항목 줄맞춤 — 번호와 텍스트 정렬 */
+.md-toc .md-toc-list { list-style: none !important; }
+.md-toc-h2 > a {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+}
+.md-toc-num {
+  display: inline-block !important;
+  min-width: 1.8em !important;
+  text-align: right !important;
+  flex-shrink: 0 !important;
+  font-variant-numeric: tabular-nums !important;
+}
+.md-toc-h3 > a {
+  padding-left: calc(10px + 1.8em + 6px + 8px) !important;
+}

@@ -158,10 +158,10 @@ export function subPageLayout(title: string, children: any) {
         </a>
       </div>
 
-      <script src="/static/app.js?v=20260423h"></script>
-      <script src="/static/sub.js?v=20260423h"></script>
-      <script src="/static/gsap-init.js?v=20260423h"></script>
-      <script src="/static/scroll-perf-patch.js?v=20260423h" defer></script>
+      <script src="/static/app.js?v=20260423i"></script>
+      <script src="/static/sub.js?v=20260423i"></script>
+      <script src="/static/gsap-init.js?v=20260423i"></script>
+      <script src="/static/scroll-perf-patch.js?v=20260423i" defer></script>
     </div>
   )
 }

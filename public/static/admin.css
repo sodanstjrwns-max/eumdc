@@ -1839,3 +1839,96 @@ button:disabled {
 .toastui-editor-md-container ::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   Toast UI Editor v3 — 마크다운 다크테마 가시성 [최종 강제]
+   ─ 이전 규칙이 안 먹은 이유: Toast UI 내부 CSS의 `.ProseMirror p`
+     같은 셀렉터가 색을 #222로 강제 지정 → 명시도 더 강하게 재정의
+   ═══════════════════════════════════════════════════════════════ */
+.toastui-editor-defaultUI .toastui-editor-md-container,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror,
+.toastui-editor-defaultUI .toastui-editor-md-container .toastui-editor,
+.toastui-editor-md-mode .toastui-editor-md-container .ProseMirror {
+  background: #1a2234 !important;
+  color: #e5e7eb !important;
+}
+
+/* ProseMirror 모든 자식 요소 — 기본 색을 회색으로 강제 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror *,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror p,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror div,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror span {
+  color: #e5e7eb !important;
+}
+
+/* 헤딩 (#, ##, ###) — 골드 계열 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror span.toastui-editor-md-heading {
+  color: #fee500 !important;
+  font-weight: 700 !important;
+}
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading1 { color: #fee500 !important; }
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading2 { color: #ffd966 !important; }
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading3 { color: #ffe999 !important; }
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading4,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading5,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-heading6 {
+  color: #ffe999 !important;
+}
+
+/* 마크다운 구분자 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-delimiter,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-meta,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-thematic-break {
+  color: #9ca3af !important;
+}
+
+/* 강조 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-strong,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-marked-text {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-emph {
+  color: #fbbf77 !important;
+}
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-strike,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-strikethrough {
+  color: #9ca3af !important;
+}
+
+/* 인용 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-block-quote {
+  color: #c4d4e8 !important;
+}
+
+/* 링크 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-link,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-link-desc {
+  color: #7dd3fc !important;
+}
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-link-url {
+  color: #94a3b8 !important;
+}
+
+/* 코드 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-code,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-code-block {
+  color: #fbbf77 !important;
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* 리스트 마커 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-list-item-style,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-list-item {
+  color: #fee500 !important;
+}
+
+/* HTML/이미지 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-html { color: #c4b5fd !important; }
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-image,
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-image-link { color: #86efac !important; }
+
+/* 표 */
+.toastui-editor-defaultUI .toastui-editor-md-container .ProseMirror .toastui-editor-md-table { color: #e5e7eb !important; }
