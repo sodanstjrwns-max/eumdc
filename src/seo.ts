@@ -637,7 +637,7 @@ export function doctorJsonLd(doctor: any) {
 
   return {
     '@context': 'https://schema.org',
-    '@type': 'Person',
+    '@type': ['Person', 'Physician'],
     '@id': `${SITE_URL}/doctors/${doctor.slug}/#person`,
     name: doctor.name,
     jobTitle: doctor.title || '원장',
@@ -646,6 +646,14 @@ export function doctorJsonLd(doctor: any) {
     url: `${SITE_URL}/doctors/${doctor.slug}`,
     worksFor: { '@type': 'Dentist', name: SITE_NAME, '@id': `${SITE_URL}/#organization` },
     knowsAbout: specs,
+    medicalSpecialty: specs.length > 0 ? specs : ['Dentistry'],
+    ...(specs.length > 0 ? {
+      availableService: specs.map((s: any) => ({
+        '@type': 'MedicalProcedure',
+        name: typeof s === 'string' ? s : (s.name || ''),
+        bodyLocation: '구강'
+      })).filter((x: any) => x.name)
+    } : {}),
     ...(edu.length > 0 ? {
       alumniOf: edu.map((e: any) => ({ '@type': 'CollegeOrUniversity', name: e.school || e.name || '' }))
     } : {}),

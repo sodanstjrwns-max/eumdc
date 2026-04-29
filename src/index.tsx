@@ -567,7 +567,7 @@ app.get('/blogs/:id', async (c) => {
       canonical: `${SITE_URL}/blogs/${slug}`,
       ogType: 'article',
       ogUrl: `${SITE_URL}/blogs/${slug}`,
-      ogImage: blog?.thumbnail || undefined,
+      ogImage: blog?.thumbnail || extractFirstImageFromContent(blog?.content) || undefined,
       ogArticle: {
         publishedTime: blog?.created_at,
         modifiedTime: blog?.updated_at || blog?.created_at,
@@ -659,28 +659,69 @@ app.get('/notices/:id', async (c) => {
   const title = notice.title
   const desc = notice.content?.substring(0, 160) || '이음치과의원 공지사항'
 
+  // 공지 본문 이미지 폴백 — 첨부 이미지 → 본문 첫 이미지 → og-image 순
+  const firstAttached = (noticeImages && noticeImages[0]?.url) || null
+  const firstFromContent = extractFirstImageFromContent(notice?.content)
+  const noticeImg = firstAttached || firstFromContent || null
+  const noticeImgAbs = noticeImg
+    ? (noticeImg.startsWith('http') ? noticeImg : `${SITE_URL}${noticeImg}`)
+    : `${SITE_URL}/static/og-image.jpg`
+
+  // 본문에 FAQ 섹션이 있으면 FAQPage 자동 주입 (이벤트/시술 안내 공지에 효과)
+  const noticeFaqs = extractFaqsFromBlogContent(notice?.content)
+
   return c.render(noticeDetailPage(id, notice, noticeImages || []), {
     seo: {
       title: `${title} | 이음치과 공지사항`,
       description: desc,
       canonical: `${SITE_URL}/notices/${id}`,
       ogUrl: `${SITE_URL}/notices/${id}`,
-      jsonLd: [
-        {
-          '@context': 'https://schema.org', '@type': 'Article',
-          headline: title, description: desc,
-          datePublished: notice?.created_at,
-          dateModified: notice?.updated_at || notice?.created_at,
-          author: { '@type': 'Organization', name: SITE_NAME },
-          publisher: { '@type': 'Organization', name: SITE_NAME },
-          mainEntityOfPage: `${SITE_URL}/notices/${id}`
-        },
-        breadcrumbJsonLd([
-          { name: '홈', url: '/' },
-          { name: '공지사항', url: '/notices' },
-          { name: title, url: `/notices/${id}` }
-        ])
-      ]
+      ogImage: noticeImgAbs,
+      ogType: 'article',
+      ogArticle: {
+        publishedTime: notice?.created_at,
+        modifiedTime: notice?.updated_at || notice?.created_at,
+        author: '이음치과의원',
+        section: '공지사항'
+      },
+      jsonLd: (() => {
+        const arr: any[] = [
+          {
+            '@context': 'https://schema.org', '@type': 'Article',
+            headline: title, description: desc,
+            image: noticeImgAbs,
+            datePublished: notice?.created_at,
+            dateModified: notice?.updated_at || notice?.created_at,
+            author: { '@type': 'Organization', name: SITE_NAME, '@id': `${SITE_URL}/#organization` },
+            publisher: {
+              '@type': 'Organization',
+              name: SITE_NAME,
+              '@id': `${SITE_URL}/#organization`,
+              logo: { '@type': 'ImageObject', url: `${SITE_URL}/static/favicon.svg` }
+            },
+            mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE_URL}/notices/${id}` },
+            isPartOf: { '@id': `${SITE_URL}/#website` },
+            inLanguage: 'ko-KR'
+          },
+          breadcrumbJsonLd([
+            { name: '홈', url: '/' },
+            { name: '공지사항', url: '/notices' },
+            { name: title, url: `/notices/${id}` }
+          ])
+        ]
+        if (noticeFaqs.length >= 2) {
+          arr.push({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: noticeFaqs.map(f => ({
+              '@type': 'Question',
+              name: f.question,
+              acceptedAnswer: { '@type': 'Answer', text: f.answer }
+            }))
+          })
+        }
+        return arr
+      })()
     }
   })
 })
