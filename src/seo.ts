@@ -288,19 +288,64 @@ export function faqCategoryJsonLd(categoryName: string, faqs: { question: string
 // 5. BlogPosting (블로그 상세)
 // ═══════════════════════════════════════════
 
+/** 블로그 본문(마크다운/HTML)에서 첫 이미지 URL 추출 */
+export function extractFirstImageFromContent(content?: string): string | null {
+  if (!content) return null
+  // 마크다운: ![alt](url) — Genspark blob/일반 URL 모두 매칭
+  const md = content.match(/!\[[^\]]*\]\((https?:\/\/[^\s)]+|\/[^\s)]+)\)/)
+  if (md && md[1]) return md[1]
+  // HTML: <img src="...">
+  const html = content.match(/<img[^>]+src=["'](https?:\/\/[^"']+|\/[^"']+)["']/i)
+  if (html && html[1]) return html[1]
+  return null
+}
+
+/** 블로그 본문에서 FAQ 섹션의 Q/A 자동 추출 (## FAQ 또는 ### FAQ 섹션 + **Q. ...** 패턴) */
+export function extractFaqsFromBlogContent(content?: string): { question: string; answer: string }[] {
+  if (!content) return []
+  // ## FAQ 섹션 시작점 찾기 (## 또는 ### FAQ / 자주 묻는 질문)
+  const faqSectionMatch = content.match(/(?:^|\n)#{1,4}\s*(?:FAQ|자주\s*묻는\s*질문)[^\n]*\n([\s\S]*?)(?:\n#{1,4}\s|$)/i)
+  if (!faqSectionMatch) return []
+  const section = faqSectionMatch[1]
+  const faqs: { question: string; answer: string }[] = []
+  // **Q. 질문** 패턴 또는 Q. 질문 패턴 → 다음 Q. 또는 *** 또는 끝까지가 답변
+  // 패턴: **Q. 텍스트?** \n 답변 \n*** \n**Q. ...
+  const qaPattern = /(?:^|\n)\s*(?:\*\*)?Q[\.\:\s]+([^\n*]+?)(?:\*\*)?\s*\n+([\s\S]+?)(?=\n\s*(?:\*\*)?Q[\.\:]|\n\s*\*\*\*|\n#{1,4}\s|$)/g
+  let m
+  while ((m = qaPattern.exec(section)) !== null) {
+    const q = m[1].replace(/[\*]+/g, '').trim().replace(/\?+$/, '?')
+    const aRaw = m[2].replace(/^\*\*\*\s*$/gm, '').trim()
+    // 답변에서 마크다운 링크/볼드 제거 (텍스트만)
+    const a = aRaw
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\n+/g, ' ')
+      .trim()
+      .substring(0, 500)
+    if (q && a && q.length > 2 && a.length > 5) {
+      faqs.push({ question: q, answer: a })
+    }
+  }
+  return faqs
+}
+
 export function blogPostingJsonLd(blog: {
   title: string; description: string; slug?: string;
   content?: string; thumbnail?: string; created_at: string;
   updated_at?: string; author?: string; tags?: string[];
 }) {
+  // 썸네일 없으면 본문 첫 이미지를 폴백으로 사용
+  const fallbackImage = extractFirstImageFromContent(blog.content)
+  const imageSrc = blog.thumbnail || fallbackImage || ''
+  const finalImage = imageSrc
+    ? (imageSrc.startsWith('http') ? imageSrc : `${SITE_URL}${imageSrc}`)
+    : DEFAULT_IMAGE
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: blog.title,
     description: blog.description,
-    image: blog.thumbnail
-      ? (blog.thumbnail.startsWith('http') ? blog.thumbnail : `${SITE_URL}${blog.thumbnail}`)
-      : DEFAULT_IMAGE,
+    image: finalImage,
     datePublished: blog.created_at,
     dateModified: blog.updated_at || blog.created_at,
     wordCount: blog.content ? blog.content.length : undefined,
