@@ -1069,7 +1069,7 @@ app.get('/sitemap.xml', async (c) => {
   const now = new Date().toISOString().split('T')[0]
 
   const { results: blogs } = await c.env.DB.prepare(
-    'SELECT id, slug, updated_at, thumbnail FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
+    'SELECT id, slug, updated_at, thumbnail, content FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
   ).all() as any
   const { results: cases } = await c.env.DB.prepare(
     'SELECT id, updated_at, pano_after, title FROM cases WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
@@ -1118,13 +1118,15 @@ app.get('/sitemap.xml', async (c) => {
     xml += `  <url><loc>${SITE_URL}/doctors/${d.slug}</loc><lastmod>${d.updated_at?.split(' ')[0] || now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`
   }
 
-  // 블로그
+  // 블로그 — 썸네일 없으면 본문 첫 이미지 폴백
   for (const b of (blogs || [])) {
     const date = b.updated_at?.split(' ')[0] || now
     const loc = `${SITE_URL}/blogs/${b.slug || b.id}`
     xml += `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n`
-    if (b.thumbnail) {
-      xml += `    <image:image>\n      <image:loc>${b.thumbnail.startsWith('http') ? b.thumbnail : SITE_URL + b.thumbnail}</image:loc>\n      <image:title>${escXml(b.title || '블로그')}</image:title>\n    </image:image>\n`
+    const imgRaw = b.thumbnail || extractFirstImageFromContent(b.content)
+    if (imgRaw) {
+      const imgAbs = imgRaw.startsWith('http') ? imgRaw : SITE_URL + imgRaw
+      xml += `    <image:image>\n      <image:loc>${escXml(imgAbs)}</image:loc>\n      <image:title>${escXml(b.title || '블로그')}</image:title>\n    </image:image>\n`
     }
     xml += `  </url>\n`
   }
