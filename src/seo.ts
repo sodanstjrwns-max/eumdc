@@ -566,9 +566,12 @@ export function renderSeoHead(meta: SeoMeta): string {
   html += `<meta name="twitter:description" content="${esc(m.description)}" />\n`
   html += `<meta name="twitter:image" content="${ogImage}" />\n`
 
-  // --- 한국 검색엔진 최적화 ---
+  // --- 검색엔진 사이트 소유권 인증 ---
+  html += `<meta name="google-site-verification" content="sz8apFFBP5tqry8ZqPd6drUjkyr3tipqvqu0VTNA1rg" />\n`
   // naver-site-verification: 네이버 서치어드바이저에서 발급받은 인증 코드 필요
   // html += `<meta name="naver-site-verification" content="발급받은코드" />\n`
+
+  // --- 한국 검색엔진 최적화 ---
   html += `<meta http-equiv="Content-Language" content="ko" />\n`
   html += `<meta name="geo.region" content="KR-26" />\n`
   html += `<meta name="geo.placename" content="부산광역시 강서구" />\n`
