@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
+import { autoPingOnPublish } from '../utils/indexnow'
 
 const notices = new Hono<HonoEnv>()
 
@@ -68,7 +69,11 @@ notices.post('/api/admin/notices', async (c) => {
     }
   }
 
-  return c.json({ id: noticeId }, 201)
+  // IndexNow 자동 핑 (Bing/Yandex 즉시 인덱싱)
+  const noticeUrl = `https://ieumdc.kr/notices/${noticeId}`
+  const pingResult = await autoPingOnPublish(noticeUrl).catch(() => null)
+
+  return c.json({ id: noticeId, indexnow: pingResult?.success ?? false }, 201)
 })
 
 // Update notice (partial update supported)
@@ -102,7 +107,15 @@ notices.put('/api/admin/notices/:id', async (c) => {
     }
   }
 
-  return c.json({ ok: true })
+  // IndexNow 자동 핑 (수정 시 재인덱싱 트리거 — 게시 상태일 때만)
+  let pingSuccess = false
+  if (is_published) {
+    const noticeUrl = `https://ieumdc.kr/notices/${id}`
+    const pingResult = await autoPingOnPublish(noticeUrl).catch(() => null)
+    pingSuccess = pingResult?.success ?? false
+  }
+
+  return c.json({ ok: true, indexnow: pingSuccess })
 })
 
 // Delete notice

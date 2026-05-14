@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
+import { autoPingOnPublish } from '../utils/indexnow'
 
 const blogs = new Hono<HonoEnv>()
 
@@ -68,7 +69,11 @@ blogs.post('/api/admin/blogs', async (c) => {
     }
   }
 
-  return c.json({ id: blogId }, 201)
+  // IndexNow 자동 핑 (Bing/Yandex 즉시 인덱싱)
+  const blogUrl = `https://ieumdc.kr/blogs/${slug || blogId}`
+  const pingResult = await autoPingOnPublish(blogUrl).catch(() => null)
+
+  return c.json({ id: blogId, indexnow: pingResult?.success ?? false }, 201)
 })
 
 // Update blog (partial update supported)
@@ -112,7 +117,15 @@ blogs.put('/api/admin/blogs/:id', async (c) => {
     }
   }
 
-  return c.json({ ok: true })
+  // IndexNow 자동 핑 (수정 시에도 재인덱싱 트리거 — 게시 상태일 때만)
+  let pingSuccess = false
+  if (is_published) {
+    const blogUrl = `https://ieumdc.kr/blogs/${slug || id}`
+    const pingResult = await autoPingOnPublish(blogUrl).catch(() => null)
+    pingSuccess = pingResult?.success ?? false
+  }
+
+  return c.json({ ok: true, indexnow: pingSuccess })
 })
 
 // Delete blog

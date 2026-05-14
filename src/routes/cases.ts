@@ -3,6 +3,7 @@ import { getCookie } from 'hono/cookie'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
 import { verifyHmacToken } from './auth'
+import { autoPingOnPublish } from '../utils/indexnow'
 
 const cases = new Hono<HonoEnv>()
 
@@ -113,7 +114,12 @@ cases.post('/api/admin/cases', async (c) => {
     doctor_id || null, treatment_duration || '', treatment_id || null
   ).run()
 
-  return c.json({ id: result.meta.last_row_id }, 201)
+  const caseId = result.meta.last_row_id
+  // IndexNow 자동 핑 (Bing/Yandex 즉시 인덱싱)
+  const caseUrl = `https://ieumdc.kr/cases/${caseId}`
+  const pingResult = await autoPingOnPublish(caseUrl).catch(() => null)
+
+  return c.json({ id: caseId, indexnow: pingResult?.success ?? false }, 201)
 })
 
 // Update case (partial update supported)
@@ -161,7 +167,15 @@ cases.put('/api/admin/cases/:id', async (c) => {
     is_published ?? 1, id
   ).run()
 
-  return c.json({ ok: true })
+  // IndexNow 자동 핑 (수정 시 재인덱싱 트리거 — 게시 상태일 때만)
+  let pingSuccess = false
+  if (is_published) {
+    const caseUrl = `https://ieumdc.kr/cases/${id}`
+    const pingResult = await autoPingOnPublish(caseUrl).catch(() => null)
+    pingSuccess = pingResult?.success ?? false
+  }
+
+  return c.json({ ok: true, indexnow: pingSuccess })
 })
 
 // Delete case
