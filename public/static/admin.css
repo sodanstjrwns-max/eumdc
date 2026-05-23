@@ -1142,9 +1142,177 @@ button:disabled {
   border-radius: 50%;
   background: #5a6576;
 }
-.editor-statusbar .seo-dot[data-score="good"] { background: #58d68d; }
-.editor-statusbar .seo-dot[data-score="ok"] { background: #f6c34a; }
+.editor-statusbar .seo-dot[data-score="good"] { background: #58d68d; box-shadow: 0 0 8px rgba(88, 214, 141, 0.6); }
+.editor-statusbar .seo-dot[data-score="ok"] { background: #f6c34a; box-shadow: 0 0 8px rgba(246, 195, 74, 0.5); }
+.editor-statusbar .seo-dot[data-score="mid"] { background: #ff9f43; box-shadow: 0 0 8px rgba(255, 159, 67, 0.5); }
+.editor-statusbar .seo-dot[data-score="bad"] { background: #ff7676; box-shadow: 0 0 8px rgba(255, 118, 118, 0.5); }
 .editor-statusbar .seo-dot[data-score="poor"] { background: #ff7676; }
+.editor-statusbar .seo-score-item { cursor: pointer; transition: opacity 0.2s; }
+.editor-statusbar .seo-score-item:hover { opacity: 0.8; }
+.editor-statusbar .seo-score-item b { color: #fee500 !important; }
+
+/* ═══════════════════════════════════════════════════════════════
+   SEO 상세 진단 패널 (점수 클릭 시 표시)
+   ═══════════════════════════════════════════════════════════════ */
+.seo-detail-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 27, 45, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: seoPanelFadeIn 0.2s ease;
+}
+@keyframes seoPanelFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.seo-panel-card {
+  background: #1a2234;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(254, 229, 0, 0.2);
+  overflow: hidden;
+}
+.seo-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(254, 229, 0, 0.04), transparent);
+}
+.seo-panel-score {
+  flex: 0 0 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  border: 3px solid;
+}
+.seo-panel-score[data-score="good"] { border-color: #58d68d; color: #58d68d; background: rgba(88, 214, 141, 0.08); }
+.seo-panel-score[data-score="ok"] { border-color: #f6c34a; color: #f6c34a; background: rgba(246, 195, 74, 0.08); }
+.seo-panel-score[data-score="mid"] { border-color: #ff9f43; color: #ff9f43; background: rgba(255, 159, 67, 0.08); }
+.seo-panel-score[data-score="bad"] { border-color: #ff7676; color: #ff7676; background: rgba(255, 118, 118, 0.08); }
+.seo-score-num { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+.seo-score-max { font-size: 0.9rem; opacity: 0.7; margin-left: 2px; }
+.seo-panel-title { flex: 1; }
+.seo-panel-title h3 { margin: 0 0 4px; color: #e5e7eb; font-size: 1.3rem; font-weight: 700; }
+.seo-panel-title p { margin: 0; color: #9ca3af; font-size: 0.9rem; }
+.seo-panel-close {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: #e5e7eb;
+  font-size: 1.6rem;
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.seo-panel-close:hover { background: rgba(255, 255, 255, 0.12); }
+.seo-panel-body {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+.seo-section-title {
+  margin: 18px 0 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.seo-section-title:first-child { margin-top: 0; }
+.seo-section-warn { color: #ff9f43; }
+.seo-section-ok { color: #58d68d; }
+.seo-check-list { list-style: none; margin: 0; padding: 0; }
+.seo-check-item {
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid transparent;
+  transition: background 0.2s;
+}
+.seo-check-item.fail { border-left-color: #ff9f43; background: rgba(255, 159, 67, 0.06); }
+.seo-check-item.pass { border-left-color: #58d68d; background: rgba(88, 214, 141, 0.05); }
+.seo-check-item:hover { background: rgba(255, 255, 255, 0.06); }
+.seo-check-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+.seo-check-label em {
+  font-style: normal;
+  font-size: 0.78rem;
+  color: #ff9f43;
+  font-weight: 500;
+  margin-left: 4px;
+}
+.seo-check-detail {
+  font-size: 0.85rem;
+  color: #c4d4e8;
+  line-height: 1.5;
+}
+.seo-panel-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.seo-panel-footer .btn-secondary {
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: rgba(254, 229, 0, 0.15);
+  border: 1px solid rgba(254, 229, 0, 0.4);
+  color: #fee500;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.seo-panel-footer .btn-secondary:hover {
+  background: rgba(254, 229, 0, 0.25);
+  border-color: #fee500;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   발행 후 IndexNow 핑 결과 토스트
+   ═══════════════════════════════════════════════════════════════ */
+.indexnow-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: linear-gradient(135deg, #1e3a5f, #0f1b2d);
+  border: 1px solid rgba(88, 214, 141, 0.3);
+  color: #e5e7eb;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+  z-index: 10001;
+  max-width: 380px;
+  animation: indexnowSlideIn 0.3s ease;
+}
+@keyframes indexnowSlideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.indexnow-toast.success { border-left: 4px solid #58d68d; }
+.indexnow-toast.failed { border-left: 4px solid #ff9f43; }
+.indexnow-toast h4 { margin: 0 0 6px; color: #fee500; font-size: 0.95rem; }
+.indexnow-toast p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: #c4d4e8; }
+.indexnow-toast .crawler-list { margin-top: 8px; font-size: 0.75rem; color: #9ca3af; }
 
 /* 드롭존 */
 .editor-dropzone-group { margin: 0 !important; }

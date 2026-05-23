@@ -368,13 +368,14 @@
             if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
             return r.json();
           })
-          .then(function () {
+          .then(function (resp) {
             document.getElementById('caseModal').style.display = 'none';
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
             loadCases();
             loadStats();
             // 성공 피드백
             showToast('✅ 케이스가 저장되었습니다');
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
@@ -393,6 +394,27 @@
     setTimeout(function() { toast.style.transition = 'opacity 0.3s'; toast.style.opacity = '0'; }, 2500);
     setTimeout(function() { toast.remove(); }, 3000);
   }
+
+  // IndexNow 결과 토스트 (Bing/Yandex 자동 크롤링 핑 결과)
+  function showIndexNowToast(ok, url) {
+    var t = document.createElement('div');
+    t.className = 'indexnow-toast' + (ok ? ' success' : ' fail');
+    var icon = ok ? '🚀' : '⚠️';
+    var msg = ok
+      ? 'IndexNow: Bing / Yandex에 자동 크롤링 요청 전송 완료'
+      : 'IndexNow: 크롤링 핑 실패 (게시는 정상 완료)';
+    t.innerHTML =
+      '<div class="indexnow-toast-icon">' + icon + '</div>' +
+      '<div class="indexnow-toast-body">' +
+        '<div class="indexnow-toast-title">' + msg + '</div>' +
+        (url ? '<div class="indexnow-toast-url">' + url + '</div>' : '') +
+      '</div>';
+    document.body.appendChild(t);
+    setTimeout(function () { t.classList.add('show'); }, 50);
+    setTimeout(function () { t.classList.remove('show'); }, 4500);
+    setTimeout(function () { t.remove(); }, 5000);
+  }
+  window.showIndexNowToast = showIndexNowToast;
 
   function clearCasePreviews() {
     ['pano_before', 'pano_after', 'intra_before', 'intra_after'].forEach(function (s) {
@@ -1064,26 +1086,246 @@
       setText('statReadTime', minutes + '분');
     }
 
-    // ─── SEO 점수 (휴리스틱) ───
+    // ─── SEO 점수 시스템 (12개 항목, 100점 만점) ───
+    // 핵심 진료 키워드 (원장님 지시: 임플란트, 인비절라인, 라미네이트, 글로우네이트, 치아교정)
+    var SEO_PRIORITY_KEYWORDS = ['임플란트', '인비절라인', '라미네이트', '글로우네이트', '치아교정'];
+    var SEO_REGION_KEYWORDS = ['명지동', '부산', '강서구', '명지국제', '명지오션', '하단', '에코델타'];
+    var SEO_TREATMENT_KEYWORDS = ['심미보철', '심미레진', '레진', '크라운', '신경치료', '잇몸치료', '발치', '사랑니', '치주치료', '틀니', '브릿지', '치아미백', '스케일링', '턱관절', '소아치과', '예방치과', '뼈이식', '투명교정'];
+
+    function _val(id) { var el = document.getElementById(id); return el ? (el.value || '') : ''; }
+
+    function computeSeoScore() {
+      var title = _val('blogTitle');
+      var metaTitle = _val('blogMetaTitle');
+      var desc = _val('blogMetaDesc');
+      var body = _val('blogContent');
+      var slug = _val('blogSlug');
+      var effectiveTitle = metaTitle || title;
+      var bodyLower = (title + ' ' + body).toLowerCase();
+      var checks = [];
+
+      // 1. 제목 길이 (30~60자 최적)
+      var titleLen = effectiveTitle.length;
+      checks.push({
+        id: 'title-len',
+        pass: titleLen >= 25 && titleLen <= 60,
+        weight: 10,
+        label: '제목 길이',
+        detail: titleLen >= 25 && titleLen <= 60
+          ? '✅ ' + titleLen + '자 (최적)'
+          : titleLen < 25 ? '⚠️ ' + titleLen + '자 — 25~60자 권장 (너무 짧음)' : '⚠️ ' + titleLen + '자 — 60자 초과시 검색결과에서 잘림'
+      });
+
+      // 2. 디스크립션 길이 (100~160자 최적)
+      var descLen = desc.length;
+      checks.push({
+        id: 'desc-len',
+        pass: descLen >= 100 && descLen <= 160,
+        weight: 10,
+        label: '메타 설명',
+        detail: descLen === 0 ? '⚠️ 비어있음 (본문 첫 단락 자동 사용됨, 직접 작성 권장)'
+          : descLen >= 100 && descLen <= 160 ? '✅ ' + descLen + '자 (최적)'
+          : descLen < 100 ? '⚠️ ' + descLen + '자 — 100~160자 권장' : '⚠️ ' + descLen + '자 — 160자 초과시 잘림'
+      });
+
+      // 3. 핵심 진료 키워드 포함 (임플란트/인비절라인/라미네이트/글로우네이트/치아교정 중 1개+)
+      var foundPriorityKws = SEO_PRIORITY_KEYWORDS.filter(function(k) { return bodyLower.indexOf(k.toLowerCase()) !== -1; });
+      checks.push({
+        id: 'priority-kw',
+        pass: foundPriorityKws.length >= 1,
+        weight: 15,
+        label: '핵심 진료 키워드',
+        detail: foundPriorityKws.length > 0
+          ? '✅ ' + foundPriorityKws.join(', ') + ' 포함'
+          : '❌ 임플란트/인비절라인/라미네이트/글로우네이트/치아교정 중 1개 이상 포함 권장'
+      });
+
+      // 4. 지역 키워드 포함 (명지동/부산/강서구 등)
+      var foundRegions = SEO_REGION_KEYWORDS.filter(function(k) { return bodyLower.indexOf(k.toLowerCase()) !== -1; });
+      checks.push({
+        id: 'region-kw',
+        pass: foundRegions.length >= 1,
+        weight: 10,
+        label: '지역 키워드',
+        detail: foundRegions.length > 0
+          ? '✅ ' + foundRegions.join(', ') + ' 포함'
+          : '❌ 명지동/부산/강서구 중 1개 이상 포함 권장 (지역 SEO 핵심)'
+      });
+
+      // 5. 제목에 핵심 키워드 포함 (가장 중요한 SEO 신호)
+      var titleHasKw = SEO_PRIORITY_KEYWORDS.concat(SEO_REGION_KEYWORDS).some(function(k) {
+        return effectiveTitle.toLowerCase().indexOf(k.toLowerCase()) !== -1;
+      });
+      checks.push({
+        id: 'title-kw',
+        pass: titleHasKw,
+        weight: 12,
+        label: '제목에 키워드',
+        detail: titleHasKw ? '✅ 제목에 진료/지역 키워드 포함'
+          : '⚠️ 제목 앞쪽에 임플란트/명지동 등 핵심 키워드 포함 권장'
+      });
+
+      // 6. 본문 길이 (1500자+ 권장, 3000자+ 우수)
+      var bodyLen = body.length;
+      checks.push({
+        id: 'body-len',
+        pass: bodyLen >= 1500,
+        weight: 10,
+        label: '본문 분량',
+        detail: bodyLen >= 3000 ? '✅ ' + bodyLen.toLocaleString() + '자 (우수)'
+          : bodyLen >= 1500 ? '✅ ' + bodyLen.toLocaleString() + '자 (양호)'
+          : bodyLen >= 500 ? '⚠️ ' + bodyLen.toLocaleString() + '자 — 1500자 이상 권장'
+          : '❌ ' + bodyLen.toLocaleString() + '자 — 너무 짧음 (검색 노출 어려움)'
+      });
+
+      // 7. H2 (## 헤더) 3개 이상
+      var h2Count = (body.match(/^##\s+/gm) || []).length;
+      checks.push({
+        id: 'h2-count',
+        pass: h2Count >= 3,
+        weight: 8,
+        label: 'H2 헤더 (## 섹션)',
+        detail: h2Count >= 5 ? '✅ ' + h2Count + '개 (우수)'
+          : h2Count >= 3 ? '✅ ' + h2Count + '개'
+          : '⚠️ ' + h2Count + '개 — 3개 이상 권장 (목차 구조)'
+      });
+
+      // 8. 이미지 (마크다운 ![] 또는 HTML <img>)
+      var mdImgs = (body.match(/!\[[^\]]*\]\([^)]+\)/g) || []).length;
+      var htmlImgs = (body.match(/<img[^>]*>/gi) || []).length;
+      var totalImgs = mdImgs + htmlImgs;
+      checks.push({
+        id: 'images',
+        pass: totalImgs >= 2,
+        weight: 8,
+        label: '이미지',
+        detail: totalImgs >= 3 ? '✅ ' + totalImgs + '개 (우수)'
+          : totalImgs >= 2 ? '✅ ' + totalImgs + '개'
+          : totalImgs >= 1 ? '⚠️ ' + totalImgs + '개 — 2개 이상 권장'
+          : '❌ 이미지 없음 — 본문 이미지는 sitemap에도 노출됨'
+      });
+
+      // 9. 내부 링크 (/treatments, /blogs, /cases 등 사이트 내부 링크)
+      var internalLinks = (body.match(/\[[^\]]+\]\((https?:\/\/ieumdc\.kr|\/)[^)]*\)/g) || []).length;
+      checks.push({
+        id: 'internal-link',
+        pass: internalLinks >= 2,
+        weight: 8,
+        label: '내부 링크',
+        detail: internalLinks >= 3 ? '✅ ' + internalLinks + '개 (우수)'
+          : internalLinks >= 2 ? '✅ ' + internalLinks + '개'
+          : '⚠️ ' + internalLinks + '개 — 진료/케이스/관련글 링크 2개 이상 권장'
+      });
+
+      // 10. FAQ 섹션 (## FAQ 또는 ### FAQ)
+      var hasFaq = /^#{2,3}\s*(FAQ|자주\s*묻는\s*질문)/im.test(body);
+      checks.push({
+        id: 'faq',
+        pass: hasFaq,
+        weight: 7,
+        label: 'FAQ 섹션',
+        detail: hasFaq ? '✅ FAQ 자동 감지 — FAQPage 스키마 자동 주입됨'
+          : '⚠️ ## FAQ 섹션 추가시 PAA/AI 검색 노출 ↑'
+      });
+
+      // 11. URL 슬러그 (영문/숫자/하이픈)
+      var slugOk = !slug || /^[a-z0-9-]+$/.test(slug);
+      checks.push({
+        id: 'slug',
+        pass: slugOk,
+        weight: 5,
+        label: 'URL 슬러그',
+        detail: !slug ? '✅ 자동 생성 (ID 사용)'
+          : slugOk ? '✅ ' + slug
+          : '❌ 영문 소문자/숫자/하이픈만 사용 권장 (예: myeongji-implant-2026)'
+      });
+
+      // 12. 썸네일 이미지 업로드
+      var hasThumb = window.blogImages && window.blogImages.length > 0;
+      checks.push({
+        id: 'thumbnail',
+        pass: hasThumb,
+        weight: 7,
+        label: '썸네일/대표 이미지',
+        detail: hasThumb ? '✅ 업로드됨 (og:image로 사용됨)'
+          : '⚠️ 대표 이미지 업로드 권장 (소셜 미디어 공유 시 표시됨)'
+      });
+
+      // 점수 계산
+      var totalWeight = 0, earnedWeight = 0;
+      checks.forEach(function(c) {
+        totalWeight += c.weight;
+        if (c.pass) earnedWeight += c.weight;
+      });
+      var score100 = Math.round((earnedWeight / totalWeight) * 100);
+      return { score: score100, checks: checks, passedCount: checks.filter(function(c){ return c.pass; }).length, total: checks.length };
+    }
+
     function updateSeoScore() {
-      var title = (document.getElementById('blogTitle') || {}).value || '';
-      var desc = (document.getElementById('blogMetaDesc') || {}).value || '';
-      var body = (document.getElementById('blogContent') || {}).value || '';
-      var score = 0, total = 6;
-      if (title.length >= 15 && title.length <= 60) score++;
-      if (desc.length >= 70 && desc.length <= 150) score++;
-      if (/^##\s/m.test(body)) score++;                       // H2 하나 이상
-      if (body.length >= 500) score++;                         // 본문 500자 이상
-      if (/!\[[^\]]*\]\([^)]+\)/.test(body)) score++;          // 이미지 1개 이상
-      if (/\[[^\]]+\]\([^)]+\)/.test(body)) score++;           // 링크 1개 이상
+      var result = computeSeoScore();
       var dot = document.getElementById('seoDot');
       var txt = document.getElementById('seoScoreText');
       var rating;
-      if (score >= 5) rating = { label: '우수', cls: 'good' };
-      else if (score >= 3) rating = { label: '양호', cls: 'ok' };
+      if (result.score >= 85) rating = { label: '우수', cls: 'good' };
+      else if (result.score >= 65) rating = { label: '양호', cls: 'ok' };
+      else if (result.score >= 40) rating = { label: '보통', cls: 'mid' };
       else rating = { label: '부족', cls: 'bad' };
       if (dot) dot.setAttribute('data-score', rating.cls);
-      if (txt) txt.textContent = rating.label + ' (' + score + '/' + total + ')';
+      if (txt) {
+        txt.textContent = result.score + '점 (' + rating.label + ')';
+        txt.style.cursor = 'pointer';
+        txt.title = '클릭하여 상세 진단 보기';
+        txt.onclick = function() { showSeoPanel(result); };
+      }
+      var dotEl = document.getElementById('seoDot');
+      if (dotEl) {
+        dotEl.style.cursor = 'pointer';
+        dotEl.onclick = function() { showSeoPanel(result); };
+      }
+    }
+
+    // SEO 상세 진단 패널 (점수 클릭 시 모달 표시)
+    function showSeoPanel(result) {
+      var existing = document.getElementById('seoDetailPanel');
+      if (existing) existing.remove();
+      var passedList = result.checks.filter(function(c){ return c.pass; });
+      var failedList = result.checks.filter(function(c){ return !c.pass; });
+      var html = '<div id="seoDetailPanel" class="seo-detail-panel">'
+        + '<div class="seo-panel-card">'
+        + '<div class="seo-panel-header">'
+        + '<div class="seo-panel-score" data-score="' + (result.score >= 85 ? 'good' : result.score >= 65 ? 'ok' : result.score >= 40 ? 'mid' : 'bad') + '">'
+        + '<span class="seo-score-num">' + result.score + '</span><span class="seo-score-max">/100</span>'
+        + '</div>'
+        + '<div class="seo-panel-title"><h3>SEO 진단 결과</h3><p>' + result.passedCount + '/' + result.total + '개 항목 통과</p></div>'
+        + '<button type="button" class="seo-panel-close" id="seoPanelClose">&times;</button>'
+        + '</div>'
+        + '<div class="seo-panel-body">';
+      if (failedList.length > 0) {
+        html += '<h4 class="seo-section-title seo-section-warn">⚠️ 개선 필요 (' + failedList.length + '개)</h4>';
+        html += '<ul class="seo-check-list">';
+        failedList.forEach(function(c) {
+          html += '<li class="seo-check-item fail"><span class="seo-check-label">' + c.label + ' <em>(-' + c.weight + '점)</em></span><span class="seo-check-detail">' + c.detail + '</span></li>';
+        });
+        html += '</ul>';
+      }
+      if (passedList.length > 0) {
+        html += '<h4 class="seo-section-title seo-section-ok">✅ 통과 항목 (' + passedList.length + '개)</h4>';
+        html += '<ul class="seo-check-list">';
+        passedList.forEach(function(c) {
+          html += '<li class="seo-check-item pass"><span class="seo-check-label">' + c.label + '</span><span class="seo-check-detail">' + c.detail + '</span></li>';
+        });
+        html += '</ul>';
+      }
+      html += '</div>'
+        + '<div class="seo-panel-footer">'
+        + '<button type="button" class="btn-secondary" id="seoPanelCloseBtn">닫기</button>'
+        + '</div></div></div>';
+      document.body.insertAdjacentHTML('beforeend', html);
+      var panel = document.getElementById('seoDetailPanel');
+      var close = function() { if (panel) panel.remove(); };
+      document.getElementById('seoPanelClose').onclick = close;
+      document.getElementById('seoPanelCloseBtn').onclick = close;
+      panel.onclick = function(e) { if (e.target === panel) close(); };
     }
 
     // ─── 자동저장 (localStorage) ───
@@ -1423,7 +1665,7 @@
             if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
             return r.json();
           })
-          .then(function () {
+          .then(function (resp) {
             document.getElementById('blogModal').style.display = 'none';
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
             // 저장 성공 시 자동저장 초안 삭제
@@ -1431,6 +1673,8 @@
             loadBlogs();
             loadStats();
             showToast('✅ 블로그가 저장되었습니다');
+            // IndexNow 자동 크롤링 핑 결과 토스트
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
@@ -1972,12 +2216,13 @@
             if (!r.ok) throw new Error('저장 실패 (HTTP ' + r.status + ')');
             return r.json();
           })
-          .then(function () {
+          .then(function (resp) {
             document.getElementById('noticeModal').style.display = 'none';
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
             loadNotices();
             loadStats();
             showToast('✅ 공지사항이 저장되었습니다');
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }

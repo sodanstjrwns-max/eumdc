@@ -73,7 +73,7 @@ notices.post('/api/admin/notices', async (c) => {
   const noticeUrl = `https://ieumdc.kr/notices/${noticeId}`
   const pingResult = await autoPingOnPublish(noticeUrl).catch(() => null)
 
-  return c.json({ id: noticeId, indexnow: pingResult?.success ?? false }, 201)
+  return c.json({ id: noticeId, indexnow: pingResult?.success ?? false, url: noticeUrl }, 201)
 })
 
 // Update notice (partial update supported)
@@ -115,7 +115,8 @@ notices.put('/api/admin/notices/:id', async (c) => {
     pingSuccess = pingResult?.success ?? false
   }
 
-  return c.json({ ok: true, indexnow: pingSuccess })
+  const noticeUrlOut = `https://ieumdc.kr/notices/${id}`
+  return c.json({ ok: true, indexnow: pingSuccess, url: noticeUrlOut })
 })
 
 // Delete notice

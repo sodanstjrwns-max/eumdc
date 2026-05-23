@@ -73,7 +73,7 @@ blogs.post('/api/admin/blogs', async (c) => {
   const blogUrl = `https://ieumdc.kr/blogs/${slug || blogId}`
   const pingResult = await autoPingOnPublish(blogUrl).catch(() => null)
 
-  return c.json({ id: blogId, indexnow: pingResult?.success ?? false }, 201)
+  return c.json({ id: blogId, indexnow: pingResult?.success ?? false, url: blogUrl }, 201)
 })
 
 // Update blog (partial update supported)
@@ -125,7 +125,8 @@ blogs.put('/api/admin/blogs/:id', async (c) => {
     pingSuccess = pingResult?.success ?? false
   }
 
-  return c.json({ ok: true, indexnow: pingSuccess })
+  const blogUrlOut = `https://ieumdc.kr/blogs/${slug || id}`
+  return c.json({ ok: true, indexnow: pingSuccess, url: blogUrlOut })
 })
 
 // Delete blog

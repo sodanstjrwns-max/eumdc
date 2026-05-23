@@ -119,7 +119,7 @@ cases.post('/api/admin/cases', async (c) => {
   const caseUrl = `https://ieumdc.kr/cases/${caseId}`
   const pingResult = await autoPingOnPublish(caseUrl).catch(() => null)
 
-  return c.json({ id: caseId, indexnow: pingResult?.success ?? false }, 201)
+  return c.json({ id: caseId, indexnow: pingResult?.success ?? false, url: caseUrl }, 201)
 })
 
 // Update case (partial update supported)
@@ -175,7 +175,8 @@ cases.put('/api/admin/cases/:id', async (c) => {
     pingSuccess = pingResult?.success ?? false
   }
 
-  return c.json({ ok: true, indexnow: pingSuccess })
+  const caseUrlOut = `https://ieumdc.kr/cases/${id}`
+  return c.json({ ok: true, indexnow: pingSuccess, url: caseUrlOut })
 })
 
 // Delete case

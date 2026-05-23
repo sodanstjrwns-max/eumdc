@@ -45,14 +45,28 @@ const app = new Hono<HonoEnv>()
 // === SEO: 도메인 정규화 301 리다이렉트 ===
 // - 기존 도메인(eumdc.kr, www.eumdc.kr) → 신규 도메인(ieumdc.kr)
 // - www.ieumdc.kr → ieumdc.kr (non-www 통일)
+// - 끝 슬래시(/path/) → 슬래시 없는 정규형 (/path) [홈 제외]
 // - 경로/쿼리스트링은 그대로 보존 (SEO 자산 승계)
 app.use('*', async (c, next) => {
   const url = new URL(c.req.url)
   const host = url.hostname.toLowerCase()
+  let needsRedirect = false
+
+  // 1) 도메인 정규화
   if (host === 'eumdc.kr' || host === 'www.eumdc.kr' || host === 'www.ieumdc.kr') {
     url.hostname = 'ieumdc.kr'
-    return c.redirect(url.toString(), 301)
+    needsRedirect = true
   }
+
+  // 2) 끝 슬래시 제거 (홈 / 와 정적 파일/.well-known 제외)
+  if (url.pathname.length > 1 && url.pathname.endsWith('/') &&
+      !url.pathname.startsWith('/.well-known') &&
+      !url.pathname.startsWith('/static/')) {
+    url.pathname = url.pathname.replace(/\/+$/, '')
+    needsRedirect = true
+  }
+
+  if (needsRedirect) return c.redirect(url.toString(), 301)
   await next()
 })
 
@@ -560,6 +574,12 @@ app.get('/blogs/:id', async (c) => {
   const blog = await (isNumeric
     ? c.env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(idOrSlug).first()
     : c.env.DB.prepare('SELECT * FROM blogs WHERE slug = ?').bind(idOrSlug).first()) as any
+
+  // 🎯 SEO: 숫자 ID로 접근 + slug 존재 시 → slug URL로 301 영구 리다이렉트
+  //    (canonical 통일 → GSC "리디렉션이 포함된 페이지" 문제 해결)
+  if (blog && isNumeric && blog.slug && blog.slug !== idOrSlug) {
+    return c.redirect(`/blogs/${blog.slug}`, 301)
+  }
 
   // 존재하지 않는 블로그 글 → 404
   if (!blog) {
@@ -1198,7 +1218,7 @@ app.get('/sitemap.xml', async (c) => {
   const now = new Date().toISOString().split('T')[0]
 
   const { results: blogs } = await c.env.DB.prepare(
-    'SELECT id, slug, updated_at, thumbnail, content FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
+    'SELECT id, slug, title, updated_at, thumbnail, content FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
   ).all() as any
   const { results: cases } = await c.env.DB.prepare(
     'SELECT id, updated_at, pano_after, title FROM cases WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
