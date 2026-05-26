@@ -29,6 +29,12 @@ import { treatmentsPage, treatmentDetailPage } from './pages/treatments'
 import { doctorsPage, doctorDetailPage } from './pages/doctors'
 import { missionPage, visitGuidePage } from './pages/about'
 import { seoRegionPage, seoRegionListPage } from './pages/seo-region'
+import { regionTreatmentPage } from './pages/region-treatment'
+import {
+  SEO_REGIONS, SEO_REGIONS_MAP,
+  SEO_TREATMENTS, SEO_TREATMENTS_MAP,
+  PRIORITY_TREATMENT_SLUGS, PRIORITY_REGION_SLUGS
+} from './data/seo-matrix'
 import {
   defaultSeo, localBusinessJsonLd, websiteJsonLd, breadcrumbJsonLd,
   faqPageJsonLd, blogPostingJsonLd, medicalWebPageJsonLd,
@@ -971,14 +977,21 @@ app.get('/regions/:slug', async (c) => {
   ).bind(slug).first() as any
 
   const regionName = region?.region_name || '지역'
-  const metaTitle = region?.meta_title || `${regionName} 치과 이음치과의원 | 임플란트·심미보철`
-  const metaDesc = region?.meta_description || `${regionName} 근처 치과를 찾고 계신가요? 이음치과의원 임플란트·심미보철 전문, 일반진료까지 모두 가능. ☎ 051-206-5888`
+  // 매트릭스 데이터 보강 (인근지역·LSI 키워드)
+  const regionMatrix = SEO_REGIONS_MAP[slug]
+  const lsiKeywords = regionMatrix?.searchVariants?.slice(0, 4).join(', ') || regionName
+
+  // 핵심 진료 5개를 메타 키워드에 포함 (원장님 지시)
+  const metaTitle = region?.meta_title
+    || `${regionName} 치과 이음치과의원 | 임플란트·인비절라인·라미네이트·치아교정`
+  const metaDesc = region?.meta_description
+    || `${regionName} 치과 — 이음치과의원. 임플란트·인비절라인·라미네이트·글로우네이트·치아교정 전문. ${regionMatrix?.distance || '명지국제8로 265'}. ☎ 051-206-5888`
 
   return c.render(seoRegionPage(slug, region?.h1_title || `${regionName} 치과 이음치과의원`), {
     seo: {
       title: metaTitle,
       description: metaDesc,
-      keywords: `${regionName} 치과, ${regionName} 임플란트, ${regionName} 심미보철, 이음치과, 부산치과, 명지치과`,
+      keywords: `${lsiKeywords} 치과, ${regionName} 임플란트, ${regionName} 인비절라인, ${regionName} 라미네이트, ${regionName} 글로우네이트, ${regionName} 치아교정, 이음치과, 부산치과`,
       canonical: `${SITE_URL}/regions/${slug}`,
       ogUrl: `${SITE_URL}/regions/${slug}`,
       jsonLd: [
@@ -989,6 +1002,167 @@ app.get('/regions/:slug', async (c) => {
           { name: `${regionName} 치과`, url: `/regions/${slug}` }
         ])
       ]
+    }
+  })
+})
+
+// ═══════════════════════════════════════════════════════════════════
+// 🎯 SEO 슈퍼 매트릭스: 지역×진료 롱테일 랜딩 페이지
+// URL: /regions/:region/:treatment (예: /regions/myeongji/implant)
+// 15개 지역 × 9개 진료 = 135개 자동 생성 페이지
+// ═══════════════════════════════════════════════════════════════════
+app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
+  const regionSlug = c.req.param('regionSlug')
+  const treatmentSlug = c.req.param('treatmentSlug')
+
+  const region = SEO_REGIONS_MAP[regionSlug]
+  const treatment = SEO_TREATMENTS_MAP[treatmentSlug]
+
+  // 둘 중 하나라도 없으면 404 (검색엔진 잘못된 URL 방어)
+  if (!region || !treatment) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 페이지를 찾을 수 없습니다.</p>
+        <a href="/regions" class="btn-primary">지역별 진료 안내로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '페이지를 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/regions`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const canonical = `${SITE_URL}/regions/${region.slug}/${treatment.slug}`
+  const h1Match = `${region.name} ${treatment.name}`
+
+  // 🎯 SEO 타이틀: 검색어 1:1 매칭 + 신뢰 신호
+  const seoTitle = `${h1Match} 잘하는 곳 | 이음치과의원 — ${region.fullName}`
+  // 🎯 메타 디스크립션: 핵심 가치 + 거리/위치 + CTA
+  const seoDesc = `${region.fullName} ${treatment.name} 전문 — 이음치과의원. ${treatment.shortBenefit}. ${region.distance}. 통합치의학과 전문의 직접 진료. 치료기간 ${treatment.duration}. ☎ 051-206-5888`
+
+  // 🎯 LSI 키워드 풍부 (지역 변형 + 진료 변형 + 5대 핵심 키워드)
+  const keywords = [
+    ...region.searchVariants.map(r => `${r} ${treatment.name}`),
+    ...treatment.searchVariants.slice(0, 5),
+    `${region.name} 치과`,
+    `${region.district} ${treatment.name}`,
+    `${region.city} ${treatment.name}`,
+    '이음치과', '명지동 치과'
+  ].join(', ')
+
+  // 🎯 JSON-LD 슈퍼 묶음 (5개 스키마 동시 주입)
+  const jsonLdBundle: any[] = [
+    // 1) LocalBusiness (지역 비즈니스)
+    localBusinessJsonLd(),
+    // 2) BreadcrumbList (계층 구조)
+    breadcrumbJsonLd([
+      { name: '홈', url: '/' },
+      { name: '지역별 진료', url: '/regions' },
+      { name: region.name, url: `/regions/${region.slug}` },
+      { name: treatment.name, url: `/regions/${region.slug}/${treatment.slug}` }
+    ]),
+    // 3) MedicalWebPage (의료 페이지 — 신뢰도 ↑)
+    {
+      '@context': 'https://schema.org',
+      '@type': 'MedicalWebPage',
+      'name': `${h1Match} | 이음치과의원`,
+      'url': canonical,
+      'description': seoDesc,
+      'inLanguage': 'ko-KR',
+      'about': {
+        '@type': 'MedicalProcedure',
+        'name': treatment.name,
+        'alternateName': treatment.nameEn
+      },
+      'audience': {
+        '@type': 'MedicalAudience',
+        'geographicArea': {
+          '@type': 'AdministrativeArea',
+          'name': region.fullName
+        }
+      },
+      'specialty': 'Dentistry',
+      'mainContentOfPage': {
+        '@type': 'WebPageElement',
+        'cssSelector': '.rt-intro, .rt-why, .rt-process'
+      }
+    },
+    // 4) Service (서비스 — 지역 + 진료 결합)
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      'name': `${region.name} ${treatment.name}`,
+      'description': `${region.fullName}에서 받는 ${treatment.name} — ${treatment.shortBenefit}`,
+      'serviceType': treatment.jsonLdServiceType,
+      'provider': {
+        '@type': 'Dentist',
+        'name': '이음치과의원',
+        'url': SITE_URL,
+        'telephone': '+82-51-206-5888',
+        'address': {
+          '@type': 'PostalAddress',
+          'addressCountry': 'KR',
+          'addressLocality': '부산광역시',
+          'addressRegion': '강서구',
+          'streetAddress': '명지국제8로 265, 201호'
+        }
+      },
+      'areaServed': {
+        '@type': 'Place',
+        'name': region.fullName,
+        'address': {
+          '@type': 'PostalAddress',
+          'addressCountry': 'KR',
+          'addressLocality': region.city,
+          'addressRegion': region.district
+        }
+      },
+      'audience': {
+        '@type': 'PeopleAudience',
+        'geographicArea': region.fullName
+      }
+    },
+    // 5) FAQPage (FAQ 풍부 결과 노출)
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': treatment.faqs.map(f => ({
+        '@type': 'Question',
+        'name': f.q,
+        'acceptedAnswer': { '@type': 'Answer', 'text': f.a }
+      }))
+    }
+  ]
+
+  // 6) MedicalCondition (관련 의학 조건이 있으면 추가)
+  if (treatment.medicalCondition) {
+    jsonLdBundle.push({
+      '@context': 'https://schema.org',
+      '@type': 'MedicalCondition',
+      'name': treatment.medicalCondition,
+      'possibleTreatment': {
+        '@type': 'MedicalProcedure',
+        'name': treatment.name,
+        'alternateName': treatment.nameEn
+      }
+    })
+  }
+
+  return c.render(regionTreatmentPage(region, treatment), {
+    seo: {
+      title: seoTitle.length > 70 ? `${h1Match} | 이음치과의원` : seoTitle,
+      description: seoDesc.length > 200 ? seoDesc.slice(0, 197) + '…' : seoDesc,
+      keywords,
+      canonical,
+      ogUrl: canonical,
+      ogType: 'article',
+      jsonLd: jsonLdBundle
     }
   })
 })
@@ -1321,6 +1495,20 @@ app.get('/sitemap.xml', async (c) => {
   for (const dt of (dictTerms || [])) {
     const date = dt.updated_at?.split(' ')[0] || now
     xml += `  <url><loc>${SITE_URL}/dictionary/${dt.slug}</loc><lastmod>${date}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
+  }
+
+  // 🎯 SEO 슈퍼 매트릭스: 지역×진료 조합 (15 × 9 = 135개 롱테일 랜딩 페이지)
+  // 5대 핵심 진료 + 핵심 지역 조합은 priority 0.9, 나머지는 0.7
+  xml += `\n  <!-- 지역×진료 매트릭스 (롱테일 SEO 페이지) -->\n`
+  for (const region of SEO_REGIONS) {
+    for (const treatment of SEO_TREATMENTS) {
+      const isPriorityCombo =
+        PRIORITY_REGION_SLUGS.includes(region.slug) &&
+        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
+      const priority = isPriorityCombo ? '0.9' : '0.7'
+      const changefreq = isPriorityCombo ? 'weekly' : 'monthly'
+      xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>\n`
+    }
   }
 
   xml += '</urlset>'
