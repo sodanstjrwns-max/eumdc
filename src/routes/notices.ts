@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
-import { autoPingOnPublish } from '../utils/indexnow'
+import { autoIndexOnPublish } from '../utils/auto-index'
 
 const notices = new Hono<HonoEnv>()
 
@@ -69,11 +69,18 @@ notices.post('/api/admin/notices', async (c) => {
     }
   }
 
-  // IndexNow 자동 핑 (Bing/Yandex 즉시 인덱싱)
+  // 🚀 통합 자동 색인 (Google + IndexNow)
   const noticeUrl = `https://ieumdc.kr/notices/${noticeId}`
-  const pingResult = await autoPingOnPublish(noticeUrl).catch(() => null)
+  const pingResult = await autoIndexOnPublish(c.env, noticeUrl).catch(() => null)
 
-  return c.json({ id: noticeId, indexnow: pingResult?.success ?? false, url: noticeUrl }, 201)
+  return c.json({
+    id: noticeId,
+    url: noticeUrl,
+    indexnow: pingResult?.indexnow?.success ?? false,
+    google: pingResult?.google?.success ?? false,
+    googleConfigured: pingResult?.google?.configured ?? false,
+    googleError: pingResult?.google?.error
+  }, 201)
 })
 
 // Update notice (partial update supported)
@@ -107,16 +114,21 @@ notices.put('/api/admin/notices/:id', async (c) => {
     }
   }
 
-  // IndexNow 자동 핑 (수정 시 재인덱싱 트리거 — 게시 상태일 때만)
-  let pingSuccess = false
+  // 🚀 통합 자동 색인 (수정 시 재인덱싱)
+  const noticeUrlOut = `https://ieumdc.kr/notices/${id}`
+  let pingResult: any = null
   if (is_published) {
-    const noticeUrl = `https://ieumdc.kr/notices/${id}`
-    const pingResult = await autoPingOnPublish(noticeUrl).catch(() => null)
-    pingSuccess = pingResult?.success ?? false
+    pingResult = await autoIndexOnPublish(c.env, noticeUrlOut).catch(() => null)
   }
 
-  const noticeUrlOut = `https://ieumdc.kr/notices/${id}`
-  return c.json({ ok: true, indexnow: pingSuccess, url: noticeUrlOut })
+  return c.json({
+    ok: true,
+    url: noticeUrlOut,
+    indexnow: pingResult?.indexnow?.success ?? false,
+    google: pingResult?.google?.success ?? false,
+    googleConfigured: pingResult?.google?.configured ?? false,
+    googleError: pingResult?.google?.error
+  })
 })
 
 // Delete notice

@@ -1309,10 +1309,81 @@ button:disabled {
   to { transform: translateY(0); opacity: 1; }
 }
 .indexnow-toast.success { border-left: 4px solid #58d68d; }
+.indexnow-toast.partial { border-left: 4px solid #fbbf24; }
+.indexnow-toast.fail,
 .indexnow-toast.failed { border-left: 4px solid #ff9f43; }
 .indexnow-toast h4 { margin: 0 0 6px; color: #fee500; font-size: 0.95rem; }
 .indexnow-toast p { margin: 0; font-size: 0.82rem; line-height: 1.5; color: #c4d4e8; }
 .indexnow-toast .crawler-list { margin-top: 8px; font-size: 0.75rem; color: #9ca3af; }
+
+/* 🚀 새 통합 토스트 (Google + IndexNow 이중) */
+.indexnow-toast {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateX(40px);
+  transition: all 0.3s ease;
+}
+.indexnow-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+.indexnow-toast-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.indexnow-toast-body { flex: 1; min-width: 0; }
+.indexnow-toast-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #fee500;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+.indexnow-toast-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.indexnow-toast .seo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: help;
+}
+.indexnow-toast .seo-badge.green {
+  background: rgba(88, 214, 141, 0.15);
+  color: #58d68d;
+  border: 1px solid rgba(88, 214, 141, 0.35);
+}
+.indexnow-toast .seo-badge.red {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff8e8e;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+}
+.indexnow-toast .seo-badge.gray {
+  background: rgba(156, 163, 175, 0.15);
+  color: #d1d5db;
+  border: 1px solid rgba(156, 163, 175, 0.35);
+}
+.indexnow-toast-url {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  word-break: break-all;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
 
 /* 드롭존 */
 .editor-dropzone-group { margin: 0 !important; }

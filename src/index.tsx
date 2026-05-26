@@ -156,6 +156,38 @@ app.use('/api/admin/reservations', requireAdmin())
 app.use('/api/admin/reservations/*', requireAdmin())
 app.use('/api/admin/doctors', requireAdmin())
 app.use('/api/admin/doctors/*', requireAdmin())
+app.use('/api/admin/seo', requireAdmin())
+app.use('/api/admin/seo/*', requireAdmin())
+
+// ═══════════════════════════════════════════════
+// 🔍 SEO 자동 색인 진단 + 테스트 엔드포인트
+// ═══════════════════════════════════════════════
+app.get('/api/admin/seo/status', async (c) => {
+  const { isGoogleIndexingConfigured } = await import('./utils/google-indexing')
+  const { INDEXNOW_KEY } = await import('./utils/indexnow')
+  return c.json({
+    google: {
+      configured: isGoogleIndexingConfigured(c.env),
+      hint: '환경변수 GOOGLE_INDEXING_SERVICE_ACCOUNT 가 설정되어야 합니다 (Cloudflare Pages → Settings → Environment variables → Secret)'
+    },
+    indexnow: {
+      configured: true,
+      key: INDEXNOW_KEY.slice(0, 8) + '...' + INDEXNOW_KEY.slice(-4),
+      keyLocation: `${SITE_URL}/${INDEXNOW_KEY}.txt`
+    },
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    rss: `${SITE_URL}/feed.xml`
+  })
+})
+
+// 테스트 핑 (어드민만, 임의 URL 1개에 Google + IndexNow 시험 핑)
+app.post('/api/admin/seo/test-ping', async (c) => {
+  const body = await c.req.json().catch(() => ({})) as { url?: string }
+  const targetUrl = body.url || `${SITE_URL}/`
+  const { autoIndexOnPublish } = await import('./utils/auto-index')
+  const result = await autoIndexOnPublish(c.env, targetUrl)
+  return c.json(result)
+})
 
 // === API routes (after admin middleware) ===
 app.route('', usersRoutes)     // Contains /api/admin/users, /api/admin/stats (protected above)

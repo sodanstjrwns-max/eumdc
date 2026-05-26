@@ -375,7 +375,7 @@
             loadStats();
             // 성공 피드백
             showToast('✅ 케이스가 저장되었습니다');
-            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url, resp && resp.google, resp && resp.googleConfigured, resp && resp.googleError); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
@@ -395,24 +395,54 @@
     setTimeout(function() { toast.remove(); }, 3000);
   }
 
-  // IndexNow 결과 토스트 (Bing/Yandex 자동 크롤링 핑 결과)
-  function showIndexNowToast(ok, url) {
+  // 🚀 자동 색인 결과 토스트 (Google Indexing + IndexNow 통합)
+  // resp: { google, googleConfigured, googleError, indexnow, url }
+  function showIndexNowToast(indexnowOk, url, googleOk, googleConfigured, googleError) {
+    // 하위 호환: 첫 인자만 전달된 경우 IndexNow만 표시
+    var bothSuccess = indexnowOk === true && googleOk === true
+    var anySuccess = indexnowOk === true || googleOk === true
     var t = document.createElement('div');
-    t.className = 'indexnow-toast' + (ok ? ' success' : ' fail');
-    var icon = ok ? '🚀' : '⚠️';
-    var msg = ok
-      ? 'IndexNow: Bing / Yandex에 자동 크롤링 요청 전송 완료'
-      : 'IndexNow: 크롤링 핑 실패 (게시는 정상 완료)';
+    t.className = 'indexnow-toast ' + (bothSuccess ? 'success' : (anySuccess ? 'partial' : 'fail'));
+    var icon = bothSuccess ? '🚀' : (anySuccess ? '⚡' : '⚠️');
+
+    // Google 상태 배지
+    var googleBadge;
+    if (!googleConfigured) {
+      googleBadge = '<span class="seo-badge gray" title="Google Indexing API 미설정 (가이드 참조)">G ⚙️</span>';
+    } else if (googleOk) {
+      googleBadge = '<span class="seo-badge green" title="Google이 1시간 내 크롤링 예정">G ✓</span>';
+    } else {
+      googleBadge = '<span class="seo-badge red" title="' + (googleError || '핑 실패') + '">G ✗</span>';
+    }
+    // IndexNow 배지
+    var bingBadge = indexnowOk
+      ? '<span class="seo-badge green" title="Bing/Yandex 핑 완료">B/Y ✓</span>'
+      : '<span class="seo-badge red" title="Bing/Yandex 핑 실패">B/Y ✗</span>';
+
+    var title;
+    if (bothSuccess) {
+      title = '자동 색인 완료 — Google + Bing/Yandex 모두 전송됨';
+    } else if (googleOk && !indexnowOk) {
+      title = 'Google 색인 완료 (IndexNow 실패)';
+    } else if (!googleOk && indexnowOk) {
+      title = !googleConfigured
+        ? 'Bing/Yandex 색인 완료 (Google Indexing API 설정 필요)'
+        : 'Bing/Yandex 색인 완료 (Google 실패)';
+    } else {
+      title = '자동 색인 실패 (게시는 정상 완료)';
+    }
+
     t.innerHTML =
       '<div class="indexnow-toast-icon">' + icon + '</div>' +
       '<div class="indexnow-toast-body">' +
-        '<div class="indexnow-toast-title">' + msg + '</div>' +
+        '<div class="indexnow-toast-title">' + title + '</div>' +
+        '<div class="indexnow-toast-badges">' + googleBadge + bingBadge + '</div>' +
         (url ? '<div class="indexnow-toast-url">' + url + '</div>' : '') +
       '</div>';
     document.body.appendChild(t);
     setTimeout(function () { t.classList.add('show'); }, 50);
-    setTimeout(function () { t.classList.remove('show'); }, 4500);
-    setTimeout(function () { t.remove(); }, 5000);
+    setTimeout(function () { t.classList.remove('show'); }, 5500);
+    setTimeout(function () { t.remove(); }, 6000);
   }
   window.showIndexNowToast = showIndexNowToast;
 
@@ -1674,7 +1704,7 @@
             loadStats();
             showToast('✅ 블로그가 저장되었습니다');
             // IndexNow 자동 크롤링 핑 결과 토스트
-            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url, resp && resp.google, resp && resp.googleConfigured, resp && resp.googleError); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }
@@ -2222,7 +2252,7 @@
             loadNotices();
             loadStats();
             showToast('✅ 공지사항이 저장되었습니다');
-            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url); } catch (e) {}
+            try { showIndexNowToast(resp && resp.indexnow, resp && resp.url, resp && resp.google, resp && resp.googleConfigured, resp && resp.googleError); } catch (e) {}
           })
           .catch(function (err) {
             if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalBtnText; }

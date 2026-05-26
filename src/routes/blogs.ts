@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
 import { incrementView } from './views'
-import { autoPingOnPublish } from '../utils/indexnow'
+import { autoIndexOnPublish, autoIndexOnDelete } from '../utils/auto-index'
 
 const blogs = new Hono<HonoEnv>()
 
@@ -69,11 +69,18 @@ blogs.post('/api/admin/blogs', async (c) => {
     }
   }
 
-  // IndexNow 자동 핑 (Bing/Yandex 즉시 인덱싱)
+  // 🚀 통합 자동 색인 (Google Indexing API + IndexNow 병렬)
   const blogUrl = `https://ieumdc.kr/blogs/${slug || blogId}`
-  const pingResult = await autoPingOnPublish(blogUrl).catch(() => null)
+  const pingResult = await autoIndexOnPublish(c.env, blogUrl).catch(() => null)
 
-  return c.json({ id: blogId, indexnow: pingResult?.success ?? false, url: blogUrl }, 201)
+  return c.json({
+    id: blogId,
+    url: blogUrl,
+    indexnow: pingResult?.indexnow?.success ?? false,
+    google: pingResult?.google?.success ?? false,
+    googleConfigured: pingResult?.google?.configured ?? false,
+    googleError: pingResult?.google?.error
+  }, 201)
 })
 
 // Update blog (partial update supported)
@@ -117,16 +124,21 @@ blogs.put('/api/admin/blogs/:id', async (c) => {
     }
   }
 
-  // IndexNow 자동 핑 (수정 시에도 재인덱싱 트리거 — 게시 상태일 때만)
-  let pingSuccess = false
+  // 🚀 통합 자동 색인 (수정 시 재인덱싱 — 게시 상태일 때만)
+  const blogUrlOut = `https://ieumdc.kr/blogs/${slug || id}`
+  let pingResult: any = null
   if (is_published) {
-    const blogUrl = `https://ieumdc.kr/blogs/${slug || id}`
-    const pingResult = await autoPingOnPublish(blogUrl).catch(() => null)
-    pingSuccess = pingResult?.success ?? false
+    pingResult = await autoIndexOnPublish(c.env, blogUrlOut).catch(() => null)
   }
 
-  const blogUrlOut = `https://ieumdc.kr/blogs/${slug || id}`
-  return c.json({ ok: true, indexnow: pingSuccess, url: blogUrlOut })
+  return c.json({
+    ok: true,
+    url: blogUrlOut,
+    indexnow: pingResult?.indexnow?.success ?? false,
+    google: pingResult?.google?.success ?? false,
+    googleConfigured: pingResult?.google?.configured ?? false,
+    googleError: pingResult?.google?.error
+  })
 })
 
 // Delete blog
