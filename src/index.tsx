@@ -30,11 +30,15 @@ import { doctorsPage, doctorDetailPage } from './pages/doctors'
 import { missionPage, visitGuidePage } from './pages/about'
 import { seoRegionPage, seoRegionListPage } from './pages/seo-region'
 import { regionTreatmentPage } from './pages/region-treatment'
+import { regionTreatmentCostPage } from './pages/region-treatment-cost'
+import { regionTreatmentBestPage } from './pages/region-treatment-best'
+import { nearMePage } from './pages/near-me'
 import {
   SEO_REGIONS, SEO_REGIONS_MAP,
   SEO_TREATMENTS, SEO_TREATMENTS_MAP,
   PRIORITY_TREATMENT_SLUGS, PRIORITY_REGION_SLUGS
 } from './data/seo-matrix'
+import { SEO_COSTS_MAP } from './data/seo-cost-matrix'
 import {
   defaultSeo, localBusinessJsonLd, websiteJsonLd, breadcrumbJsonLd,
   faqPageJsonLd, blogPostingJsonLd, medicalWebPageJsonLd,
@@ -1199,6 +1203,405 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
   })
 })
 
+// ═══════════════════════════════════════════════════════════════════
+// 💰 지역×진료×가격 매트릭스 (Cost Matrix)
+// URL: /regions/:region/:treatment/cost (예: /regions/myeongji/implant/cost)
+// 9개 진료(가격 데이터 보유) × 15개 지역 = 최대 135개 가격 페이지
+// 타겟: "명지 임플란트 가격", "강서구 라미네이트 비용" 등 구매의도 키워드
+// ═══════════════════════════════════════════════════════════════════
+app.get('/regions/:regionSlug/:treatmentSlug/cost', async (c) => {
+  const regionSlug = c.req.param('regionSlug')
+  const treatmentSlug = c.req.param('treatmentSlug')
+
+  const region = SEO_REGIONS_MAP[regionSlug]
+  const treatment = SEO_TREATMENTS_MAP[treatmentSlug]
+  const cost = SEO_COSTS_MAP[treatmentSlug]
+
+  if (!region || !treatment || !cost) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 가격 안내 페이지를 찾을 수 없습니다.</p>
+        <a href={`/regions/${regionSlug}/${treatmentSlug}`} class="btn-primary">진료 페이지로 이동</a>
+      </div>,
+      {
+        seo: {
+          title: '가격 페이지를 찾을 수 없습니다 | 이음치과의원',
+          description: '요청하신 가격 안내 페이지를 찾을 수 없습니다.',
+          canonical: `${SITE_URL}/regions`,
+          noindex: true
+        }
+      }
+    )
+  }
+
+  const canonical = `${SITE_URL}/regions/${region.slug}/${treatment.slug}/cost`
+  const seoTitle = `${region.name} ${treatment.name} 가격·비용 안내 | 이음치과의원`
+  const seoDesc = `${region.fullName} ${treatment.name} 비용 안내 — 가격 결정 요인, 보험 적용, 분할납부 가이드. ${cost.priceRange}. ☎ 051-206-5888 정확 견적 상담.`
+
+  const keywords = [
+    ...cost.longTailKeywords.map(k => `${region.name} ${k}`),
+    ...cost.longTailKeywords,
+    `${region.name} ${treatment.name} 가격`,
+    `${region.name} ${treatment.name} 비용`,
+    `${region.fullName} ${treatment.name} 가격`,
+    `${region.district} ${treatment.name} 비용`,
+    `${treatment.name} 보험`,
+    `${treatment.name} 분납`,
+    '이음치과'
+  ].join(', ')
+
+  // 가격 페이지 JSON-LD 묶음
+  const jsonLdBundle: any[] = [
+    localBusinessJsonLd(),
+    breadcrumbJsonLd([
+      { name: '홈', url: '/' },
+      { name: '지역별 진료', url: '/regions' },
+      { name: region.name, url: `/regions/${region.slug}` },
+      { name: treatment.name, url: `/regions/${region.slug}/${treatment.slug}` },
+      { name: '가격·비용', url: `/regions/${region.slug}/${treatment.slug}/cost` }
+    ]),
+    // MedicalWebPage with cost focus
+    {
+      '@context': 'https://schema.org',
+      '@type': 'MedicalWebPage',
+      'name': `${region.name} ${treatment.name} 가격·비용 안내`,
+      'url': canonical,
+      'description': seoDesc,
+      'inLanguage': 'ko-KR',
+      'about': {
+        '@type': 'MedicalProcedure',
+        'name': treatment.name
+      },
+      'audience': {
+        '@type': 'MedicalAudience',
+        'geographicArea': { '@type': 'AdministrativeArea', 'name': region.fullName }
+      }
+    },
+    // Offer (가격 안내 — schema.org가 인정하는 표준)
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      'name': `${region.name} ${treatment.name}`,
+      'description': `${region.fullName}에서 받는 ${treatment.name} 진료 — ${cost.priceRange}`,
+      'provider': {
+        '@type': 'Dentist',
+        'name': '이음치과의원',
+        'telephone': '+82-51-206-5888',
+        'url': SITE_URL
+      },
+      'offers': {
+        '@type': 'Offer',
+        'priceCurrency': 'KRW',
+        'priceSpecification': {
+          '@type': 'PriceSpecification',
+          'priceCurrency': 'KRW',
+          'description': cost.priceRange
+        },
+        'availability': 'https://schema.org/InStock',
+        'eligibleRegion': {
+          '@type': 'AdministrativeArea',
+          'name': region.fullName
+        }
+      }
+    },
+    // FAQPage
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': [
+        { '@type': 'Question', 'name': `${region.name} ${treatment.name} 가격은 얼마인가요?`,
+          'acceptedAnswer': { '@type': 'Answer', 'text': `${cost.priceRange}. 정확한 비용은 정밀 진단 후 안내드립니다.` } },
+        { '@type': 'Question', 'name': `${treatment.name} 보험 적용이 되나요?`,
+          'acceptedAnswer': { '@type': 'Answer', 'text': cost.insuranceNote } },
+        { '@type': 'Question', 'name': `${treatment.name} 분할납부가 가능한가요?`,
+          'acceptedAnswer': { '@type': 'Answer', 'text': cost.installmentNote } }
+      ]
+    }
+  ]
+
+  return c.render(regionTreatmentCostPage(region, treatment, cost), {
+    seo: {
+      title: seoTitle,
+      description: seoDesc.length > 200 ? seoDesc.slice(0, 197) + '…' : seoDesc,
+      keywords,
+      canonical,
+      ogUrl: canonical,
+      ogType: 'article',
+      jsonLd: jsonLdBundle
+    }
+  })
+})
+
+// ═══════════════════════════════════════════════════════════════════
+// 💎 지역×진료 추천/비교 페이지 (Best Pages)
+// URL: /best/:region-:treatment (예: /best/myeongji-implant)
+// AI 검색 인용 + "잘하는 곳", "추천" 키워드 점령
+// ═══════════════════════════════════════════════════════════════════
+app.get('/best/:slug', async (c) => {
+  const slug = c.req.param('slug')
+  // "myeongji-implant" → ["myeongji", "implant"]
+  // 단, 지역 슬러그에 하이픈이 있는 경우 처리 ("myeongji-ocean", "eco-delta")
+  const treatmentSlugs = SEO_TREATMENTS.map(t => t.slug)
+  let regionSlug = ''
+  let treatmentSlug = ''
+  for (const ts of treatmentSlugs) {
+    if (slug.endsWith(`-${ts}`)) {
+      treatmentSlug = ts
+      regionSlug = slug.slice(0, slug.length - ts.length - 1)
+      break
+    }
+  }
+
+  const region = SEO_REGIONS_MAP[regionSlug]
+  const treatment = SEO_TREATMENTS_MAP[treatmentSlug]
+
+  if (!region || !treatment) {
+    c.status(404)
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 추천 페이지를 찾을 수 없습니다.</p>
+        <a href="/regions" class="btn-primary">지역별 진료로 이동</a>
+      </div>,
+      { seo: { title: '404 | 이음치과의원', description: 'Not found', canonical: `${SITE_URL}`, noindex: true } }
+    )
+  }
+
+  const canonical = `${SITE_URL}/best/${slug}`
+  const h1Match = `${region.name} ${treatment.name}`
+  const seoTitle = `${h1Match} 잘하는 곳 추천 | 이음치과의원 — ${region.fullName}`
+  const seoDesc = `${region.fullName}에서 ${treatment.name} 잘하는 곳 고르는 객관적 기준 7가지. 통합치의학과 전문의 진료, CBCT, 야간·주말 진료. ☎ 051-206-5888`
+
+  const keywords = [
+    `${region.name} ${treatment.name} 잘하는 곳`,
+    `${region.name} ${treatment.name} 추천`,
+    `${region.name} ${treatment.name} 유명한 곳`,
+    `${region.name} ${treatment.name} 후기`,
+    `${region.name} 치과 추천`,
+    `${region.fullName} ${treatment.name}`,
+    ...region.searchVariants.map(r => `${r} ${treatment.name} 추천`),
+    `${treatment.name} 잘하는 곳`,
+    `${treatment.name} 추천`,
+    '이음치과'
+  ].join(', ')
+
+  const jsonLdBundle: any[] = [
+    localBusinessJsonLd(),
+    breadcrumbJsonLd([
+      { name: '홈', url: '/' },
+      { name: '잘하는 치과', url: '/best' },
+      { name: `${region.name} ${treatment.name}`, url: `/best/${slug}` }
+    ]),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      'headline': `${h1Match} 잘하는 곳 고르는 7가지 기준`,
+      'description': seoDesc,
+      'url': canonical,
+      'inLanguage': 'ko-KR',
+      'author': {
+        '@type': 'Organization',
+        'name': '이음치과의원',
+        'url': SITE_URL
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name': '이음치과의원',
+        'logo': {
+          '@type': 'ImageObject',
+          'url': `${SITE_URL}/static/images/symbol.png`
+        }
+      },
+      'datePublished': new Date().toISOString().split('T')[0],
+      'mainEntityOfPage': { '@type': 'WebPage', '@id': canonical }
+    },
+    // FAQPage with Speakable
+    {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': [
+        {
+          '@type': 'Question',
+          'name': `${region.name}에서 ${treatment.name} 잘하는 치과는 어디인가요?`,
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': `${region.fullName}에서 ${treatment.name} 진료는 이음치과의원이 추천드릴 만한 곳입니다. 통합치의학과 전문의 진료, CBCT·디지털 스캐너 풀세트, 야간·주말 진료, 무료주차, ${region.distance}의 접근성을 모두 갖추고 있습니다.`
+          }
+        },
+        {
+          '@type': 'Question',
+          'name': `${treatment.name} 치과 고를 때 가장 중요한 기준은?`,
+          'acceptedAnswer': {
+            '@type': 'Answer',
+            'text': '의료진 자격(전문의 여부), 진단 장비(CBCT·디지털 스캐너), 감염관리 시스템, 사후관리·보증 — 이 네 가지가 가장 핵심입니다.'
+          }
+        }
+      ]
+    },
+    // Speakable (음성 검색 친화)
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      'url': canonical,
+      'speakable': {
+        '@type': 'SpeakableSpecification',
+        'cssSelector': ['.rt-h1', '.rt-faq-list']
+      }
+    }
+  ]
+
+  return c.render(regionTreatmentBestPage(region, treatment), {
+    seo: {
+      title: seoTitle.length > 70 ? `${h1Match} 잘하는 곳 | 이음치과의원` : seoTitle,
+      description: seoDesc.length > 200 ? seoDesc.slice(0, 197) + '…' : seoDesc,
+      keywords,
+      canonical,
+      ogUrl: canonical,
+      ogType: 'article',
+      jsonLd: jsonLdBundle
+    }
+  })
+})
+
+// 📋 /best 목록 페이지
+app.get('/best', async (c) => {
+  const canonical = `${SITE_URL}/best`
+  const seoTitle = '부산·강서구·명지 잘하는 치과 추천 가이드 | 이음치과의원'
+  const seoDesc = '명지·강서구·부산에서 임플란트, 인비절라인, 라미네이트, 글로우네이트, 치아교정 잘하는 치과 고르는 객관적 기준. 이음치과의원 추천 가이드.'
+
+  return c.render(
+    <div class="page-best-list">
+      <section class="rt-hero rt-hero-best">
+        <div class="container-wide">
+          <nav class="rt-breadcrumb"><a href="/">홈</a> <span class="sep">›</span> <span>잘하는 치과</span></nav>
+          <div class="rt-best-badge">💎 잘하는 곳 가이드</div>
+          <h1 class="rt-h1">부산 강서구 잘하는 치과 추천 가이드</h1>
+          <p class="rt-subtitle">지역×진료별 잘하는 곳 고르는 객관적 기준을 안내드립니다.</p>
+        </div>
+      </section>
+      <section class="rt-related">
+        <div class="container-wide">
+          <h2 class="rt-h2">진료별 추천 가이드</h2>
+          <div class="rt-related-grid">
+            {SEO_TREATMENTS.filter(t => PRIORITY_TREATMENT_SLUGS.includes(t.slug)).map(t => (
+              <div>
+                <h3 style="margin: 24px 0 12px; font-size: 18px;">{t.name}</h3>
+                <div class="rt-nearby-grid">
+                  {SEO_REGIONS.filter(r => PRIORITY_REGION_SLUGS.includes(r.slug)).slice(0, 6).map(r => (
+                    <a class="rt-nearby-card" href={`/best/${r.slug}-${t.slug}`}>
+                      <strong>{r.name} {t.name} 잘하는 곳</strong>
+                      <span>{r.fullName}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>,
+    {
+      seo: {
+        title: seoTitle,
+        description: seoDesc,
+        keywords: '잘하는 치과, 치과 추천, 명지 치과 추천, 강서구 치과 추천, 부산 치과 추천, 이음치과',
+        canonical,
+        ogUrl: canonical,
+        jsonLd: [
+          localBusinessJsonLd(),
+          breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '잘하는 치과', url: '/best' }])
+        ]
+      }
+    }
+  )
+})
+
+// ═══════════════════════════════════════════════════════════════════
+// 📱 Near Me / Open Now / Weekend / Night 페이지
+// ═══════════════════════════════════════════════════════════════════
+app.get('/near-me', (c) => {
+  const canonical = `${SITE_URL}/near-me`
+  return c.render(nearMePage('near-me'), {
+    seo: {
+      title: '내 근처 치과 — 명지 이음치과의원 | 가까운 치과 찾기',
+      description: '명지국제신도시·강서구·김해 인근 가장 가까운 치과 — 이음치과의원. 월~목 야간 21시, 토·일 주말 진료. ☎ 051-206-5888',
+      keywords: '내 근처 치과, 가까운 치과, 주변 치과, 근처 치과 추천, 명지 근처 치과, 강서구 근처 치과, 부산 근처 치과, 이음치과',
+      canonical,
+      ogUrl: canonical,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '내 근처 치과', url: '/near-me' }]),
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          'url': canonical,
+          'speakable': { '@type': 'SpeakableSpecification', 'cssSelector': ['.near-h1', '.near-faq'] }
+        }
+      ]
+    }
+  })
+})
+
+app.get('/open-now', (c) => {
+  const canonical = `${SITE_URL}/open-now`
+  return c.render(nearMePage('open-now'), {
+    seo: {
+      title: '지금 여는 치과 — 야간 21시까지 명지 이음치과의원',
+      description: '지금 진료받을 수 있는 치과 — 평일 야간 21시, 토·일 진료. 명지·강서구·부산 당일 예약 가능. ☎ 051-206-5888',
+      keywords: '지금 여는 치과, 오늘 진료하는 치과, 당일 진료 치과, 야간 치과, 늦게까지 하는 치과, 명지 야간 치과, 이음치과',
+      canonical,
+      ogUrl: canonical,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '지금 여는 치과', url: '/open-now' }])
+      ]
+    }
+  })
+})
+
+app.get('/weekend-dental', (c) => {
+  const canonical = `${SITE_URL}/weekend-dental`
+  return c.render(nearMePage('weekend'), {
+    seo: {
+      title: '주말 진료 치과 — 토·일 진료하는 명지 이음치과의원',
+      description: '주말에도 진료받을 수 있는 치과 — 토요일·일요일 진료. 명지국제신도시 이음치과의원. ☎ 051-206-5888',
+      keywords: '주말 진료 치과, 토요일 진료 치과, 일요일 진료 치과, 주말 임플란트, 주말 응급 치과, 명지 주말 치과, 이음치과',
+      canonical,
+      ogUrl: canonical,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '주말 진료 치과', url: '/weekend-dental' }])
+      ]
+    }
+  })
+})
+
+app.get('/night-dental', (c) => {
+  const canonical = `${SITE_URL}/night-dental`
+  return c.render(nearMePage('night'), {
+    seo: {
+      title: '야간 진료 치과 — 평일 21시까지 명지 이음치과의원',
+      description: '월~목 21시까지 야간 진료. 퇴근 후에도 진료받을 수 있는 명지국제신도시 이음치과의원. ☎ 051-206-5888',
+      keywords: '야간 진료 치과, 늦게까지 하는 치과, 저녁 진료 치과, 명지 야간 치과, 강서구 야간 치과, 퇴근 후 치과, 이음치과',
+      canonical,
+      ogUrl: canonical,
+      jsonLd: [
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '야간 진료 치과', url: '/night-dental' }])
+      ]
+    }
+  })
+})
+
+// 404 라우팅 호환성: /blog → /blogs, /contact → /visit
+app.get('/blog', (c) => c.redirect('/blogs', 301))
+app.get('/blog/:slug', (c) => c.redirect(`/blogs/${c.req.param('slug')}`, 301))
+app.get('/contact', (c) => c.redirect('/visit', 301))
+app.get('/services', (c) => c.redirect('/treatments', 301))
+app.get('/services/:slug', (c) => c.redirect(`/treatments/${c.req.param('slug')}`, 301))
+
 // === Admin Page ===
 app.get('/admin', (c) => c.html(adminPage()))
 
@@ -1384,10 +1787,10 @@ Disallow: /signup
 Sitemap: ${SITE_URL}/sitemap.xml
 
 # RSS 피드 (네이버/구글 뉴스 + AI 크롤러용)
-# RSS: ${SITE_URL}/feed.xml
+RSS: ${SITE_URL}/feed.xml
 
 # AI 친화 요약(AEO)
-# llms.txt: ${SITE_URL}/llms.txt
+LLMs: ${SITE_URL}/llms.txt
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1
@@ -1542,6 +1945,39 @@ app.get('/sitemap.xml', async (c) => {
       xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>\n`
     }
   }
+
+  // 💰 가격 매트릭스 (지역 × 가격데이터 보유 진료 = 최대 135개)
+  xml += `\n  <!-- 💰 가격/비용 매트릭스 (구매의도 키워드) -->\n`
+  for (const region of SEO_REGIONS) {
+    for (const treatment of SEO_TREATMENTS) {
+      if (!SEO_COSTS_MAP[treatment.slug]) continue
+      const isPriorityCombo =
+        PRIORITY_REGION_SLUGS.includes(region.slug) &&
+        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
+      const priority = isPriorityCombo ? '0.85' : '0.65'
+      xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}/cost</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>\n`
+    }
+  }
+
+  // 💎 추천 매트릭스 (지역 × 진료 = 135개 best 페이지)
+  xml += `\n  <!-- 💎 추천/비교 매트릭스 (의사결정 직전 키워드) -->\n`
+  xml += `  <url><loc>${SITE_URL}/best</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
+  for (const region of SEO_REGIONS) {
+    for (const treatment of SEO_TREATMENTS) {
+      const isPriorityCombo =
+        PRIORITY_REGION_SLUGS.includes(region.slug) &&
+        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
+      const priority = isPriorityCombo ? '0.85' : '0.65'
+      xml += `  <url><loc>${SITE_URL}/best/${region.slug}-${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>\n`
+    }
+  }
+
+  // 📱 Near Me 모바일 검색 페이지
+  xml += `\n  <!-- 📱 Near Me / Hours-based pages -->\n`
+  xml += `  <url><loc>${SITE_URL}/near-me</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>\n`
+  xml += `  <url><loc>${SITE_URL}/open-now</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
+  xml += `  <url><loc>${SITE_URL}/weekend-dental</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
+  xml += `  <url><loc>${SITE_URL}/night-dental</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>\n`
 
   xml += '</urlset>'
 
