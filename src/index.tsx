@@ -2115,7 +2115,7 @@ app.get('/sitemap-images.xml', async (c) => {
     'SELECT id, title, description, pano_before, pano_after, updated_at FROM cases WHERE is_published = 1 ORDER BY created_at DESC LIMIT 200'
   ).all() as any
   const { results: treatments } = await c.env.DB.prepare(
-    'SELECT slug, name, hero_image, thumbnail, updated_at FROM treatments WHERE is_published = 1'
+    'SELECT slug, name, hero_image, updated_at FROM treatments WHERE is_published = 1'
   ).all() as any
   const { results: doctors } = await c.env.DB.prepare(
     'SELECT slug, name, title, photo, updated_at FROM doctors WHERE is_published = 1'
@@ -2154,7 +2154,7 @@ app.get('/sitemap-images.xml', async (c) => {
   }
   // 진료과목 hero 이미지
   for (const t of (treatments || [])) {
-    const img = t.hero_image || t.thumbnail
+    const img = t.hero_image
     if (!img) continue
     const imgAbs = img.startsWith('http') ? img : SITE_URL + img
     xml += `  <url>\n    <loc>${SITE_URL}/treatments/${t.slug}</loc>\n    <lastmod>${isoLastmod(t.updated_at)}</lastmod>\n    <image:image>\n      <image:loc>${escXml(imgAbs)}</image:loc>\n      <image:title>${escXml(t.name || '진료')}</image:title>\n    </image:image>\n  </url>\n`
