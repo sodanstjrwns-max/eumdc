@@ -300,6 +300,27 @@ export function extractFirstImageFromContent(content?: string): string | null {
   return null
 }
 
+/** 블로그 본문에서 모든 이미지 URL 추출 (sitemap 이미지용) */
+export function extractAllImagesFromContent(content?: string): string[] {
+  if (!content) return []
+  const images: string[] = []
+  const seen = new Set<string>()
+  // 마크다운 이미지
+  const mdRe = /!\[[^\]]*\]\((https?:\/\/[^\s)]+|\/[^\s)]+)\)/g
+  let m: RegExpExecArray | null
+  while ((m = mdRe.exec(content)) !== null) {
+    const url = m[1].trim()
+    if (!seen.has(url)) { seen.add(url); images.push(url) }
+  }
+  // HTML <img>
+  const htmlRe = /<img[^>]+src=["'](https?:\/\/[^"']+|\/[^"']+)["']/gi
+  while ((m = htmlRe.exec(content)) !== null) {
+    const url = m[1].trim()
+    if (!seen.has(url)) { seen.add(url); images.push(url) }
+  }
+  return images
+}
+
 /** 블로그 본문에서 FAQ 섹션의 Q/A 자동 추출 (## FAQ 또는 ### FAQ 섹션 + **Q. ...** 패턴) */
 export function extractFaqsFromBlogContent(content?: string): { question: string; answer: string }[] {
   if (!content) return []
