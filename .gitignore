@@ -40,3 +40,24 @@ tmp_*.mjs
 core
 *.tar.gz
 *.backup
+
+# Linux core dumps (process crashes) — prevent re-introducing 201MB core file
+core
+core.*
+*.core
+vgcore.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup/temp files
+*.bak
+*.backup
+*.tmp
+*.swp
+*~
+
+# Large media safety net (>50MB binaries should use Git LFS)
+*.dmp
+*.iso
