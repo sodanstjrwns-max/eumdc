@@ -309,7 +309,7 @@ app.get('/treatments/:slug', async (c) => {
     }
   }
 
-  return c.render(treatmentDetailPage(slug, name, treatment?.hero_title || name), {
+  return c.render(treatmentDetailPage(slug, name, treatment?.hero_title || name, treatment), {
     seo: {
       title: metaTitle,
       description: desc,
@@ -940,7 +940,7 @@ app.get('/dictionary/:slug', async (c) => {
   const termEn = term.english || ''
   const catName = term.category_name || ''
 
-  return c.render(dictionaryDetailPage(slug), {
+  return c.render(dictionaryDetailPage(slug, term), {
     seo: {
       title: `${termName} 뜻 | ${catName} 용어 — 이음치과 백과사전`,
       description: `${termName}${termEn ? ` (${termEn})` : ''} — ${termDesc.substring(0, 100)}. 이음치과 치과 용어 백과사전.`,
@@ -1017,13 +1017,21 @@ app.get('/regions/:slug', async (c) => {
   const regionMatrix = SEO_REGIONS_MAP[slug]
   const lsiKeywords = regionMatrix?.searchVariants?.slice(0, 4).join(', ') || regionName
 
+  // SSR용 진료 9개 fetch (지역 페이지에 그대로 박기)
+  const { results: regionTreatments } = await c.env.DB.prepare(
+    'SELECT slug, name, short_desc FROM treatments WHERE is_published = 1 ORDER BY sort_order, id LIMIT 9'
+  ).all() as any
+
+  // 인근 지역: SEO_REGIONS_MAP에서 가까운 지역 추출
+  const nearbyAreas = (regionMatrix?.nearby || []).map((n: any) => ({ name: n.name || n, slug: n.slug || n }))
+
   // 핵심 진료 5개를 메타 키워드에 포함 (원장님 지시)
   const metaTitle = region?.meta_title
     || `${regionName} 치과 이음치과의원 | 임플란트·인비절라인·라미네이트·치아교정`
   const metaDesc = region?.meta_description
     || `${regionName} 치과 — 이음치과의원. 임플란트·인비절라인·라미네이트·글로우네이트·치아교정 전문. ${regionMatrix?.distance || '명지국제8로 265'}. ☎ 051-206-5888`
 
-  return c.render(seoRegionPage(slug, region?.h1_title || `${regionName} 치과 이음치과의원`), {
+  return c.render(seoRegionPage(slug, region?.h1_title || `${regionName} 치과 이음치과의원`, region, regionMatrix, regionTreatments || [], nearbyAreas), {
     seo: {
       title: metaTitle,
       description: metaDesc,

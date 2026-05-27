@@ -169,16 +169,48 @@ export function dictionaryPage() {
   ))
 }
 
-/** 백과사전 상세 페이지 */
-export function dictionaryDetailPage(slug: string) {
+/** 백과사전 상세 페이지 — SSR-first */
+export function dictionaryDetailPage(slug: string, term?: any) {
+  const termName = term?.term || ''
+  const english = term?.english || ''
+  const pronunciation = term?.pronunciation || ''
+  const shortDesc = term?.short_desc || ''
+  const fullDesc = term?.full_desc || ''
+  const categoryName = term?.category_name || ''
+  const relatedService = term?.related_service || ''
+
+  // 관련 진료 슬러그 매핑 (가능하면 직링크)
+  const relatedTreatmentLink = (() => {
+    const map: Record<string, string> = {
+      '임플란트': '/treatments/implant',
+      '교정': '/treatments/orthodontics',
+      '치아교정': '/treatments/orthodontics',
+      '인비절라인': '/treatments/invisalign',
+      '라미네이트': '/treatments/laminate',
+      '글로우네이트': '/treatments/glownate',
+      '보철': '/treatments/aesthetic',
+      '심미보철': '/treatments/aesthetic',
+      '치주': '/treatments/periodontal',
+      '잇몸': '/treatments/periodontal',
+      '소아': '/treatments/pediatric',
+      '레진': '/treatments/resin'
+    }
+    if (!relatedService) return ''
+    for (const k in map) if (relatedService.includes(k)) return map[k]
+    return ''
+  })()
+
   return subPageLayout('DICTIONARY', (
     <div class="dict-detail-page">
       <header class="sub-hero dict-hero dict-hero-compact">
         <div class="sub-hero-inner">
           <nav class="breadcrumb" aria-label="브레드크럼">
-            <a href="/">홈</a><span class="bc-sep">/</span><a href="/dictionary">치과 용어 백과사전</a><span class="bc-sep">/</span><span id="bcTerm">...</span>
+            <a href="/">홈</a><span class="bc-sep">/</span><a href="/dictionary">치과 용어 백과사전</a><span class="bc-sep">/</span><span id="bcTerm">{termName}</span>
           </nav>
-          <h1 class="dict-detail-h1" id="dictDetailH1" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">치과 용어 상세</h1>
+          {/* SEO를 위한 visible H1 (이전엔 숨겨져있어서 색인 부족 원인) */}
+          <h1 class="dict-detail-h1" id="dictDetailH1">{termName}{english ? ` (${english})` : ''}</h1>
+          {pronunciation && <p class="dict-pronunciation">[{pronunciation}]</p>}
+          {categoryName && <span class="dict-category-badge">{categoryName}</span>}
         </div>
       </header>
 
@@ -186,13 +218,73 @@ export function dictionaryDetailPage(slug: string) {
         <div class="dict-container">
           <div class="dict-detail-layout">
             <main class="dict-detail-main" id="dictDetailMain">
-              <div class="dict-loading" id="dictDetailLoading">
-                <div class="dict-spinner"></div>
-                <p>용어를 불러오는 중...</p>
+              {/* SSR 본문 */}
+              {shortDesc && (
+                <div class="dict-section">
+                  <h2 class="dict-section-title">{termName}란?</h2>
+                  <p class="dict-short-desc">{shortDesc}</p>
+                </div>
+              )}
+              {fullDesc && (
+                <div class="dict-section">
+                  <h2 class="dict-section-title">{termName} 자세한 설명</h2>
+                  <div class="dict-full-desc" dangerouslySetInnerHTML={{ __html: fullDesc }}></div>
+                </div>
+              )}
+              {relatedService && (
+                <div class="dict-section dict-related-section">
+                  <h2 class="dict-section-title">{termName} 관련 진료</h2>
+                  <p>이 용어는 <strong>{relatedService}</strong> 진료와 관련됩니다.</p>
+                  {relatedTreatmentLink && (
+                    <a href={relatedTreatmentLink} class="dict-related-link">{relatedService} 진료 안내 →</a>
+                  )}
+                </div>
+              )}
+
+              {/* 자동 FAQ — 색인 강화 */}
+              <div class="dict-section dict-faq-section">
+                <h2 class="dict-section-title">{termName} 자주 묻는 질문</h2>
+                <details class="dict-faq-item">
+                  <summary><strong>{termName}이란 무엇인가요?</strong></summary>
+                  <p>{shortDesc || `${termName}은 ${categoryName} 분야에서 사용되는 치과 용어입니다.`}</p>
+                </details>
+                <details class="dict-faq-item">
+                  <summary><strong>{termName}는 어떤 경우에 필요한가요?</strong></summary>
+                  <p>{relatedService ? `${termName}는 ${relatedService} 진료와 관련하여 사용되는 개념입니다. 정확한 상담은 이음치과에서 받아보실 수 있습니다.` : `${termName}에 대한 자세한 안내는 이음치과 상담을 통해 받아보실 수 있습니다.`}</p>
+                </details>
+                <details class="dict-faq-item">
+                  <summary><strong>{termName} 관련 진료 상담은 어디서 받나요?</strong></summary>
+                  <p>이음치과의원에서 {termName} 관련 진료 상담을 받으실 수 있습니다. ☎ 051-206-5888 또는 네이버 예약을 통해 문의해주세요.</p>
+                </details>
+              </div>
+
+              {/* CTA */}
+              <div class="dict-section dict-cta-section">
+                <h2 class="dict-section-title">{termName} 관련 상담</h2>
+                <p>치과 용어가 어렵게 느껴지시나요? 이음치과는 환자가 이해할 때까지 친절히 설명해드립니다.</p>
+                <div class="dict-cta-actions">
+                  <a href="tel:051-206-5888" class="dict-cta-btn primary">051-206-5888 전화 상담</a>
+                  <a href="/dictionary" class="dict-cta-btn secondary">다른 용어 둘러보기</a>
+                </div>
               </div>
             </main>
 
             <aside class="dict-detail-sidebar" id="dictDetailSidebar">
+              <div class="dict-sidebar-block">
+                <h3>관련 진료 안내</h3>
+                <ul class="dict-related-list">
+                  <li><a href="/treatments/implant">임플란트</a></li>
+                  <li><a href="/treatments/invisalign">인비절라인</a></li>
+                  <li><a href="/treatments/laminate">라미네이트</a></li>
+                  <li><a href="/treatments/glownate">글로우네이트</a></li>
+                  <li><a href="/treatments/orthodontics">치아교정</a></li>
+                </ul>
+              </div>
+              <div class="dict-sidebar-block">
+                <h3>도움말</h3>
+                <p>이음치과 백과사전은 환자가 진료 전 미리 알아두면 좋은 치과 용어를 정리한 자료입니다.</p>
+                <a href="/dictionary" class="dict-sidebar-link">전체 용어 보기 →</a>
+              </div>
             </aside>
           </div>
         </div>

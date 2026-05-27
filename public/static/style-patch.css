@@ -5334,3 +5334,203 @@ article.case-card:hover .case-card-cta {
   .best-table th, .best-table td { padding: 12px 14px; }
   .cost-tip-box { flex-direction: column; align-items: center; text-align: center; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SSR-FIRST PATCH — 색인 거부 41개 페이지 본문 강화용 스타일
+   2026-05 SEO Recovery: SSR로 박힌 본문 콘텐츠 스타일
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ---------- TREATMENT DETAIL (SSR) ---------- */
+.treat-hero-subtitle {
+  font-size: 1.15rem; color: rgba(255,255,255,.85); margin: 12px 0 24px;
+  max-width: 760px; line-height: 1.6;
+}
+.treat-hero-meta {
+  display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px;
+}
+.treat-meta-item {
+  background: rgba(255,255,255,.12); backdrop-filter: blur(8px);
+  padding: 10px 16px; border-radius: 8px; font-size: .92rem;
+  color: #fff; border: 1px solid rgba(255,255,255,.18);
+}
+.treat-meta-item strong { display: block; font-size: .75rem; opacity: .75; margin-bottom: 4px; font-weight: 500; }
+
+.treat-section { padding: 60px 0; }
+.treat-section:nth-child(even) { background: #fafbfc; }
+.treat-section-title {
+  font-size: 1.8rem; font-weight: 700; color: #00306A;
+  margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #00306A;
+}
+.treat-overview-body { font-size: 1.05rem; line-height: 1.85; color: #334; }
+.treat-overview-body p { margin-bottom: 16px; }
+
+.treat-benefits-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.treat-benefit-card {
+  background: #fff; padding: 28px 22px; border-radius: 14px;
+  border: 1px solid #e5e7eb; box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  transition: transform .25s, box-shadow .25s;
+}
+.treat-benefit-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,48,106,.1); }
+.treat-benefit-icon { font-size: 2rem; display: block; margin-bottom: 12px; }
+.treat-benefit-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: #00306A; }
+.treat-benefit-desc { font-size: .95rem; line-height: 1.6; color: #555; }
+
+.treat-process-list { list-style: none; padding: 0; }
+.treat-process-step {
+  display: flex; gap: 20px; padding: 24px 0;
+  border-bottom: 1px solid #eaecef;
+}
+.treat-process-step:last-child { border-bottom: none; }
+.treat-process-num {
+  flex: 0 0 56px; height: 56px; background: #00306A; color: #fff;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.1rem;
+}
+.treat-process-body { flex: 1; }
+.treat-process-title { font-size: 1.15rem; font-weight: 700; color: #00306A; margin-bottom: 6px; }
+.treat-process-desc { color: #555; line-height: 1.7; }
+
+.treat-extra-body, .treat-warnings-body { font-size: 1rem; line-height: 1.85; color: #334; }
+.treat-warnings { background: #fff8f0; }
+.treat-baf-text { font-size: 1.05rem; color: #334; line-height: 1.7; margin-bottom: 16px; }
+.treat-baf-link { display: inline-block; color: #00306A; font-weight: 600; text-decoration: underline; }
+
+.treat-related-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.treat-related-card {
+  display: flex; flex-direction: column; gap: 6px;
+  background: #fff; padding: 20px; border-radius: 12px;
+  border: 1px solid #e5e7eb; text-decoration: none;
+  transition: all .25s;
+}
+.treat-related-card:hover { border-color: #00306A; transform: translateX(4px); }
+.treat-related-card strong { color: #00306A; font-size: 1.02rem; }
+.treat-related-card span { color: #777; font-size: .88rem; }
+
+.treat-cta-bottom { background: linear-gradient(135deg, #00306A 0%, #002550 100%); color: #fff; }
+.treat-cta-bottom .treat-section-title { color: #fff; border-color: rgba(255,255,255,.3); }
+.treat-cta-inner { text-align: center; padding: 20px 0; }
+.treat-cta-inner h3 { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
+.treat-cta-inner p { font-size: 1.05rem; opacity: .9; margin-bottom: 24px; }
+.treat-cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.treat-cta-btn { padding: 14px 28px; border-radius: 10px; font-weight: 600; text-decoration: none; transition: all .25s; }
+.treat-cta-btn.primary { background: #fff; color: #00306A; }
+.treat-cta-btn.secondary { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.3); }
+.treat-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+
+/* ---------- REGION PAGE (SSR) ---------- */
+.region-hero-text { font-size: 1.1rem; color: rgba(255,255,255,.9); line-height: 1.7; max-width: 760px; margin: 16px 0 20px; }
+.region-hero-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.region-meta-item {
+  background: rgba(255,255,255,.12); padding: 8px 14px; border-radius: 6px;
+  font-size: .88rem; color: #fff; backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.region-meta-item strong { opacity: .75; margin-right: 6px; font-weight: 500; }
+.region-meta-item a { color: #fff; text-decoration: underline; }
+
+.region-content-section { padding: 60px 0; background: #fafbfc; }
+.region-content-body { font-size: 1.05rem; line-height: 1.85; color: #334; }
+.region-content-body p { margin-bottom: 16px; }
+
+.region-treat-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px; margin-top: 32px;
+}
+.region-treat-card {
+  background: #fff; padding: 26px; border-radius: 14px;
+  border: 1px solid #e5e7eb; text-decoration: none;
+  transition: all .25s; display: block;
+}
+.region-treat-card:hover { border-color: #00306A; box-shadow: 0 8px 24px rgba(0,48,106,.08); }
+.region-treat-name { font-size: 1.15rem; font-weight: 700; color: #00306A; margin-bottom: 8px; }
+.region-treat-desc { color: #555; line-height: 1.6; font-size: .95rem; margin-bottom: 14px; }
+.region-treat-links { display: flex; gap: 12px; flex-wrap: wrap; }
+.region-treat-links a {
+  font-size: .85rem; color: #00306A; text-decoration: none;
+  border-bottom: 1px solid transparent; transition: all .2s;
+}
+.region-treat-links a:hover { border-color: #00306A; }
+
+.region-nearby { padding: 50px 0; }
+.region-nearby-grid {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px;
+}
+.region-nearby-card {
+  display: inline-flex; padding: 10px 18px; border-radius: 999px;
+  background: #f0f4fa; color: #00306A; font-weight: 500;
+  text-decoration: none; font-size: .92rem; transition: all .2s;
+}
+.region-nearby-card:hover { background: #00306A; color: #fff; }
+
+.region-faq-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+.region-faq-item {
+  background: #fff; padding: 20px 24px; border-radius: 12px;
+  border: 1px solid #e5e7eb; cursor: pointer;
+}
+.region-faq-item summary { font-weight: 600; color: #00306A; cursor: pointer; outline: none; }
+.region-faq-item summary strong { font-size: 1.02rem; }
+.region-faq-item[open] { background: #f0f4fa; }
+.region-faq-item p { margin-top: 12px; color: #444; line-height: 1.7; }
+
+/* ---------- DICTIONARY DETAIL (SSR) ---------- */
+.dict-detail-h1 {
+  /* 이전엔 visually-hidden 이었음 — SEO 위해 visible 변경 */
+  position: static !important; width: auto !important; height: auto !important;
+  overflow: visible !important; clip: auto !important; white-space: normal !important;
+  font-size: 2rem; font-weight: 700; color: #00306A; margin: 12px 0;
+}
+.dict-pronunciation { font-size: 1rem; color: #777; font-style: italic; margin-bottom: 8px; }
+.dict-category-badge {
+  display: inline-block; background: #00306A; color: #fff;
+  padding: 4px 12px; border-radius: 999px; font-size: .82rem;
+}
+
+.dict-section { padding: 28px 0; border-bottom: 1px solid #eaecef; }
+.dict-section:last-child { border-bottom: none; }
+.dict-section-title { font-size: 1.3rem; font-weight: 700; color: #00306A; margin-bottom: 14px; }
+.dict-short-desc { font-size: 1.05rem; line-height: 1.8; color: #334; }
+.dict-full-desc { font-size: 1rem; line-height: 1.85; color: #444; }
+.dict-full-desc p { margin-bottom: 14px; }
+
+.dict-related-section { background: #f0f4fa; padding: 24px; border-radius: 12px; border: none; }
+.dict-related-link {
+  display: inline-block; margin-top: 12px; padding: 10px 18px;
+  background: #00306A; color: #fff; border-radius: 8px;
+  text-decoration: none; font-weight: 600; font-size: .95rem;
+}
+
+.dict-faq-section .dict-faq-item {
+  background: #fafbfc; padding: 16px 20px; border-radius: 10px;
+  border: 1px solid #e5e7eb; margin-bottom: 10px;
+}
+.dict-faq-section .dict-faq-item summary { font-weight: 600; color: #00306A; cursor: pointer; }
+.dict-faq-section .dict-faq-item p { margin-top: 10px; color: #555; line-height: 1.7; }
+
+.dict-cta-section { background: #00306A; color: #fff; padding: 30px; border-radius: 12px; border: none; }
+.dict-cta-section .dict-section-title { color: #fff; }
+.dict-cta-section p { color: rgba(255,255,255,.85); margin-bottom: 16px; }
+.dict-cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.dict-cta-btn { padding: 12px 22px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+.dict-cta-btn.primary { background: #fff; color: #00306A; }
+.dict-cta-btn.secondary { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3); }
+
+.dict-sidebar-block { background: #fafbfc; padding: 22px; border-radius: 12px; margin-bottom: 16px; border: 1px solid #e5e7eb; }
+.dict-sidebar-block h3 { font-size: 1rem; color: #00306A; font-weight: 700; margin-bottom: 12px; }
+.dict-related-list { list-style: none; padding: 0; }
+.dict-related-list li { margin-bottom: 8px; }
+.dict-related-list a { color: #444; text-decoration: none; font-size: .92rem; }
+.dict-related-list a:hover { color: #00306A; text-decoration: underline; }
+.dict-sidebar-block p { font-size: .88rem; color: #555; line-height: 1.6; margin-bottom: 10px; }
+.dict-sidebar-link { color: #00306A; font-weight: 600; font-size: .9rem; text-decoration: none; }
+
+@media (max-width: 768px) {
+  .treat-process-step { flex-direction: column; gap: 12px; }
+  .treat-process-num { width: 48px; height: 48px; flex: none; }
+  .treat-related-grid, .treat-benefits-grid { grid-template-columns: 1fr; }
+}
