@@ -250,6 +250,7 @@ app.get('/treatments', (c) => {
       canonical: `${SITE_URL}/treatments`,
       ogUrl: `${SITE_URL}/treatments`,
       jsonLd: [
+        localBusinessJsonLd(),
         medicalWebPageJsonLd({ name: '이음치과 진료 안내', description: '이음치과의원의 전문 진료과목을 소개합니다.', url: '/treatments', specialty: 'Dentistry' }),
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '진료 안내', url: '/treatments' }])
       ]
@@ -318,6 +319,7 @@ app.get('/treatments/:slug', async (c) => {
       ogUrl: `${SITE_URL}/treatments/${slug}`,
       ogImage: treatment?.hero_image || undefined,
       jsonLd: [
+        localBusinessJsonLd(),
         treatment ? treatmentJsonLd(treatment) : medicalWebPageJsonLd({ name, description: desc, url: `/treatments/${slug}` }),
         breadcrumbJsonLd([
           { name: '홈', url: '/' },
@@ -343,6 +345,7 @@ app.get('/doctors', async (c) => {
       canonical: `${SITE_URL}/doctors`,
       ogUrl: `${SITE_URL}/doctors`,
       jsonLd: [
+        localBusinessJsonLd(),
         medicalWebPageJsonLd({ name: '이음치과 의료진 소개', description: '이음치과의원의 전문 의료진을 소개합니다.', url: '/doctors' }),
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '의료진 소개', url: '/doctors' }])
       ]
@@ -389,6 +392,7 @@ app.get('/doctors/:slug', async (c) => {
       ogUrl: `${SITE_URL}/doctors/${slug}`,
       ogImage: doctor?.photo || undefined,
       jsonLd: [
+        localBusinessJsonLd(),
         doctor ? doctorJsonLd(doctor) : {},
         breadcrumbJsonLd([
           { name: '홈', url: '/' },
@@ -427,6 +431,7 @@ app.get('/visit', (c) => {
       canonical: `${SITE_URL}/visit`,
       ogUrl: `${SITE_URL}/visit`,
       jsonLd: [
+        localBusinessJsonLd(),
         visitHowToJsonLd(),
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '내원 안내', url: '/visit' }])
       ]
@@ -475,6 +480,7 @@ app.get('/cases', async (c) => {
       canonical: `${SITE_URL}/cases`,
       ogUrl: `${SITE_URL}/cases`,
       jsonLd: [
+        localBusinessJsonLd(),
         medicalWebPageJsonLd({
           name: '비포애프터 치료 사례',
           description: '이음치과의원의 실제 치료 전후 사진 모음. 임플란트, 심미보철, 레진 수복 결과를 확인하세요.',
@@ -561,6 +567,7 @@ app.get('/cases/:id', async (c) => {
       ogImage: loggedIn ? (caseData?.pano_after || caseData?.intra_after || undefined) : undefined,
       jsonLd: (() => {
         const arr: any[] = [
+          localBusinessJsonLd(),
           caseData ? {
             ...caseDetailJsonLd({
               id: caseData.id, title, category,
@@ -601,6 +608,7 @@ app.get('/blogs', async (c) => {
       canonical: `${SITE_URL}/blogs`,
       ogUrl: `${SITE_URL}/blogs`,
       jsonLd: [
+        localBusinessJsonLd(),
         blogListJsonLd(),
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '블로그', url: '/blogs' }])
       ]
@@ -683,6 +691,7 @@ app.get('/blogs/:id', async (c) => {
       jsonLd: (() => {
         const inlineFaqs = extractFaqsFromBlogContent(blog?.content)
         const arr: any[] = [
+          localBusinessJsonLd(),
           {
             ...blogPostingJsonLd({
               title: rawTitle, description: desc, slug,
@@ -736,6 +745,7 @@ app.get('/notices', async (c) => {
       canonical: `${SITE_URL}/notices`,
       ogUrl: `${SITE_URL}/notices`,
       jsonLd: [
+        localBusinessJsonLd(),
         { '@context': 'https://schema.org', '@type': 'CollectionPage', name: '이음치과 공지사항', url: `${SITE_URL}/notices`, isPartOf: { '@id': `${SITE_URL}/#website` } },
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '공지사항', url: '/notices' }])
       ]
@@ -799,6 +809,7 @@ app.get('/notices/:id', async (c) => {
       },
       jsonLd: (() => {
         const arr: any[] = [
+          localBusinessJsonLd(),
           {
             '@context': 'https://schema.org', '@type': 'Article',
             headline: title, description: desc,
@@ -872,6 +883,7 @@ app.get('/faq', async (c) => {
       ogUrl: `${SITE_URL}/faq`,
       speakable: ['.page-title', '.faq-q-text', '.faq-answer-inner'],
       jsonLd: [
+        localBusinessJsonLd(),
         faqJsonLdData,
         breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '자주 묻는 질문', url: '/faq' }]),
         speakableJsonLd(`${SITE_URL}/faq`, ['.page-title', '.faq-group-title', '.faq-q-text'])
@@ -893,6 +905,7 @@ app.get('/dictionary', async (c) => {
       canonical: `${SITE_URL}/dictionary`,
       ogUrl: `${SITE_URL}/dictionary`,
       jsonLd: [
+        localBusinessJsonLd(),
         {
           '@context': 'https://schema.org', '@type': 'DefinedTermSet',
           '@id': `${SITE_URL}/dictionary/#termset`,
@@ -948,6 +961,7 @@ app.get('/dictionary/:slug', async (c) => {
       canonical: `${SITE_URL}/dictionary/${slug}`,
       ogUrl: `${SITE_URL}/dictionary/${slug}`,
       jsonLd: [
+        localBusinessJsonLd(),
         {
           '@context': 'https://schema.org', '@type': 'DefinedTerm',
           name: termName, description: termFull,
@@ -989,6 +1003,19 @@ app.get('/login', (c) => {
       jsonLd: [breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '로그인', url: '/login' }])]
     }
   })
+})
+
+// === 외부 예약/상담 채널 (정규 URL → 302 리디렉트) ===
+// /booking, /reserve → 네이버 예약 / 카카오톡 채널로 안전 이전
+// 이유: 내부 링크가 /booking 으로 박혀있는데 라우트 없으면 GSC "soft 404" 페널티
+app.get('/booking', (c) => {
+  return c.redirect('https://m.place.naver.com/hospital/2005922467/booking', 302)
+})
+app.get('/reserve', (c) => {
+  return c.redirect('https://m.place.naver.com/hospital/2005922467/booking', 302)
+})
+app.get('/kakao', (c) => {
+  return c.redirect('http://pf.kakao.com/_diyyn', 302)
 })
 
 // === 지역 SEO 랜딩 페이지 ===

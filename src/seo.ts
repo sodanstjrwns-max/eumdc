@@ -86,16 +86,15 @@ export function localBusinessJsonLd() {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 35.0944,
-      longitude: 128.9347
+      latitude: 35.0951,
+      longitude: 128.9148
     },
     hasMap: NAVER_MAP_URL,
     openingHoursSpecification: [
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '12:00', closes: '21:00' },
       { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday', 'Sunday'], opens: '10:00', closes: '17:00' },
-      // 금요일 정기휴무: Google 공식 가이드에 따라 opens=closes=00:00으로 명시
-      // (누락 시 "정보 없음"으로 오인될 수 있음)
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: 'Friday', opens: '00:00', closes: '00:00' },
+      // 금요일 정기휴무: Google 공식 권장은 'isClosed'를 명시하지 않으므로
+      // dayOfWeek에서 Friday를 제외하여 "휴무" 의미를 전달 (opens=closes=00:00은 일부 검증툴에서 경고 발생)
     ],
     // 대표원장 (Person)
     founder: personJsonLd(),
@@ -124,14 +123,9 @@ export function localBusinessJsonLd() {
       medicalService('일반진료', '충치, 신경치료, 사랑니, 스케일링'),
       medicalService('턱관절 치료', '턱관절 통증, 이갈이, 스플린트')
     ],
-    // 리뷰 통합 (AEO - AI가 "평판" 참고)
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      reviewCount: '387',
-      bestRating: '5',
-      worstRating: '1'
-    },
+    // ⚠️ aggregateRating은 Google 정책상 "본 페이지 내에 실제 리뷰가 보이는 경우"에만 허용됩니다.
+    // 네이버/카카오 외부 리뷰 수치를 자체 보증 없이 표기하면 수동 페널티 위험이 있어 제거.
+    // 향후 자체 리뷰 시스템 구축 시 page에 보이는 Review 객체 + aggregateRating 동시 노출 필요.
     sameAs: [
       NAVER_MAP_URL,
       'https://www.instagram.com/ieumdental/'
@@ -530,7 +524,110 @@ export function speakableJsonLd(url: string, selectors: string[]) {
 }
 
 // ═══════════════════════════════════════════
-// 11. 메타 태그 HTML 생성
+// 11. Service 스키마 (개별 진료 = 서비스)
+// ═══════════════════════════════════════════
+
+/** MedicalProcedure + Service 복합 - 진료별 디테일 */
+export function medicalProcedureJsonLd(opts: {
+  name: string
+  description: string
+  url?: string
+  bodyLocation?: string
+  preparation?: string
+  followup?: string
+  howPerformed?: string
+  category?: string  // implant, orthodontics, cosmetic 등
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalProcedure',
+    name: opts.name,
+    description: opts.description,
+    ...(opts.url ? { url: opts.url.startsWith('http') ? opts.url : `${SITE_URL}${opts.url}` } : {}),
+    bodyLocation: opts.bodyLocation || '구강',
+    procedureType: 'http://schema.org/TherapeuticProcedure',
+    ...(opts.preparation ? { preparation: opts.preparation } : {}),
+    ...(opts.followup ? { followup: opts.followup } : {}),
+    ...(opts.howPerformed ? { howPerformed: opts.howPerformed } : {}),
+    ...(opts.category ? { category: opts.category } : {}),
+    performer: {
+      '@type': 'Dentist',
+      '@id': `${SITE_URL}/#organization`,
+      name: SITE_NAME
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// 12. ImageObject 스키마 (이미지 SEO 강화 - cases / before-after)
+// ═══════════════════════════════════════════
+
+/** 비포애프터 등 의료 이미지 - ImageObject + ContentLocation */
+export function medicalImageJsonLd(opts: {
+  url: string
+  caption: string
+  description?: string
+  width?: number
+  height?: number
+}) {
+  const absoluteUrl = opts.url.startsWith('http') ? opts.url : `${SITE_URL}${opts.url}`
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ImageObject',
+    contentUrl: absoluteUrl,
+    url: absoluteUrl,
+    caption: opts.caption,
+    description: opts.description || opts.caption,
+    ...(opts.width ? { width: opts.width } : {}),
+    ...(opts.height ? { height: opts.height } : {}),
+    creator: { '@id': `${SITE_URL}/#organization` },
+    copyrightHolder: { '@id': `${SITE_URL}/#organization` },
+    license: `${SITE_URL}/`,
+    acquireLicensePage: `${SITE_URL}/`,
+    creditText: SITE_NAME,
+    representativeOfPage: false
+  }
+}
+
+// ═══════════════════════════════════════════
+// 13. VideoObject 스키마 (유튜브/소개영상 SEO)
+// ═══════════════════════════════════════════
+
+export function videoObjectJsonLd(opts: {
+  name: string
+  description: string
+  thumbnailUrl: string
+  contentUrl?: string
+  embedUrl?: string
+  uploadDate: string  // ISO 8601
+  duration?: string   // ISO 8601 (PT1M30S)
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: opts.name,
+    description: opts.description,
+    thumbnailUrl: opts.thumbnailUrl.startsWith('http') ? opts.thumbnailUrl : `${SITE_URL}${opts.thumbnailUrl}`,
+    uploadDate: opts.uploadDate,
+    ...(opts.contentUrl ? { contentUrl: opts.contentUrl } : {}),
+    ...(opts.embedUrl ? { embedUrl: opts.embedUrl } : {}),
+    ...(opts.duration ? { duration: opts.duration } : {}),
+    publisher: { '@id': `${SITE_URL}/#organization` }
+  }
+}
+
+// ═══════════════════════════════════════════
+// 14. 공통 Site-wide JSON-LD 묶음 (모든 페이지 공통)
+// — Organization + Website 항상 주입 = Knowledge Graph 일관성
+// ═══════════════════════════════════════════
+
+/** 모든 페이지에 공통으로 주입할 site-wide 스키마 (Organization + WebSite) */
+export function siteWideJsonLd() {
+  return [localBusinessJsonLd(), websiteJsonLd()]
+}
+
+// ═══════════════════════════════════════════
+// 15. 메타 태그 HTML 생성
 // ═══════════════════════════════════════════
 
 export function renderSeoHead(meta: SeoMeta): string {
