@@ -5534,3 +5534,180 @@ article.case-card:hover .case-card-cta {
   .treat-process-num { width: 48px; height: 48px; flex: none; }
   .treat-related-grid, .treat-benefits-grid { grid-template-columns: 1fr; }
 }
+
+/* ============================================
+   /regions 허브 페이지 SSR 강화 스타일
+   ============================================ */
+
+.regions-intro-section {
+  padding: 32px 0 24px;
+  background: #f9fafb;
+}
+.regions-intro-box {
+  max-width: 980px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.regions-intro-box .section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 14px;
+  letter-spacing: -0.02em;
+}
+.regions-intro-box p {
+  color: #4b5563;
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.regions-intro-box p strong { color: #111827; font-weight: 600; }
+.regions-intro-features {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+.regions-intro-features li {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  color: #374151;
+  border-left: 3px solid #2563eb;
+}
+.regions-intro-features li strong { color: #1e40af; margin-right: 6px; }
+
+.region-district-block {
+  margin-bottom: 40px;
+}
+.region-district-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 18px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  letter-spacing: -0.02em;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #2563eb;
+}
+.region-district-title i { color: #2563eb; }
+.region-district-count {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.regions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.region-card-ssr {
+  display: block;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 22px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.region-card-ssr:hover {
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.12);
+  transform: translateY(-2px);
+}
+.region-card-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.region-card-desc {
+  font-size: 0.88rem;
+  color: #6b7280;
+  line-height: 1.55;
+  margin-bottom: 12px;
+  min-height: 2.7em;
+}
+.region-card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-top: 10px;
+  border-top: 1px solid #f3f4f6;
+}
+.region-card-cta i { transition: transform 0.2s ease; }
+.region-card-ssr:hover .region-card-cta i { transform: translateX(4px); }
+
+.regions-cta-section {
+  padding: 48px 0;
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  margin-top: 20px;
+}
+.regions-cta-box {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  color: #fff;
+}
+.regions-cta-box h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+.regions-cta-box p {
+  color: rgba(255,255,255,0.92);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.regions-cta-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.regions-cta-buttons .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+.regions-cta-buttons .btn-primary {
+  background: #fff;
+  color: #1e40af;
+}
+.regions-cta-buttons .btn-primary:hover { background: #f1f5f9; }
+.regions-cta-buttons .btn-outline {
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.6);
+}
+.regions-cta-buttons .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+@media (max-width: 640px) {
+  .regions-intro-box { padding: 22px 18px; }
+  .region-district-title { font-size: 1.2rem; }
+  .regions-cta-box h2 { font-size: 1.3rem; }
+  .regions-cta-buttons .btn { font-size: 0.9rem; padding: 10px 18px; }
+}

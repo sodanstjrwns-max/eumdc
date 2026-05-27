@@ -992,15 +992,61 @@ app.get('/login', (c) => {
 })
 
 // === 지역 SEO 랜딩 페이지 ===
-app.get('/regions', (c) => {
-  return c.render(seoRegionListPage(), {
+app.get('/regions', async (c) => {
+  // SSR: 모든 게시 지역 fetch + 구/시별 그룹화
+  const { results: regionsRaw } = await c.env.DB.prepare(
+    'SELECT slug, region_name, hero_text FROM seo_regions WHERE is_published = 1 ORDER BY id'
+  ).all() as any
+  const regions = (regionsRaw || []) as any[]
+
+  // slug → 구/시 매핑 (DB에 district 필드가 없으니 slug 기반 분류)
+  const districtMap: Record<string, string> = {
+    // 강서구
+    'myeongji': '강서구', 'myeongji-ocean': '강서구', 'gangseo': '강서구', 'noksan': '강서구',
+    'sinho': '강서구', 'eco-delta': '강서구', 'daejeo': '강서구', 'jisa': '강서구',
+    'bulam': '강서구', 'gangdong': '강서구', 'garak': '강서구', 'mieum': '강서구',
+    // 사하구
+    'saha': '사하구', 'hadan': '사하구', 'dadeok': '사하구', 'goejeong': '사하구', 'sinpyeong': '사하구',
+    // 사상구
+    'sasang': '사상구', 'gamjeon': '사상구', 'jurye': '사상구',
+    // 북구
+    'buk-gu': '북구', 'deokcheon': '북구', 'geumgok': '북구', 'gurang': '북구', 'hwamyeong': '북구',
+    // 김해시
+    'gimhae': '김해시', 'jangyu': '김해시', 'bongrim': '김해시',
+    'jinyeong': '김해시', 'samgye': '김해시'
+  }
+
+  const grouped: Record<string, any[]> = {}
+  for (const r of regions) {
+    const d = districtMap[r.slug] || '기타'
+    if (!grouped[d]) grouped[d] = []
+    grouped[d].push(r)
+  }
+
+  // ItemList JSON-LD (SEO)
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': '이음치과의원 진료 지역 30곳',
+    'itemListElement': regions.map((r, idx) => ({
+      '@type': 'ListItem',
+      'position': idx + 1,
+      'name': r.region_name,
+      'url': `${SITE_URL}/regions/${r.slug}`
+    }))
+  }
+
+  return c.render(seoRegionListPage(grouped), {
     seo: {
-      title: '지역별 치과 안내 | 이음치과의원',
-      description: '부산 강서구·사하구 지역별 치과 안내. 명지국제신도시, 에코델타시티, 하단, 다대포 등 이음치과의원 진료 가능 지역과 대중교통·주차 정보, 지역 특화 진료 서비스를 확인하세요.',
+      title: '부산 명지 이음치과 진료지역 30곳 | 강서구·사하구·사상구·북구·김해',
+      description: '이음치과의원 진료 가능 30개 지역 안내. 강서구(명지·녹산·신호·에코델타·대저·지사·미음), 사하구(하단·다대·괴정·신평), 사상구(사상·감전·주례), 북구(덕천·화명·구포·금곡), 김해시(장유·삼계·진영·봉림). 자차 6~30분 거리, 2시간 무료 주차. ☎ 051-206-5888',
+      keywords: '명지치과, 강서구치과, 사하구치과, 사상구치과, 북구치과, 김해치과, 부산치과, 이음치과, 임플란트, 인비절라인, 라미네이트, 글로우네이트, 치아교정',
       canonical: `${SITE_URL}/regions`,
       ogUrl: `${SITE_URL}/regions`,
       jsonLd: [
-        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '지역별 안내', url: '/regions' }])
+        localBusinessJsonLd(),
+        breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '지역별 안내', url: '/regions' }]),
+        itemListJsonLd
       ]
     }
   })
@@ -1044,7 +1090,52 @@ app.get('/regions/:slug', async (c) => {
           { name: '홈', url: '/' },
           { name: '지역별 안내', url: '/regions' },
           { name: `${regionName} 치과`, url: `/regions/${slug}` }
-        ])
+        ]),
+        // GeoCircle/Place — Local SEO 강화
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Place',
+          'name': `${regionName} - 이음치과의원 진료 권역`,
+          'description': `${regionName} 거주민의 임플란트·인비절라인·라미네이트·글로우네이트·치아교정 전문 디지털 치과`,
+          'url': `${SITE_URL}/regions/${slug}`,
+          'geo': {
+            '@type': 'GeoCircle',
+            'geoMidpoint': {
+              '@type': 'GeoCoordinates',
+              'latitude': 35.0951,
+              'longitude': 128.9148,
+              'name': '이음치과의원 (명지국제8로 265)'
+            },
+            'geoRadius': '15000'
+          },
+          'containedInPlace': {
+            '@type': 'AdministrativeArea',
+            'name': '부산광역시'
+          }
+        },
+        // MedicalWebPage — 의료 페이지 강화
+        {
+          '@context': 'https://schema.org',
+          '@type': 'MedicalWebPage',
+          'name': `${regionName} 치과 - 이음치과의원`,
+          'url': `${SITE_URL}/regions/${slug}`,
+          'about': {
+            '@type': 'MedicalBusiness',
+            'name': '이음치과의원',
+            'medicalSpecialty': ['Dentistry', 'CosmeticDentistry', 'Orthodontics'],
+            'areaServed': {
+              '@type': 'Place',
+              'name': regionName
+            }
+          },
+          'audience': {
+            '@type': 'PeopleAudience',
+            'geographicArea': {
+              '@type': 'AdministrativeArea',
+              'name': regionName
+            }
+          }
+        }
       ]
     }
   })
