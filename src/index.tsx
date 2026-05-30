@@ -503,8 +503,12 @@ app.get('/cases/:id', async (c) => {
     caseData.intra_after = null
   }
 
-  // 존재하지 않는 case → 404
+  // 존재하지 않는 case
   if (!caseData) {
+    // 🎯 SEO: 숫자 ID 옛 주소는 404 대신 목록으로 301 (과거 색인 URL 보호)
+    if (/^\d+$/.test(id)) {
+      return c.redirect('/cases', 301)
+    }
     c.status(404)
     return c.render(
       <div class="container py-20 text-center">
@@ -631,8 +635,13 @@ app.get('/blogs/:id', async (c) => {
     return c.redirect(`/blogs/${blog.slug}`, 301)
   }
 
-  // 존재하지 않는 블로그 글 → 404
+  // 존재하지 않는 블로그 글
   if (!blog) {
+    // 🎯 SEO: 숫자 ID 옛 주소(/blogs/6 등 과거 색인된 URL)는 404 대신 목록으로 301 영구 이전
+    //    → GSC "찾을 수 없음(404)" 제거 + 잔존 링크주스를 /blogs로 승계
+    if (isNumeric) {
+      return c.redirect('/blogs', 301)
+    }
     c.status(404)
     return c.render(
       <div class="container py-20 text-center">
@@ -758,8 +767,12 @@ app.get('/notices/:id', async (c) => {
   const id = c.req.param('id')
   const notice = await c.env.DB.prepare('SELECT * FROM notices WHERE id = ?').bind(id).first() as any
 
-  // 존재하지 않는 공지 → 404
+  // 존재하지 않는 공지
   if (!notice) {
+    // 🎯 SEO: 숫자 ID 옛 주소는 404 대신 목록으로 301 (과거 색인 URL 보호)
+    if (/^\d+$/.test(id)) {
+      return c.redirect('/notices', 301)
+    }
     c.status(404)
     return c.render(
       <div class="container py-20 text-center">
