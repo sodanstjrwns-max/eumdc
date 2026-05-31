@@ -187,7 +187,6 @@ export function dictionaryDetailPage(slug: string, term?: any) {
       '치아교정': '/treatments/orthodontics',
       '인비절라인': '/treatments/invisalign',
       '라미네이트': '/treatments/laminate',
-      '글로우네이트': '/treatments/glownate',
       '보철': '/treatments/aesthetic',
       '심미보철': '/treatments/aesthetic',
       '치주': '/treatments/periodontal',
@@ -276,7 +275,6 @@ export function dictionaryDetailPage(slug: string, term?: any) {
                   <li><a href="/treatments/implant">임플란트</a></li>
                   <li><a href="/treatments/invisalign">인비절라인</a></li>
                   <li><a href="/treatments/laminate">라미네이트</a></li>
-                  <li><a href="/treatments/glownate">글로우네이트</a></li>
                   <li><a href="/treatments/orthodontics">치아교정</a></li>
                 </ul>
               </div>

@@ -80,23 +80,6 @@ export const SEO_COSTS: CostInfo[] = [
     longTailKeywords: ['라미네이트 가격', '라미네이트 비용', '라미네이트 얼마', '앞니 라미네이트 가격', '이맥스 라미네이트 가격', '지르코니아 라미네이트 비용']
   },
   {
-    treatmentSlug: 'glownate',
-    priceRange: '라미네이트보다 보존적 시술 — 합리적 가격대 (상담 시 안내)',
-    unit: '1개당',
-    factors: [
-      { factor: '도재·디자인', explanation: '컴퓨터 색상 매칭 정밀도에 따라 차이가 있습니다.' },
-      { factor: '개수', explanation: '단일~6개 이상 패키지별 가격대가 다릅니다.' },
-      { factor: '치아 표면 상태', explanation: '기존 충치·변색 정도에 따라 사전 처치가 필요할 수 있습니다.' }
-    ],
-    insuranceCovered: false,
-    insuranceNote: '심미 목적 비급여 진료입니다.',
-    installmentAvailable: true,
-    installmentNote: '3·6개월 무이자 분납 가능',
-    consultationFee: '심미 상담 무료',
-    beforeAfterTip: '글로우네이트는 라미네이트 대비 치아 삭제가 거의 없어 향후 다른 치료로 전환할 때도 유리합니다.',
-    longTailKeywords: ['글로우네이트 가격', '글로우네이트 비용', '당일 심미치료 가격', '미니라미네이트 비용']
-  },
-  {
     treatmentSlug: 'orthodontics',
     priceRange: '교정 방식·기간에 따라 폭이 큼 (정밀진단 후 안내)',
     unit: '1악당 (위 또는 아래)',

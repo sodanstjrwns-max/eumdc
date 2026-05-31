@@ -281,34 +281,6 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     medicalCondition: '치아 변색·심미 부조화(Tooth discoloration, ICD-10 K03)'
   },
   {
-    slug: 'glownate',
-    name: '글로우네이트',
-    nameEn: 'Glownate',
-    category: 'aesthetic',
-    shortBenefit: '당일 완성 · 삭제 최소화 · 자연스러운 광채',
-    searchVariants: ['글로우네이트', '글로우네이트 비용', '당일심미치료', '미니라미네이트', '글로우네이트 잘하는곳'],
-    duration: '1~2회 내원 (당일 완성 가능)',
-    whyChoose: [
-      '⚡ 당일완성 — 1회 내원으로 자연스러운 변화',
-      '🦷 치아 삭제 최소화로 본 치아 보존',
-      '✨ 컴퓨터 색상 매칭으로 본인 치아 톤 그대로'
-    ],
-    processSteps: [
-      '심미 진단 + 시뮬레이션 상담',
-      '치아 표면 정리 (삭제 거의 없음)',
-      '컴퓨터 색상 매칭',
-      '글로우네이트 부착 + 광 경화',
-      '교합조정 + 마무리 폴리싱'
-    ],
-    faqs: [
-      { q: '글로우네이트와 라미네이트 차이는?', a: '글로우네이트는 삭제를 거의 하지 않고 당일 완성이 가능한 차세대 심미 보철입니다. 라미네이트보다 비침습적이며 보존적입니다.' },
-      { q: '글로우네이트는 정말 자연스럽나요?', a: '컴퓨터 색상 매칭과 정밀 시뮬레이션으로 본인 치아와 거의 구별되지 않는 자연스러움을 구현합니다.' },
-      { q: '글로우네이트 수명은요?', a: '평균 5~10년이며 관리·습관에 따라 더 길게 사용 가능합니다. 정기 검진을 권장합니다.' }
-    ],
-    jsonLdServiceType: 'MedicalProcedure',
-    medicalCondition: '치아 변색·심미 부조화(Tooth discoloration, ICD-10 K03)'
-  },
-  {
     slug: 'orthodontics',
     name: '치아교정',
     nameEn: 'Orthodontics',
@@ -450,7 +422,7 @@ export const SEO_TREATMENTS_MAP: Record<string, TreatmentInfo> =
   Object.fromEntries(SEO_TREATMENTS.map(t => [t.slug, t]))
 
 // 5대 핵심 진료 (메인 키워드)
-export const PRIORITY_TREATMENT_SLUGS = ['implant', 'invisalign', 'laminate', 'glownate', 'orthodontics']
+export const PRIORITY_TREATMENT_SLUGS = ['implant', 'invisalign', 'laminate', 'orthodontics']
 
 // 핵심 지역 (가장 가까운 진료권)
 export const PRIORITY_REGION_SLUGS = ['myeongji', 'myeongji-ocean', 'gangseo', 'noksan', 'sinho', 'eco-delta', 'jangyu']
