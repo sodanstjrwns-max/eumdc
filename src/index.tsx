@@ -1336,6 +1336,9 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
     })
   }
 
+  // 🎯 SEO 다이어트: 우선 조합(7지역×4진료=28페이지)만 색인. 나머지는 noindex.
+  const isPriority = PRIORITY_REGION_SLUGS.includes(region.slug) && PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
+
   return c.render(regionTreatmentPage(region, treatment), {
     seo: {
       title: seoTitle.length > 70 ? `${h1Match} | 이음치과의원` : seoTitle,
@@ -1344,6 +1347,7 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
       canonical,
       ogUrl: canonical,
       ogType: 'article',
+      noindex: !isPriority,
       jsonLd: jsonLdBundle
     }
   })
@@ -1480,6 +1484,7 @@ app.get('/regions/:regionSlug/:treatmentSlug/cost', async (c) => {
       canonical,
       ogUrl: canonical,
       ogType: 'article',
+      noindex: true, // 🎯 SEO 다이어트: 모든 가격(cost) 페이지 색인 제외(도배성 정리)
       jsonLd: jsonLdBundle
     }
   })
@@ -1615,6 +1620,7 @@ app.get('/best/:slug', async (c) => {
       canonical,
       ogUrl: canonical,
       ogType: 'article',
+      noindex: true, // 🎯 SEO 다이어트: 모든 추천(best) 페이지 색인 제외(도배성 정리)
       jsonLd: jsonLdBundle
     }
   })
@@ -1664,6 +1670,7 @@ app.get('/best', async (c) => {
         keywords: '잘하는 치과, 치과 추천, 명지 치과 추천, 강서구 치과 추천, 부산 치과 추천, 이음치과',
         canonical,
         ogUrl: canonical,
+        noindex: true, // 🎯 SEO 다이어트: best 목록 페이지도 색인 제외
         jsonLd: [
           localBusinessJsonLd(),
           breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '잘하는 치과', url: '/best' }])
@@ -1946,8 +1953,6 @@ Sitemap: ${SITE_URL}/sitemap-pages.xml
 Sitemap: ${SITE_URL}/sitemap-blogs.xml
 Sitemap: ${SITE_URL}/sitemap-cases.xml
 Sitemap: ${SITE_URL}/sitemap-matrix.xml
-Sitemap: ${SITE_URL}/sitemap-cost.xml
-Sitemap: ${SITE_URL}/sitemap-best.xml
 Sitemap: ${SITE_URL}/sitemap-dictionary.xml
 Sitemap: ${SITE_URL}/sitemap-images.xml
 Sitemap: ${SITE_URL}/sitemap-news.xml
@@ -2046,8 +2051,6 @@ app.get('/sitemap.xml', async (c) => {
   <sitemap><loc>${SITE_URL}/sitemap-blogs.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-cases.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-matrix.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-cost.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-best.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-dictionary.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-images.xml</loc><lastmod>${now}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-news.xml</loc><lastmod>${now}</lastmod></sitemap>
@@ -2183,14 +2186,13 @@ app.get('/sitemap-matrix.xml', async (c) => {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `
+  // 🎯 SEO 다이어트: 우선 지역(7) × 우선 진료(4) = 28개만 색인 노출.
+  //    나머지 비우선 조합은 noindex 처리되므로 사이트맵에서 제외 (도배성 페이지 정리)
   for (const region of SEO_REGIONS) {
+    if (!PRIORITY_REGION_SLUGS.includes(region.slug)) continue
     for (const treatment of SEO_TREATMENTS) {
-      const isPriorityCombo =
-        PRIORITY_REGION_SLUGS.includes(region.slug) &&
-        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
-      const priority = isPriorityCombo ? '0.9' : '0.7'
-      const changefreq = isPriorityCombo ? 'weekly' : 'monthly'
-      xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>\n`
+      if (!PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)) continue
+      xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`
     }
   }
   xml += '</urlset>'
@@ -2200,43 +2202,24 @@ app.get('/sitemap-matrix.xml', async (c) => {
 // ─────────────────────────────────────────────
 // 💰 sitemap-cost.xml: 가격 매트릭스 (135개)
 // ─────────────────────────────────────────────
+// ⚠️ SEO 다이어트: cost 페이지는 도배성으로 판단되어 색인 제외(noindex).
+//    구 사이트맵 URL 접근 시 빈 urlset 반환 (404 대신 안전 처리)
 app.get('/sitemap-cost.xml', async (c) => {
-  const now = new Date().toISOString().split('T')[0]
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-`
-  for (const region of SEO_REGIONS) {
-    for (const treatment of SEO_TREATMENTS) {
-      if (!SEO_COSTS_MAP[treatment.slug]) continue
-      const isPriorityCombo =
-        PRIORITY_REGION_SLUGS.includes(region.slug) &&
-        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
-      const priority = isPriorityCombo ? '0.85' : '0.65'
-      xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}/cost</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>\n`
-    }
-  }
-  xml += '</urlset>'
+</urlset>`
   return xmlResponse(xml, 86400)
 })
 
 // ─────────────────────────────────────────────
 // 💎 sitemap-best.xml: 추천/비교 페이지 (135개)
 // ─────────────────────────────────────────────
+// ⚠️ SEO 다이어트: best 페이지는 도배성으로 판단되어 색인 제외(noindex).
+//    구 사이트맵 URL 접근 시 빈 urlset 반환 (404 대신 안전 처리)
 app.get('/sitemap-best.xml', async (c) => {
-  const now = new Date().toISOString().split('T')[0]
-  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-`
-  for (const region of SEO_REGIONS) {
-    for (const treatment of SEO_TREATMENTS) {
-      const isPriorityCombo =
-        PRIORITY_REGION_SLUGS.includes(region.slug) &&
-        PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
-      const priority = isPriorityCombo ? '0.85' : '0.65'
-      xml += `  <url><loc>${SITE_URL}/best/${region.slug}-${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>\n`
-    }
-  }
-  xml += '</urlset>'
+</urlset>`
   return xmlResponse(xml, 86400)
 })
 
