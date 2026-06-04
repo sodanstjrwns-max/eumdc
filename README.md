@@ -86,8 +86,21 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 🎯 SEO 정밀 다이어트 (2026-06-04)
+GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어웨이 페이지) 정리:
+- **색인 대상 축소**: 사이트맵 URL ~700 → ~304개. 매트릭스는 우선조합 **7지역 × 4진료 = 28페이지**만 색인.
+  - 우선 지역: `myeongji, myeongji-ocean, gangseo, noksan, sinho, eco-delta, jangyu`
+  - 우선 진료: `implant, invisalign, laminate, orthodontics`
+- **noindex 처리 (HTML `<meta name="robots" content="noindex, nofollow">`)**:
+  - 비우선 매트릭스 페이지 (우선조합 외 모든 `/regions/:r/:t`)
+  - 전체 가격 페이지 (`/regions/:r/:t/cost`, 135개)
+  - 전체 추천/비교 페이지 (`/best/:slug`, 135개) + `/best` 목록
+- **사이트맵 정리**: `sitemap-cost.xml`, `sitemap-best.xml`을 빈 urlset으로 변경하고 마스터 인덱스(`sitemap.xml`) 및 `robots.txt`에서 제거. `sitemap-matrix.xml`은 28개 우선 URL만 출력.
+- 우선조합 28페이지는 `index, follow`로 정상 색인 유지.
+- 📌 후속 권장: GSC에서 sitemap 재제출 + 핵심 28페이지 색인 요청. (`sitemap-dictionary.xml`이 219 URL로 남아있어 향후 추가 다이어트 후보.)
+
 ## 📦 배포
 - **Platform**: Cloudflare Pages (project: `eumdc`)
 - **Status**: ✅ Active
 - **Stack**: Hono 4 + Vite 6 + TypeScript + TailwindCSS(CDN) + GSAP(CDN) + Cloudflare D1/R2
-- **Last Updated**: 2026-04-19
+- **Last Updated**: 2026-06-04
