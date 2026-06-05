@@ -86,6 +86,16 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 📚 용어사전 콘텐츠 전면 강화 (2026-06-05)
+GSC "Discovered – not indexed"에 묶여있던 용어사전 219페이지의 근본 원인(=빈약/도배성 본문) 해결:
+- **문제**: `dict_terms.full_desc`가 용어당 평균 100자(한 문장)뿐 → 페이지 간 차별성 부족, 구글 색인 거부.
+- **해결**: GPT-5 기반으로 **219개 용어 전체에 고유·구조화 HTML 본문 생성**.
+  - 구조: 핵심 정의 단락 + `<h3>원리/특징` + `<h3>적응증/관련상황(목록)` + `<h3>알아두면 좋은 점`
+  - 결과: `full_desc` 평균 길이 **100자 → 648자** (최소 535 / 최대 820), 본문 중복 0건, h3 구조 100% 적용.
+- **적용 방식**: `migrations/0101_dict_rich_content.sql` (219 UPDATE문)을 D1 로컬·프로덕션에 직접 실행. 런타임 D1 조회라 재배포 불필요.
+- 용어 페이지는 이미 `index, follow` + `sitemap-dictionary.xml`(219 URL)에 포함되어 있어, 본문만 보강하면 색인 가능성 대폭 상승.
+- 생성 스크립트: `scripts/gen-dict-content.mjs` (재실행/이어받기 지원).
+
 ## 🎯 SEO 정밀 다이어트 (2026-06-04)
 GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어웨이 페이지) 정리:
 - **색인 대상 축소**: 사이트맵 URL ~700 → ~304개. 매트릭스는 우선조합 **7지역 × 4진료 = 28페이지**만 색인.
@@ -103,4 +113,4 @@ GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어�
 - **Platform**: Cloudflare Pages (project: `eumdc`)
 - **Status**: ✅ Active
 - **Stack**: Hono 4 + Vite 6 + TypeScript + TailwindCSS(CDN) + GSAP(CDN) + Cloudflare D1/R2
-- **Last Updated**: 2026-06-04
+- **Last Updated**: 2026-06-05
