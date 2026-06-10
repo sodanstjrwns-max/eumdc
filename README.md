@@ -86,6 +86,14 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 🔗 색인 촉진: 내부링크 + 매트릭스 차별화 (2026-06-10)
+GSC 진단 결과 "발견-색인안됨 270 → 0"(다이어트 성공)이나 "크롤링됨-색인안됨 41" 잔존. 두 가지 근본 원인 해결:
+- **① 핵심 페이지 고립 해소**: 홈페이지에 지역×진료 내부링크 허브(`#section-region-hub`) 추가. 홈→`/regions/*` 링크 **0→28개**, 홈→`/treatments/*` **0→4개**. 구글 크롤러가 핵심 28매트릭스+4진료 페이지로 직접 진입 가능.
+- **② 매트릭스 도배성 해소**: 28개 매트릭스 페이지(7지역×4진료)가 지역명만 다른 95.6% 동일 콘텐츠였음. GPT-5로 **지역별 고유 본문**(교통·생활권·거주특성 반영) 생성해 주입 → 페이지 유사도 **95.6%→76%**(본문만 비교 시 30%).
+  - 데이터: `src/data/matrix-local-content.ts` (28개), 생성 스크립트: `scripts/gen-matrix-content.mjs`
+  - 렌더: `region-treatment.tsx`의 `.rt-local` 섹션
+- 📌 후속(원장님): GSC 사이트맵 재제출 + 주소변경(도메인 이전) 신고 확인 + 핵심 페이지 색인 요청.
+
 ## 📚 용어사전 콘텐츠 전면 강화 (2026-06-05)
 GSC "Discovered – not indexed"에 묶여있던 용어사전 219페이지의 근본 원인(=빈약/도배성 본문) 해결:
 - **문제**: `dict_terms.full_desc`가 용어당 평균 100자(한 문장)뿐 → 페이지 간 차별성 부족, 구글 색인 거부.
@@ -113,4 +121,4 @@ GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어�
 - **Platform**: Cloudflare Pages (project: `eumdc`)
 - **Status**: ✅ Active
 - **Stack**: Hono 4 + Vite 6 + TypeScript + TailwindCSS(CDN) + GSAP(CDN) + Cloudflare D1/R2
-- **Last Updated**: 2026-06-05
+- **Last Updated**: 2026-06-10
