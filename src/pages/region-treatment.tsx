@@ -1,5 +1,6 @@
 import { subPageLayout } from './layout'
 import { RegionInfo, TreatmentInfo, SEO_REGIONS_MAP, SEO_TREATMENTS } from '../data/seo-matrix'
+import { MATRIX_LOCAL_CONTENT } from '../data/matrix-local-content'
 
 /**
  * 🎯 지역×진료 매트릭스 페이지 (SSR 풍부 콘텐츠)
@@ -16,6 +17,9 @@ export function regionTreatmentPage(region: RegionInfo, treatment: TreatmentInfo
   const h1 = `${region.name} ${treatment.name}`
   const titleVariants = region.searchVariants.slice(0, 3).join('·')
   const treatmentVariants = treatment.searchVariants.slice(0, 4)
+
+  // 지역×진료 고유 본문 (도배성 방지 — 페이지별 차별화 콘텐츠)
+  const localContent = MATRIX_LOCAL_CONTENT[`${region.slug}__${treatment.slug}`]
 
   // 인근 지역에서 같은 진료 받기 (내부 링크)
   const nearbyRegions = region.nearbyAreas
@@ -93,6 +97,15 @@ export function regionTreatmentPage(region: RegionInfo, treatment: TreatmentInfo
           </p>
         </div>
       </section>
+
+      {/* ───────── 지역 특화 콘텐츠 (페이지별 고유 본문) ───────── */}
+      {localContent && (
+        <section class="rt-local">
+          <div class="container-wide">
+            <div class="rt-local-content" dangerouslySetInnerHTML={{ __html: localContent }}></div>
+          </div>
+        </section>
+      )}
 
       {/* ───────── 왜 이음치과? (E-E-A-T 신호) ───────── */}
       <section class="rt-why">

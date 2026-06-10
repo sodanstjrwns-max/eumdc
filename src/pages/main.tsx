@@ -2,6 +2,8 @@
  *  Flow: Question → Insight → Aha → Therefore → Proof
  *  "Why is the dentist so scary?" → "Because you can't see" → "We show everything" → Trust
  */
+import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP, PRIORITY_REGION_SLUGS, PRIORITY_TREATMENT_SLUGS } from '../data/seo-matrix'
+
 export function mainPage() {
   return (
     <div id="app">
@@ -629,6 +631,44 @@ export function mainPage() {
                 <div class="transport-item"><span class="transport-label">버스</span><p>국민은행명지국제신도시지점 정류장<br/>강서구 8, 8-1, 21, 124 (도보 1분)</p></div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 지역×진료 내부링크 허브 — SEO 크롤 경로 확보 (고립 페이지 방지) */}
+      <section class="section region-hub" id="section-region-hub" aria-label="지역별 진료 안내">
+        <div class="container-wide">
+          <span class="section-label">08 — AREA GUIDE</span>
+          <h2 class="region-hub-title">우리 동네 진료 안내</h2>
+          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·인비절라인·라미네이트·치아교정 안내를 확인하세요.</p>
+
+          {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
+            const t = SEO_TREATMENTS_MAP[tSlug]
+            if (!t) return null
+            return (
+              <div class="region-hub-block">
+                <h3 class="region-hub-treatment">
+                  <a href={`/treatments/${t.slug}`}>{t.name}</a>
+                  <span class="region-hub-benefit">{t.shortBenefit}</span>
+                </h3>
+                <ul class="region-hub-links">
+                  {PRIORITY_REGION_SLUGS.map((rSlug) => {
+                    const r = SEO_REGIONS_MAP[rSlug]
+                    if (!r) return null
+                    return (
+                      <li>
+                        <a href={`/regions/${r.slug}/${t.slug}`}>{r.name} {t.name}</a>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            )
+          })}
+
+          <div class="region-hub-more">
+            <a href="/treatments" class="region-hub-morelink">전체 진료 안내 →</a>
+            <a href="/dictionary" class="region-hub-morelink">치과 용어 백과사전 →</a>
           </div>
         </div>
       </section>
