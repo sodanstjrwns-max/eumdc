@@ -86,6 +86,16 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## ⚡ Core Web Vitals 튜닝 (2026-06-11)
+LCP/CLS/전송 바이트 최적화 라운드:
+- **폰트 다이어트**: Google Fonts `@import` 이중 로딩 제거(style.css/admin.css), Noto Sans KR weight 200·900 컷(미사용) → 8종→6종. `media="print" onload` 패턴으로 폰트 CSS 비차단 로딩 + noscript 폴백.
+- **갤러리 이미지 WebP 전환**: photo_1~9 JPG(1.1MB) → 1200px WebP(356KB, **-68%**). 모든 `<img>`에 width/height 명시(CLS 0 방지) + `decoding="async"`.
+- **CSS/JS 미니파이 빌드 스텝**: `scripts/minify-static.mjs` (esbuild, postbuild) — dist/static 901KB → 586KB(**-35%**). 소스는 가독성 유지.
+- **스크립트 전부 defer**: app.js/sub.js/gsap-init.js 파서 차단 제거. 캐시버스팅 `?v=20260611b` 통일.
+- **LCP 힌트**: 블로그 썸네일·의료진 프로필 히어로 이미지에 `fetchpriority="high"`.
+- **`public/_headers`**: `/static/*` → `Cache-Control: public, max-age=31536000, immutable` (반복 방문 즉시 로드).
+- **nav/footer 심볼**: 1017px PNG(28KB) → 112px WebP(8KB).
+
 ## 🤖 SEO/AEO 머신 업그레이드 (2026-06-11)
 "보이는 콘텐츠 = 구조화 데이터" 원칙으로 클로킹 리스크를 제거하고, AI 검색엔진(AEO) 인용 가능성을 극대화:
 - **① FAQ 페이지 진짜 SSR 전환**: 기존 `sr-only` 숨김 콘텐츠 + JS-only 렌더링(클로킹 오인 리스크) → `<details>` 기반 가시 SSR 콘텐츠가 기본. JS는 검색/필터 향상만 담당. 크롤러·AI·사용자가 100% 동일 콘텐츠를 봄.
