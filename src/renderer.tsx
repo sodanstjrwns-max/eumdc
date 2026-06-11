@@ -36,14 +36,23 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
         {/* 폰트 preconnect + preload (CLS 방지) */}
+        {/* 폰트: weight 다이어트 (Noto 200/900 제거) + 비차단 로딩 (LCP 개선) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+          media="print"
+          onload="this.media='all'"
+        />
+        <noscript>
+          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+        </noscript>
 
         {/* CSS — versioned to bust edge cache */}
-        <link href="/static/style.css?v=20260611a" rel="stylesheet" />
-        <link href="/static/style-patch.css?v=20260611a" rel="stylesheet" />
+        <link href="/static/style.css?v=20260611b" rel="stylesheet" />
+        <link href="/static/style-patch.css?v=20260611b" rel="stylesheet" />
 
         {/* GSAP for advanced animations */}
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>

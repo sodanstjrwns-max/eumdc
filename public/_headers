@@ -1,0 +1,11 @@
+# Cloudflare Pages 정적 자산 캐시 정책 — Core Web Vitals (반복 방문 TTFB/LCP)
+# 버전 쿼리(?v=)로 캐시 버스팅하므로 장기 캐시 안전
+
+/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+
+/manifest.json
+  Cache-Control: public, max-age=86400

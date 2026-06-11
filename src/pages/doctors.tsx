@@ -101,7 +101,7 @@ export function doctorDetailPage(slug: string, doctor?: any) {
           <div class="doctor-profile-grid">
             <div class="doctor-profile-photo">
               {doctor.photo ? (
-                <img src={doctor.photo} alt={`${doctor.name} ${doctor.title || '원장'}`} loading="eager" />
+                <img src={doctor.photo} alt={`${doctor.name} ${doctor.title || '원장'}`} loading="eager" fetchpriority="high" decoding="async" />
               ) : (
                 <div class="doctor-photo-placeholder large">
                   <span>{doctor.name?.charAt(0) || 'D'}</span>

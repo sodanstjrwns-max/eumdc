@@ -113,12 +113,12 @@ export function missionPage() {
         <div class="container-wide">
           <h2 class="mission-section-title">병원 둘러보기</h2>
           <div class="gallery-masonry">
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_7.jpg" alt="이음치과 접수 공간" loading="lazy" /><span>RECEPTION</span></div>
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_8.jpg" alt="이음치과 대기실" loading="lazy" /><span>WAITING AREA</span></div>
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_6.jpg" alt="이음치과 진료실" loading="lazy" /><span>TREATMENT ROOM</span></div>
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_4.jpg" alt="이음치과 내부" loading="lazy" /><span>INTERIOR</span></div>
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_9.jpg" alt="이음치과 편의공간" loading="lazy" /><span>AMENITY</span></div>
-            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_1.jpg" alt="이음치과 로비" loading="lazy" /><span>LOBBY</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_7.webp" alt="이음치과 접수 공간" width="1200" height="800" loading="lazy" decoding="async" /><span>RECEPTION</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_8.webp" alt="이음치과 대기실" width="1200" height="800" loading="lazy" decoding="async" /><span>WAITING AREA</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_6.webp" alt="이음치과 진료실" width="1200" height="801" loading="lazy" decoding="async" /><span>TREATMENT ROOM</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_4.webp" alt="이음치과 내부" width="1200" height="801" loading="lazy" decoding="async" /><span>INTERIOR</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_9.webp" alt="이음치과 편의공간" width="1200" height="801" loading="lazy" decoding="async" /><span>AMENITY</span></div>
+            <div class="gallery-masonry-item" data-reveal><img src="/static/img/photo_1.webp" alt="이음치과 로비" width="1200" height="800" loading="lazy" decoding="async" /><span>LOBBY</span></div>
           </div>
         </div>
       </section>

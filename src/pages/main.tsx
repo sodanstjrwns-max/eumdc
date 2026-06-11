@@ -18,7 +18,7 @@ export function mainPage() {
       {/* === NAVIGATION === */}
       <nav id="nav">
         <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
-          <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="40" height="44" loading="eager" />
+          <img src="/static/images/symbol-112.webp" alt="" class="nav-brand-symbol" width="40" height="44" loading="eager" />
           <span class="nav-brand-mark">이음치과</span>
           <span class="nav-brand-sub">IEUM · EST.2025</span>
         </a>
@@ -314,18 +314,18 @@ export function mainPage() {
       {/* GALLERY STRIP */}
       <div class="gallery-strip">
         <div class="gallery-track">
-          <div class="gallery-item" data-hover><img src="/static/img/photo_7.jpg" alt="이음치과 접수" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_8.jpg" alt="이음치과 대기실" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_6.jpg" alt="이음치과 진료실" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_4.jpg" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_9.jpg" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_1.jpg" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.jpg" alt="" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.jpg" alt="" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.jpg" alt="" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.jpg" alt="" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.jpg" alt="" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.jpg" alt="" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_7.webp" width="1200" height="800" alt="이음치과 접수" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_8.webp" width="1200" height="800" alt="이음치과 대기실" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_6.webp" width="1200" height="801" alt="이음치과 진료실" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_4.webp" width="1200" height="801" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_9.webp" width="1200" height="801" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
+          <div class="gallery-item" data-hover><img src="/static/img/photo_1.webp" width="1200" height="800" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
         </div>
       </div>
 
@@ -416,7 +416,7 @@ export function mainPage() {
           <div class="director-layout">
             <div class="director-visual">
               <div class="director-frame" data-hover>
-                <img src="/static/img/photo_5.jpg" alt="이음치과의원 대표원장 최효영" class="director-photo" width="400" height="500" />
+                <img src="/static/img/photo_5.webp" alt="이음치과의원 대표원장 최효영" class="director-photo" width="900" height="1260" loading="lazy" decoding="async" />
               </div>
             </div>
             <div class="director-info">
@@ -703,7 +703,7 @@ export function mainPage() {
           <div class="footer-top-grid">
             <div class="footer-brand-col">
               <div class="footer-brand-logo">
-                <img src="/static/images/symbol.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
+                <img src="/static/images/symbol-112.webp" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
                 <div class="footer-brand-text">
                   <div class="footer-brand-big">이음치과</div>
                   <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
@@ -775,9 +775,9 @@ export function mainPage() {
         </a>
       </div>
 
-      <script src="/static/app.js"></script>
-      <script src="/static/gsap-init.js"></script>
-      <script src="/static/scroll-perf-patch.js" defer></script>
+      <script src="/static/app.js?v=20260611b" defer></script>
+      <script src="/static/gsap-init.js?v=20260611b" defer></script>
+      <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>
       <script dangerouslySetInnerHTML={{__html: "document.getElementById('footerYear').textContent = new Date().getFullYear();"}} />
     </div>
   )

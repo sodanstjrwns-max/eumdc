@@ -153,7 +153,7 @@ export function blogDetailPage(
 
             {blog.thumbnail && (
               <figure class="blog-article-hero">
-                <img src={blog.thumbnail} alt={blog.title} loading="eager" />
+                <img src={blog.thumbnail} alt={blog.title} loading="eager" fetchpriority="high" decoding="async" />
               </figure>
             )}
 

@@ -2,7 +2,7 @@
    이음치과 — Admin Dashboard Styles
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap');
+/* 폰트는 admin.tsx <link>에서 로드 — @import 제거 */
 
 :root {
   --bg: #0a1128;

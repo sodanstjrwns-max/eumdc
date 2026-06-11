@@ -4,7 +4,7 @@
    Final Polish: Movie-Trailer Tone Unity
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;400;500;600;700;800;900&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap');
+/* 폰트는 renderer.tsx <link rel=preload+stylesheet>에서 로드 — @import 이중 로딩 제거 (LCP 개선) */
 
 /* Font loading optimization — prevent CLS */
 .fonts-loading {
@@ -577,7 +577,7 @@ body::after {
 .menu-link {
   font-family: var(--font-kr);
   font-size: clamp(1.8rem, 4.5vw, 3.8rem);
-  font-weight: 200;
+  font-weight: 300;
   color: var(--dark-text);
   padding: 0.2rem 0;
   display: block;
@@ -1723,7 +1723,7 @@ body::after {
 /* Solo word — singular dramatic word with letter-spacing animation */
 .story-text.story-solo {
   font-size: clamp(2.2rem, 5.5vw, 4.5rem);
-  font-weight: 200; letter-spacing: 0.5em;
+  font-weight: 300; letter-spacing: 0.5em;
   color: var(--white-dim);
 }
 .story-text.story-solo.visible {
@@ -1784,7 +1784,7 @@ body::after {
 /* Whisper — ghostly, eerie, barely there — trailer tension */
 .story-text.story-whisper {
   font-size: clamp(1rem, 2.5vw, 1.8rem);
-  font-weight: 200; color: var(--white-muted);
+  font-weight: 300; color: var(--white-muted);
   font-style: italic; letter-spacing: 0.4em;
   text-shadow: 0 0 60px rgba(15,27,45,0.12);
 }

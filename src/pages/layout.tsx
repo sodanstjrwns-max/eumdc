@@ -9,7 +9,7 @@ export function subPageLayout(title: string, children: any) {
       {/* Navigation */}
       <nav id="nav" class="scrolled" role="navigation" aria-label="서브페이지 네비게이션">
         <a href="/" class="nav-brand nav-brand--logo" data-hover aria-label="이음치과의원 홈">
-          <img src="/static/images/symbol.png" alt="" class="nav-brand-symbol" width="36" height="40" loading="eager" />
+          <img src="/static/images/symbol-112.webp" alt="" class="nav-brand-symbol" width="36" height="40" loading="eager" />
           <span class="nav-brand-text">이음치과</span>
         </a>
         <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
@@ -86,7 +86,7 @@ export function subPageLayout(title: string, children: any) {
           <div class="footer-top-grid">
             <div class="footer-brand-col">
               <div class="footer-brand-logo">
-                <img src="/static/images/symbol.png" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
+                <img src="/static/images/symbol-112.webp" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
                 <div class="footer-brand-text">
                   <div class="footer-brand-big">이음치과</div>
                   <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
@@ -158,10 +158,10 @@ export function subPageLayout(title: string, children: any) {
         </a>
       </div>
 
-      <script src="/static/app.js?v=20260423i"></script>
-      <script src="/static/sub.js?v=20260423i"></script>
-      <script src="/static/gsap-init.js?v=20260423i"></script>
-      <script src="/static/scroll-perf-patch.js?v=20260423i" defer></script>
+      <script src="/static/app.js?v=20260611b" defer></script>
+      <script src="/static/sub.js?v=20260611b" defer></script>
+      <script src="/static/gsap-init.js?v=20260611b" defer></script>
+      <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>
     </div>
   )
 }
