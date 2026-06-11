@@ -3,16 +3,18 @@ import { subPageLayout } from './layout'
 type FaqGroup = Record<string, { name: string; faqs: { id: number; question: string; answer: string; category_name: string; category_slug: string }[] }>
 
 export function faqPage(serverGroups?: FaqGroup) {
-  // 서버사이드 noscript용 FAQ HTML 생성 (크롤러/AI가 JS 없이 읽는 콘텐츠)
-  const noscriptHtml = serverGroups ? Object.entries(serverGroups).map(([slug, group]) => {
+  // ✅ 진짜 SSR 가시 콘텐츠 — JS 없이도 크롤러·AI·사용자 모두 동일한 FAQ를 봄
+  //    (이전: sr-only 숨김 + noscript 이중화 → 클로킹 오인 리스크 → 제거)
+  const ssrHtml = serverGroups ? Object.entries(serverGroups).map(([slug, group]) => {
     const faqItems = group.faqs.map((f, i) =>
-      `<div class="faq-item-static" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">` +
-      `<h3 itemprop="name">Q${i + 1}. ${escHtml(f.question)}</h3>` +
-      `<div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">` +
-      `<p itemprop="text">${escHtml(f.answer)}</p>` +
-      `</div></div>`
+      `<details class="faq-ssr-item" id="faq-${f.id}">` +
+      `<summary class="faq-ssr-q"><span class="faq-ssr-num">${String(i + 1).padStart(2, '0')}</span><span class="faq-ssr-q-text">Q. ${escHtml(f.question)}</span></summary>` +
+      `<div class="faq-ssr-a">${escHtml(f.answer).replace(/\n/g, '<br>')}</div>` +
+      `</details>`
     ).join('')
-    return `<section><h2>${escHtml(group.name)} (${group.faqs.length}개)</h2>${faqItems}</section>`
+    return `<section class="faq-ssr-group" data-cat="${escHtml(slug)}">` +
+      `<h2 class="faq-ssr-group-title">${escHtml(group.name)} <span class="faq-ssr-group-count">${group.faqs.length}개</span></h2>` +
+      faqItems + `</section>`
   }).join('') : ''
 
   const totalCount = serverGroups
@@ -55,36 +57,13 @@ export function faqPage(serverGroups?: FaqGroup) {
             </button>
           </div>
 
-          {/* FAQ Content (JS로 동적 렌더링) */}
+          {/* ✅ FAQ Content — 서버사이드 렌더링이 기본 (JS는 검색/필터 인터랙션만 향상)
+              크롤러·AI·사용자가 모두 같은 콘텐츠를 봄 → 클로킹 리스크 0 */}
           <div id="faqContent" class="faq-content" role="tabpanel">
-            <div class="loading-spinner" aria-label="불러오는 중">불러오는 중...</div>
+            {ssrHtml
+              ? <div class="faq-ssr-wrap" id="faqSsrWrap" dangerouslySetInnerHTML={{ __html: ssrHtml }} />
+              : <div class="loading-spinner" aria-label="불러오는 중">불러오는 중...</div>}
           </div>
-
-          {/* 서버사이드 렌더링 (크롤러/AI용 — JS 비활성 시 표시) */}
-          {noscriptHtml && (
-            <noscript>
-              <div class="faq-ssr-content" dangerouslySetInnerHTML={{ __html: noscriptHtml }} />
-            </noscript>
-          )}
-
-          {/* 숨겨진 시맨틱 FAQ (JS 활성이어도 크롤러가 읽는 콘텐츠) */}
-          {serverGroups && (
-            <div class="sr-only" aria-hidden="true" id="faqSsrData">
-              {Object.entries(serverGroups).map(([slug, group]) => (
-                <div key={slug}>
-                  <h2>{group.name}</h2>
-                  {group.faqs.map(f => (
-                    <div key={f.id} itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                      <h3 itemprop="name">{f.question}</h3>
-                      <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <p itemprop="text">{f.answer}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* CTA Banner */}
           <div class="faq-cta-banner">

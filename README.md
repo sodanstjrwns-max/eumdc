@@ -86,6 +86,21 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 🤖 SEO/AEO 머신 업그레이드 (2026-06-11)
+"보이는 콘텐츠 = 구조화 데이터" 원칙으로 클로킹 리스크를 제거하고, AI 검색엔진(AEO) 인용 가능성을 극대화:
+- **① FAQ 페이지 진짜 SSR 전환**: 기존 `sr-only` 숨김 콘텐츠 + JS-only 렌더링(클로킹 오인 리스크) → `<details>` 기반 가시 SSR 콘텐츠가 기본. JS는 검색/필터 향상만 담당. 크롤러·AI·사용자가 100% 동일 콘텐츠를 봄.
+- **② 홈페이지 가시 FAQ 섹션** (`#section-faq`): FAQPage JSON-LD 7문항과 1:1 일치하는 화면 FAQ 추가 (Google 리치결과 정책 — "JSON-LD 콘텐츠는 페이지에 보여야 함" 충족). 데이터 단일 소스: `seo.ts`의 `HOME_FAQS`.
+- **③ 블로그 상세 AEO 강화**:
+  - **TL;DR 핵심 요약 박스** (`.blog-tldr`) — 본문에서 핵심 문장 자동 추출, AI 검색·피처드 스니펫이 우선 인용하는 발췌 블록
+  - **가시 브레드크럼** — BreadcrumbList JSON-LD와 일치
+  - **관련 글 4개 내부링크** — 크롤 경로 + 체류시간 강화
+  - **Speakable 스키마** — 제목+TL;DR을 음성/AI 발췌 대상으로 지정
+- **④ 용어사전 상세**: 가시 FAQ 3문항과 1:1 일치하는 FAQPage JSON-LD 주입 + DefinedTerm에 `alternateName`(영문)·`inLanguage` 보강 → 219페이지 전체 리치결과 자격 확보.
+- **⑤ AI 크롤러 전용 콘텐츠 레이어**:
+  - `/llms-full.txt` — 진료·FAQ 100문항·의료진·최신 블로그 본문 전문 덤프 (llms.txt가 목차라면 이건 본문)
+  - `/blogs/:slug.md` — 블로그 마크다운 원문 엔드포인트 (AI 에이전트 토큰 효율 수집, X-Robots-Tag: noindex로 중복 색인 방지)
+  - robots.txt에 `LLMs-Full:` 라인 추가
+
 ## 🔗 색인 촉진: 내부링크 + 매트릭스 차별화 (2026-06-10)
 GSC 진단 결과 "발견-색인안됨 270 → 0"(다이어트 성공)이나 "크롤링됨-색인안됨 41" 잔존. 두 가지 근본 원인 해결:
 - **① 핵심 페이지 고립 해소**: 홈페이지에 지역×진료 내부링크 허브(`#section-region-hub`) 추가. 홈→`/regions/*` 링크 **0→28개**, 홈→`/treatments/*` **0→4개**. 구글 크롤러가 핵심 28매트릭스+4진료 페이지로 직접 진입 가능.
@@ -121,4 +136,4 @@ GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어�
 - **Platform**: Cloudflare Pages (project: `eumdc`)
 - **Status**: ✅ Active
 - **Stack**: Hono 4 + Vite 6 + TypeScript + TailwindCSS(CDN) + GSAP(CDN) + Cloudflare D1/R2
-- **Last Updated**: 2026-06-10
+- **Last Updated**: 2026-06-11

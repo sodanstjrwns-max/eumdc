@@ -3,6 +3,7 @@
  *  "Why is the dentist so scary?" → "Because you can't see" → "We show everything" → Trust
  */
 import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP, PRIORITY_REGION_SLUGS, PRIORITY_TREATMENT_SLUGS } from '../data/seo-matrix'
+import { HOME_FAQS } from '../seo'
 
 export function mainPage() {
   return (
@@ -669,6 +670,29 @@ export function mainPage() {
           <div class="region-hub-more">
             <a href="/treatments" class="region-hub-morelink">전체 진료 안내 →</a>
             <a href="/dictionary" class="region-hub-morelink">치과 용어 백과사전 →</a>
+          </div>
+        </div>
+      </section>
+
+      {/* 가시 FAQ 섹션 — JSON-LD FAQPage와 1:1 일치 (AEO: AI 검색·구글 리치결과 양쪽 충족) */}
+      <section class="section home-faq" id="section-faq" aria-label="자주 묻는 질문">
+        <div class="container-wide">
+          <span class="section-label">09 — FAQ</span>
+          <h2 class="home-faq-title">자주 묻는 질문</h2>
+          <p class="home-faq-sub">환자분들이 가장 많이 궁금해하시는 질문을 정리했습니다.</p>
+          <div class="home-faq-list">
+            {HOME_FAQS.map((f, i) => (
+              <details class="home-faq-item" open={i === 0}>
+                <summary class="home-faq-q">
+                  <span class="home-faq-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="home-faq-q-text">{f.question}</span>
+                </summary>
+                <p class="home-faq-a">{f.answer}</p>
+              </details>
+            ))}
+          </div>
+          <div class="home-faq-more">
+            <a href="/faq" class="region-hub-morelink">전체 FAQ 보기 →</a>
           </div>
         </div>
       </section>

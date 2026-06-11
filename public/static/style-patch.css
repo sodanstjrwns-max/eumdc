@@ -5737,3 +5737,64 @@ article.case-card:hover .case-card-cta {
 .rt-local-content p { font-size: 16px; line-height: 1.75; color: #333; margin-bottom: 14px; }
 .rt-local-content ul { padding-left: 20px; margin: 12px 0; }
 .rt-local-content li { font-size: 15px; line-height: 1.7; color: #444; margin-bottom: 8px; }
+
+/* ── 홈 FAQ 섹션 (AEO 가시 콘텐츠) ── */
+.home-faq { background: #fff; padding: 80px 0; }
+.home-faq-title { font-size: clamp(28px, 4vw, 44px); font-weight: 800; margin: 12px 0 8px; color: #1a1a1a; }
+.home-faq-sub { font-size: 16px; color: #555; margin-bottom: 36px; line-height: 1.6; }
+.home-faq-list { max-width: 860px; }
+.home-faq-item { border: 1px solid #e5e7eb; border-radius: 14px; margin-bottom: 12px; background: #fafbfc; overflow: hidden; transition: border-color .15s; }
+.home-faq-item[open] { border-color: #0f4c81; background: #fff; }
+.home-faq-q { display: flex; align-items: center; gap: 14px; padding: 18px 22px; cursor: pointer; font-size: 16px; font-weight: 600; color: #1a1a1a; list-style: none; }
+.home-faq-q::-webkit-details-marker { display: none; }
+.home-faq-q::after { content: '+'; margin-left: auto; font-size: 22px; font-weight: 300; color: #0f4c81; transition: transform .2s; }
+.home-faq-item[open] .home-faq-q::after { transform: rotate(45deg); }
+.home-faq-num { font-size: 13px; font-weight: 700; color: #0f4c81; opacity: .7; flex-shrink: 0; }
+.home-faq-q-text { line-height: 1.5; }
+.home-faq-a { padding: 0 22px 20px 58px; font-size: 15px; line-height: 1.75; color: #444; margin: 0; }
+.home-faq-more { margin-top: 28px; }
+@media (max-width: 640px) {
+  .home-faq { padding: 56px 0; }
+  .home-faq-q { padding: 15px 16px; font-size: 15px; gap: 10px; }
+  .home-faq-a { padding: 0 16px 16px 42px; font-size: 14px; }
+}
+
+/* ── FAQ SSR 가시 콘텐츠 (JS 향상 전 기본 표시) ── */
+.faq-ssr-group { margin-bottom: 36px; }
+.faq-ssr-group-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin: 0 0 16px; }
+.faq-ssr-group-count { font-size: 13px; font-weight: 600; color: #0f4c81; opacity: .75; margin-left: 8px; }
+.faq-ssr-item { border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 10px; background: #fff; overflow: hidden; }
+.faq-ssr-item[open] { border-color: #0f4c81; }
+.faq-ssr-q { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; font-size: 15.5px; font-weight: 600; color: #1a1a1a; list-style: none; }
+.faq-ssr-q::-webkit-details-marker { display: none; }
+.faq-ssr-q::after { content: '+'; margin-left: auto; font-size: 20px; font-weight: 300; color: #0f4c81; transition: transform .2s; flex-shrink: 0; }
+.faq-ssr-item[open] .faq-ssr-q::after { transform: rotate(45deg); }
+.faq-ssr-num { font-size: 12px; font-weight: 700; color: #0f4c81; opacity: .7; flex-shrink: 0; }
+.faq-ssr-q-text { line-height: 1.5; }
+.faq-ssr-a { padding: 0 20px 18px 52px; font-size: 14.5px; line-height: 1.75; color: #444; }
+@media (max-width: 640px) {
+  .faq-ssr-q { padding: 14px 14px; font-size: 14.5px; gap: 9px; }
+  .faq-ssr-a { padding: 0 14px 14px 38px; font-size: 14px; }
+}
+
+/* ── 블로그 브레드크럼 / TL;DR / 관련 글 ── */
+.blog-breadcrumb { font-size: 13px; color: #888; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.blog-breadcrumb a { color: #0f4c81; text-decoration: none; }
+.blog-breadcrumb a:hover { text-decoration: underline; }
+.blog-breadcrumb > span:last-child { color: #666; max-width: 50vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blog-tldr { background: #f4f8fc; border-left: 4px solid #0f4c81; border-radius: 0 12px 12px 0; padding: 22px 26px; margin: 0 0 32px; }
+.blog-tldr-title { font-size: 15px; font-weight: 800; color: #0f4c81; margin: 0 0 12px; letter-spacing: .02em; }
+.blog-tldr-list { margin: 0; padding-left: 18px; }
+.blog-tldr-list li { font-size: 15px; line-height: 1.7; color: #2a3a4a; margin-bottom: 8px; }
+.blog-tldr-list li:last-child { margin-bottom: 0; }
+.blog-related { max-width: 760px; margin: 56px auto 0; }
+.blog-related-title { font-size: 22px; font-weight: 800; color: #1a1a1a; margin-bottom: 20px; }
+.blog-related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
+.blog-related-card { text-decoration: none; display: block; }
+.blog-related-thumb { aspect-ratio: 16/10; border-radius: 10px; overflow: hidden; background: #eef1f5; margin-bottom: 10px; }
+.blog-related-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .25s; }
+.blog-related-card:hover .blog-related-thumb img { transform: scale(1.04); }
+.blog-related-thumb-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #b8c2cf; font-size: 13px; font-weight: 600; }
+.blog-related-card-title { font-size: 14.5px; font-weight: 600; color: #1a1a1a; line-height: 1.45; margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.blog-related-card:hover .blog-related-card-title { color: #0f4c81; }
+.blog-related-date { font-size: 12px; color: #999; }

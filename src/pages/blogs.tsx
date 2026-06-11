@@ -66,10 +66,29 @@ export function blogsPage(blogs?: any[]) {
   ))
 }
 
+/** 본문에서 TL;DR 핵심 요약 문장 추출 (AEO — AI 답변 인용 최적화) */
+function extractKeySentences(content?: string, max = 3): string[] {
+  if (!content) return []
+  const text = content
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^\s*[-*+>]\s+/gm, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^안녕하세요[^.!?]*[.!?]\s*/, '')
+  const sentences = text.split(/(?<=[.!?다요])\s+/).filter(s => s.length >= 20 && s.length <= 150)
+  return sentences.slice(0, max)
+}
+
 export function blogDetailPage(
   id: string,
   blog?: any,
-  dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>
+  dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>,
+  relatedBlogs?: any[]
 ) {
   if (!blog) {
     return subPageLayout('BLOG', (
@@ -98,12 +117,17 @@ export function blogDetailPage(
   if (dictTerms && dictTerms.length > 0) {
     contentHtml = linkDictionaryTerms(contentHtml, dictTerms)
   }
+  // TL;DR 핵심 요약 (AEO — AI 검색엔진이 우선 인용하는 발췌 가능 블록)
+  const keySentences = extractKeySentences(blog.content)
 
   return subPageLayout('BLOG', (
     <div class="page-blog-detail">
       <section class="page-hero-mini">
         <div class="container-wide">
-          <a href="/blogs" class="back-link" data-hover>← 목록으로</a>
+          {/* 가시 브레드크럼 — BreadcrumbList JSON-LD와 일치 (리치결과 + 크롤 경로) */}
+          <nav class="breadcrumb blog-breadcrumb" aria-label="브레드크럼">
+            <a href="/">홈</a><span class="bc-sep">/</span><a href="/blogs">블로그</a><span class="bc-sep">/</span><span>{blog.title}</span>
+          </nav>
         </div>
       </section>
       <section class="blog-detail-section">
@@ -131,6 +155,16 @@ export function blogDetailPage(
               <figure class="blog-article-hero">
                 <img src={blog.thumbnail} alt={blog.title} loading="eager" />
               </figure>
+            )}
+
+            {/* TL;DR 핵심 요약 — AEO: AI 검색·피처드 스니펫이 우선 인용하는 블록 */}
+            {keySentences.length >= 2 && (
+              <aside class="blog-tldr" id="blog-key-summary" aria-label="핵심 요약">
+                <h2 class="blog-tldr-title">핵심 요약</h2>
+                <ul class="blog-tldr-list">
+                  {keySentences.map(s => <li>{s}</li>)}
+                </ul>
+              </aside>
             )}
 
             <div class="blog-article-body" dangerouslySetInnerHTML={{ __html: contentHtml }} />
@@ -170,6 +204,26 @@ export function blogDetailPage(
               <a href="/blogs" class="back-to-list">← 블로그 목록으로</a>
             </footer>
           </article>
+
+          {/* 관련 글 — 내부링크 강화 (크롤 경로 + 체류시간) */}
+          {relatedBlogs && relatedBlogs.length > 0 && (
+            <section class="blog-related" aria-label="관련 글">
+              <h2 class="blog-related-title">함께 보면 좋은 글</h2>
+              <div class="blog-related-grid">
+                {relatedBlogs.map((rb: any) => (
+                  <a href={`/blogs/${rb.slug || rb.id}`} class="blog-related-card">
+                    <div class="blog-related-thumb">
+                      {rb.thumbnail
+                        ? <img src={rb.thumbnail} alt={rb.title} loading="lazy" />
+                        : <div class="blog-related-thumb-ph"><span>이음치과</span></div>}
+                    </div>
+                    <h3 class="blog-related-card-title">{rb.title}</h3>
+                    <span class="blog-related-date">{formatDate(rb.created_at)}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </section>
     </div>
