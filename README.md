@@ -86,6 +86,17 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 🔐 보안 하드닝 라운드 (2026-06-12)
+프로젝트 전체 검토 후 보안·자산 개선:
+- **AUTH_SECRET fail-closed**: `'fallback-secret'` 폴백 전면 제거 — 시크릿 미설정(16자 미만) 시 모든 인증을 거부(503/401). 공개 소스의 고정 문자열로 세션 쿠키를 위조할 수 있던 이론적 경로 차단. (admin auth.ts + user users.ts 전체)
+- **로그인 브루트포스 방어**: D1 기반 IP rate limit — 15분 윈도우 10회 초과 시 429. 어드민 로그인 + 사용자 로그인 모두 적용. `login_attempts` 테이블 (migration 0102). 검증: 12연속 시도 → 9회째부터 429 확인.
+- **예약 API 스팸 방어** (`/api/reservations`):
+  - Honeypot `website` 필드 — 봇이 채우면 가짜 성공 응답 후 DB 저장 안 함 (검증 완료)
+  - IP rate limit (15분 10회)
+  - 입력 길이 제한 (name 50자 / message 2000자 / treatment_type 100자)
+- **JSON-LD 이미지 WebP 통일**: seo.ts에 남아있던 photo_5/7/8 `.jpg` 참조 3곳 → `.webp` (구조화데이터-실파일 일치)
+- **미사용 JPG 9장 삭제**: `public/static/img/photo_*.jpg` (~1.1MB) — 모든 참조가 WebP로 전환 완료되어 dist에서 제외
+
 ## 🤖 업로드 자동 최적화 (2026-06-12) — CWV 다이어트 영구 유지
 관리자가 어떤 크기의 이미지를 올려도 자동으로 최적화되는 근본 해결:
 - **클라이언트 자동 변환** (`admin.js optimizeImage`): 업로드 직전 Canvas로 최대 1600px 리사이즈 + WebP(quality 0.82) 변환. 검증: 5.7MB PNG → **20KB WebP** 자동 변환 확인.
