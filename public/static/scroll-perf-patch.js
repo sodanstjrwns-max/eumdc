@@ -39,9 +39,10 @@
   document.documentElement.setAttribute('data-scroll-dir', 'down');
 
   // ─── 2. ScrollTrigger 로드 후 실행되는 보정 ───
-  function waitForST(cb) {
+  function waitForST(cb, tries) {
+    tries = tries || 0;
     if (window.ScrollTrigger) return cb();
-    setTimeout(function () { waitForST(cb); }, 120);
+    if (tries < 40) setTimeout(function () { waitForST(cb, tries + 1); }, 120); // ~5초 후 포기
   }
 
   waitForST(function () {

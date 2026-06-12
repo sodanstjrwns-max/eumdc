@@ -54,9 +54,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <link href="/static/style.css?v=20260611b" rel="stylesheet" />
         <link href="/static/style-patch.css?v=20260611b" rel="stylesheet" />
 
-        {/* GSAP for advanced animations */}
-        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
-        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
+        {/* GSAP은 홈(main.tsx)에서만 로드 — 서브페이지는 app.js IntersectionObserver로 충분 */}
 
         {/* 동적 SEO 메타 + JSON-LD */}
         {raw(seoHead)}

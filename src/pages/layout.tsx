@@ -158,9 +158,9 @@ export function subPageLayout(title: string, children: any) {
         </a>
       </div>
 
+      {/* 서브페이지: GSAP/gsap-init 미로드 — app.js IntersectionObserver 리빌로 충분 (-180KB) */}
       <script src="/static/app.js?v=20260611b" defer></script>
       <script src="/static/sub.js?v=20260611b" defer></script>
-      <script src="/static/gsap-init.js?v=20260611b" defer></script>
       <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>
     </div>
   )

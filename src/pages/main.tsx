@@ -775,6 +775,9 @@ export function mainPage() {
         </a>
       </div>
 
+      {/* GSAP — 시네마틱 엔진은 홈 전용 (서브페이지 전송량 -130KB) */}
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
+      <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
       <script src="/static/app.js?v=20260611b" defer></script>
       <script src="/static/gsap-init.js?v=20260611b" defer></script>
       <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>

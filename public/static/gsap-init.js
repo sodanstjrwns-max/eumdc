@@ -12,11 +12,12 @@
 (function () {
   'use strict';
 
-  function waitForGsap(cb) {
+  function waitForGsap(cb, tries) {
+    tries = tries || 0;
     if (window.gsap && window.ScrollTrigger) {
       cb();
-    } else {
-      setTimeout(function () { waitForGsap(cb); }, 100);
+    } else if (tries < 50) { // 5초 안에 GSAP 없으면 포기 (GSAP 미로드 페이지 무한 폴링 방지)
+      setTimeout(function () { waitForGsap(cb, tries + 1); }, 100);
     }
   }
 
