@@ -52,7 +52,7 @@ export function treatmentsPage() {
 }
 
 /** 진료과목 상세 페이지 (SSR-first for SEO) */
-export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any) {
+export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any, prices?: any[]) {
   // benefits / process_steps / content_sections는 JSON 문자열 → 안전 파싱
   const safeParse = (s: any): any[] => {
     if (!s) return []
@@ -64,6 +64,7 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
   const contentSections = safeParse(treatment?.content_sections)
   const subtitle = treatment?.hero_subtitle || treatment?.short_desc || ''
   const overview = treatment?.overview || ''
+  const ssrPrices = prices || []
 
   return subPageLayout('TREATMENT', (
     <div class="page-treatment-detail">
@@ -158,6 +159,33 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
             <div class="container-wide">
               <h2 class="treat-section-title">진료 시 유의사항</h2>
               <div class="treat-warnings-body" dangerouslySetInnerHTML={{ __html: treatment.warnings }}></div>
+            </div>
+          </section>
+        )}
+
+        {/* 💰 가격표 SSR — 크롤러·AI가 JS 없이 즉시 읽는 수가 정보 (AEO 핵심) */}
+        {ssrPrices.length > 0 && (
+          <section class="treat-section treat-prices-ssr bg-alt" id="treat-price-section">
+            <div class="container-wide">
+              <h2 class="treat-section-title">{treatmentName} 비용 안내</h2>
+              <div class="treat-price-table">
+                <table>
+                  <thead>
+                    <tr><th>항목</th><th>비용</th><th>보험</th><th>비고</th></tr>
+                  </thead>
+                  <tbody>
+                    {ssrPrices.map((p: any) => (
+                      <tr>
+                        <td>{p.item_name}</td>
+                        <td class="price-val">{p.price_text || '-'}</td>
+                        <td>{p.insurance_covered ? <span class="badge-ins">보험적용</span> : '-'}</td>
+                        <td>{p.note || ''}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p class="treat-price-note">※ 환자 상태에 따라 비용이 달라질 수 있습니다. 정확한 비용은 CBCT 진단 후 상담 시 안내해 드립니다. <a href="/prices">전체 진료 비용 안내 →</a></p>
             </div>
           </section>
         )}

@@ -5798,3 +5798,24 @@ article.case-card:hover .case-card-cta {
 .blog-related-card-title { font-size: 14.5px; font-weight: 600; color: #1a1a1a; line-height: 1.45; margin: 0 0 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .blog-related-card:hover .blog-related-card-title { color: #0f4c81; }
 .blog-related-date { font-size: 12px; color: #999; }
+
+/* ===== Prices page (/prices) ===== */
+.page-prices .treat-section { padding: 56px 0; }
+.prices-tldr { padding: 48px 0 8px; }
+.prices-tldr-box { background: #f4f7fb; border: 1px solid #dde6f0; border-left: 4px solid #0f4c81; border-radius: 12px; padding: 24px 28px; }
+.prices-tldr-box h2 { font-size: 17px; font-weight: 700; color: #0f4c81; margin: 0 0 12px; }
+.prices-tldr-list { list-style: none; margin: 0; padding: 0; }
+.prices-tldr-list li { padding: 7px 0; font-size: 14.5px; color: #333; border-bottom: 1px dashed #dde6f0; line-height: 1.6; }
+.prices-tldr-list li:last-child { border-bottom: none; }
+.prices-tldr-list a { color: #0f4c81; font-weight: 600; text-decoration: none; }
+.prices-tldr-list a:hover { text-decoration: underline; }
+.prices-tldr-note { margin-top: 12px; font-size: 12.5px; color: #888; }
+.prices-group { scroll-margin-top: 90px; }
+.prices-disclaimer-list { list-style: none; margin: 0; padding: 0; }
+.prices-disclaimer-list li { position: relative; padding: 6px 0 6px 22px; font-size: 13.5px; color: #555; line-height: 1.65; }
+.prices-disclaimer-list li::before { content: '·'; position: absolute; left: 6px; color: #0f4c81; font-weight: 700; }
+.prices-faq .faq-ssr-item { max-width: 860px; margin-left: auto; margin-right: auto; }
+@media (max-width: 768px) {
+  .prices-tldr-box { padding: 18px 16px; }
+  .prices-tldr-list li { font-size: 13.5px; }
+}

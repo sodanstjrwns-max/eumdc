@@ -50,11 +50,12 @@ export function subPageLayout(title: string, children: any) {
             <a href="/doctors" class="menu-link" data-hover data-index="02"><span data-text="의료진">의료진</span></a>
             <a href="/treatments" class="menu-link" data-hover data-index="03"><span data-text="진료 안내">진료 안내</span></a>
             <a href="/cases" class="menu-link" data-hover data-index="04"><span data-text="비포애프터">비포애프터</span></a>
-            <a href="/blogs" class="menu-link" data-hover data-index="05"><span data-text="블로그">블로그</span></a>
-            <a href="/faq" class="menu-link" data-hover data-index="06"><span data-text="자주 묻는 질문">자주 묻는 질문</span></a>
-            <a href="/dictionary" class="menu-link" data-hover data-index="07"><span data-text="백과사전">백과사전</span></a>
-            <a href="/visit" class="menu-link" data-hover data-index="08"><span data-text="내원 안내">내원 안내</span></a>
-            <a href="/notices" class="menu-link" data-hover data-index="09"><span data-text="공지사항">공지사항</span></a>
+            <a href="/prices" class="menu-link" data-hover data-index="05"><span data-text="비용 안내">비용 안내</span></a>
+            <a href="/blogs" class="menu-link" data-hover data-index="06"><span data-text="블로그">블로그</span></a>
+            <a href="/faq" class="menu-link" data-hover data-index="07"><span data-text="자주 묻는 질문">자주 묻는 질문</span></a>
+            <a href="/dictionary" class="menu-link" data-hover data-index="08"><span data-text="백과사전">백과사전</span></a>
+            <a href="/visit" class="menu-link" data-hover data-index="09"><span data-text="내원 안내">내원 안내</span></a>
+            <a href="/notices" class="menu-link" data-hover data-index="10"><span data-text="공지사항">공지사항</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
@@ -108,6 +109,7 @@ export function subPageLayout(title: string, children: any) {
             <div class="footer-nav-col">
               <h4>진료</h4>
               <a href="/treatments">진료 안내</a>
+              <a href="/prices">비용 안내</a>
               <a href="/doctors">의료진 소개</a>
               <a href="/cases">비포애프터</a>
             </div>

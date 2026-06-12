@@ -50,11 +50,12 @@ export function mainPage() {
             <a href="/doctors" class="menu-link" data-hover data-index="02"><span>의료진</span></a>
             <a href="/treatments" class="menu-link" data-hover data-index="03"><span>진료 안내</span></a>
             <a href="/cases" class="menu-link" data-hover data-index="04"><span>비포애프터</span></a>
-            <a href="/blogs" class="menu-link" data-hover data-index="05"><span>블로그</span></a>
-            <a href="/faq" class="menu-link" data-hover data-index="06"><span>자주 묻는 질문</span></a>
-            <a href="/dictionary" class="menu-link" data-hover data-index="07"><span>백과사전</span></a>
-            <a href="/visit" class="menu-link" data-hover data-index="08"><span>내원 안내</span></a>
-            <a href="/notices" class="menu-link" data-hover data-index="09"><span>공지사항</span></a>
+            <a href="/prices" class="menu-link" data-hover data-index="05"><span>비용 안내</span></a>
+            <a href="/blogs" class="menu-link" data-hover data-index="06"><span>블로그</span></a>
+            <a href="/faq" class="menu-link" data-hover data-index="07"><span>자주 묻는 질문</span></a>
+            <a href="/dictionary" class="menu-link" data-hover data-index="08"><span>백과사전</span></a>
+            <a href="/visit" class="menu-link" data-hover data-index="09"><span>내원 안내</span></a>
+            <a href="/notices" class="menu-link" data-hover data-index="10"><span>공지사항</span></a>
           </div>
           <div class="menu-footer">
             <div class="menu-footer-col">
@@ -725,6 +726,7 @@ export function mainPage() {
             <div class="footer-nav-col">
               <h4>진료</h4>
               <a href="/treatments">진료 안내</a>
+              <a href="/prices">비용 안내</a>
               <a href="/doctors">의료진 소개</a>
               <a href="/cases">비포애프터</a>
               <a href="/faq">자주 묻는 질문</a>

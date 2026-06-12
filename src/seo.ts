@@ -1041,3 +1041,88 @@ export function autoGenerateCaseDescription(caseData: {
   return `부산 명지동 이음치과 ${catName} 비포애프터 - ${caseData.title}. 실제 치료 전후 사진과 디지털 진단(CBCT, 구강스캐너) 결과로 정확하고 안전한 치료 과정을 확인하세요.`
 }
 
+// ═══════════════════════════════════════════
+// 16. 가격(수가) 스키마 — AEO 핵심 (AI 가격 질문 대응)
+// ═══════════════════════════════════════════
+
+/** "129만원" / "99~129만원" / "5만5천원" / "350,000원" → 숫자(원) 파싱 */
+export function parseKrwPrice(text?: string): { price?: number; minPrice?: number; maxPrice?: number } {
+  if (!text) return {}
+  const t = text.replace(/\s/g, '')
+  // 범위: 99~129만원 / 99만~129만원
+  const range = t.match(/(\d+(?:\.\d+)?)(만)?[~∼-](\d+(?:\.\d+)?)만원?/)
+  if (range) {
+    const lo = parseFloat(range[1]) * 10000
+    const hi = parseFloat(range[3]) * 10000
+    return { minPrice: lo, maxPrice: hi }
+  }
+  // 단일: 129만원 / 5.5만원
+  const man = t.match(/(\d+(?:\.\d+)?)만원?/)
+  if (man) return { price: parseFloat(man[1]) * 10000 }
+  // 쉼표 원화: 350,000원
+  const won = t.match(/(\d{1,3}(?:,\d{3})+)원/)
+  if (won) return { price: parseInt(won[1].replace(/,/g, '')) }
+  return {}
+}
+
+/** 단일 가격 항목 → schema.org Offer */
+function priceItemToOffer(item: { item_name: string; price_text?: string; note?: string; insurance_covered?: number }, treatmentName: string, treatmentSlug: string) {
+  const parsed = parseKrwPrice(item.price_text)
+  const spec: any = { '@type': 'PriceSpecification', priceCurrency: 'KRW' }
+  if (parsed.price !== undefined) spec.price = parsed.price
+  if (parsed.minPrice !== undefined) { spec.minPrice = parsed.minPrice; spec.maxPrice = parsed.maxPrice }
+  const offer: any = {
+    '@type': 'Offer',
+    name: item.item_name,
+    description: [item.price_text, item.note, item.insurance_covered ? '건강보험 적용' : ''].filter(Boolean).join(' · '),
+    url: `${SITE_URL}/treatments/${treatmentSlug}`,
+    availability: 'https://schema.org/InStock',
+    itemOffered: {
+      '@type': 'MedicalProcedure',
+      name: `${treatmentName} — ${item.item_name}`,
+      bodyLocation: '구강'
+    },
+    offeredBy: { '@id': `${SITE_URL}/#organization` },
+    areaServed: { '@type': 'City', name: '부산광역시' }
+  }
+  if (parsed.price !== undefined || parsed.minPrice !== undefined) offer.priceSpecification = spec
+  return offer
+}
+
+/** 치료 상세 페이지용 — 해당 치료의 가격표를 OfferCatalog로 */
+export function treatmentPriceJsonLd(treatment: { name: string; slug: string }, prices: any[]) {
+  if (!prices || prices.length === 0) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: `${treatment.name} 비용 안내 — ${SITE_NAME}`,
+    url: `${SITE_URL}/treatments/${treatment.slug}`,
+    itemListElement: prices.map(p => priceItemToOffer(p, treatment.name, treatment.slug))
+  }
+}
+
+/** /prices 전체 비용 안내 페이지용 — 치료별 그룹 OfferCatalog */
+export function allPricesJsonLd(groups: { treatment: { name: string; slug: string }; prices: any[] }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${SITE_URL}/prices`,
+    name: `치과 비용 안내 (수가표) — ${SITE_NAME}`,
+    description: '부산 명지 이음치과의원 진료 비용 안내. 임플란트, 라미네이트, 올세라믹 등 주요 진료 수가를 투명하게 공개합니다.',
+    url: `${SITE_URL}/prices`,
+    isPartOf: { '@id': `${SITE_URL}/#website` },
+    lastReviewed: new Date().toISOString().split('T')[0],
+    reviewedBy: { '@id': `${SITE_URL}/#director` },
+    inLanguage: 'ko-KR',
+    mainEntity: {
+      '@type': 'OfferCatalog',
+      name: `${SITE_NAME} 진료 수가표`,
+      itemListElement: groups.map(g => ({
+        '@type': 'OfferCatalog',
+        name: `${g.treatment.name} 비용`,
+        url: `${SITE_URL}/treatments/${g.treatment.slug}`,
+        itemListElement: g.prices.map(p => priceItemToOffer(p, g.treatment.name, g.treatment.slug))
+      }))
+    }
+  }
+}
