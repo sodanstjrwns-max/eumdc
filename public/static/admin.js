@@ -140,11 +140,63 @@
   // 업로드 진행 중인 파일 카운터 (폼 저장 시 대기 용도)
   window.__uploadingCount = 0;
 
+  // ── 클라이언트 자동 이미지 최적화 (Core Web Vitals) ──
+  // 업로드 전 Canvas로 최대 1600px 리사이즈 + WebP(quality 0.82) 변환.
+  // GIF(애니메이션)·SVG는 건너뜀. 변환 결과가 원본보다 크면 원본 유지.
+  var OPT_MAX_DIM = 1600;
+  var OPT_QUALITY = 0.82;
+
+  function optimizeImage(file) {
+    return new Promise(function (resolve) {
+      try {
+        var type = (file.type || '').toLowerCase();
+        // 애니메이션 손실 위험(gif) / 벡터(svg) / 이미지 아님 → 원본 그대로
+        if (!/^image\/(jpeg|png|webp)$/.test(type)) return resolve(file);
+
+        var url = URL.createObjectURL(file);
+        var img = new Image();
+        img.onload = function () {
+          URL.revokeObjectURL(url);
+          var w = img.naturalWidth, h = img.naturalHeight;
+          if (!w || !h) return resolve(file);
+
+          var scale = Math.min(1, OPT_MAX_DIM / Math.max(w, h));
+          var tw = Math.round(w * scale), th = Math.round(h * scale);
+
+          // 이미 충분히 작은 WebP면 재인코딩 손실만 생김 → 통과
+          if (type === 'image/webp' && scale === 1 && file.size < 300 * 1024) return resolve(file);
+
+          var canvas = document.createElement('canvas');
+          canvas.width = tw; canvas.height = th;
+          var ctx = canvas.getContext('2d');
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, tw, th);
+
+          canvas.toBlob(function (blob) {
+            if (!blob || blob.size >= file.size) return resolve(file); // 변환이 손해면 원본
+            var newName = (file.name || 'image').replace(/\.[a-z0-9]+$/i, '') + '.webp';
+            var optimized = new File([blob], newName, { type: 'image/webp' });
+            console.log('[EUM] 이미지 자동 최적화: ' + Math.round(file.size / 1024) + 'KB → ' + Math.round(blob.size / 1024) + 'KB (' + tw + 'x' + th + ')');
+            resolve(optimized);
+          }, 'image/webp', OPT_QUALITY);
+        };
+        img.onerror = function () { URL.revokeObjectURL(url); resolve(file); };
+        img.src = url;
+      } catch (e) {
+        resolve(file); // 어떤 실패든 원본 업로드로 폴백
+      }
+    });
+  }
+
   function uploadFile(file) {
     window.__uploadingCount++;
-    var fd = new FormData();
-    fd.append('file', file);
-    return fetch('/api/upload', { method: 'POST', body: fd })
+    return optimizeImage(file)
+      .then(function (optFile) {
+        var fd = new FormData();
+        fd.append('file', optFile);
+        return fetch('/api/upload', { method: 'POST', body: fd });
+      })
       .then(function (r) {
         if (!r.ok) throw new Error('업로드 실패 (HTTP ' + r.status + ')');
         return r.json();
@@ -160,11 +212,15 @@
 
   function uploadMulti(files) {
     window.__uploadingCount++;
-    var fd = new FormData();
-    for (var i = 0; i < files.length; i++) {
-      fd.append('files', files[i]);
-    }
-    return fetch('/api/upload/multi', { method: 'POST', body: fd })
+    var arr = Array.prototype.slice.call(files);
+    return Promise.all(arr.map(optimizeImage))
+      .then(function (optFiles) {
+        var fd = new FormData();
+        for (var i = 0; i < optFiles.length; i++) {
+          fd.append('files', optFiles[i]);
+        }
+        return fetch('/api/upload/multi', { method: 'POST', body: fd });
+      })
       .then(function (r) {
         if (!r.ok) throw new Error('업로드 실패 (HTTP ' + r.status + ')');
         return r.json();
@@ -597,9 +653,14 @@
       // 이미지 업로드 → 기존 R2 업로드 API 연결
       hooks: {
         addImageBlobHook: function (blob, callback) {
-          var fd = new FormData();
-          fd.append('file', blob);
-          fetch('/api/upload', { method: 'POST', body: fd })
+          // 본문 삽입 이미지도 자동 최적화 (리사이즈 + WebP)
+          var blobFile = blob instanceof File ? blob : new File([blob], blob.name || 'image.png', { type: blob.type || 'image/png' });
+          optimizeImage(blobFile)
+            .then(function (optFile) {
+              var fd = new FormData();
+              fd.append('file', optFile);
+              return fetch('/api/upload', { method: 'POST', body: fd });
+            })
             .then(function (r) { return r.json(); })
             .then(function (data) {
               if (data && data.url) {
