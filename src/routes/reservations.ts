@@ -1,18 +1,36 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
+import { checkLoginRateLimit, clientIp } from './auth'
 
 const reservations = new Hono<HonoEnv>()
 
 // === PUBLIC: 예약 문의 접수 ===
 reservations.post('/api/reservations', async (c) => {
   const body = await c.req.json()
-  const { name, phone, treatment_type, preferred_date, preferred_time, message, user_id } = body
+  const { name, phone, treatment_type, preferred_date, preferred_time, message, user_id, website } = body
+
+  // Honeypot: 숨겨진 'website' 필드를 채우는 건 봇 — 조용히 성공 응답 후 무시
+  if (website) {
+    return c.json({ ok: true, id: 0 }, 201)
+  }
+
+  // IP당 rate limit (15분 10회 — 예약 폭탄 방지)
+  const allowed = await checkLoginRateLimit(c.env.DB, `rsv:${clientIp(c)}`)
+  if (!allowed) {
+    return c.json({ error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' }, 429)
+  }
 
   if (!name || !phone) {
     return c.json({ error: '이름과 전화번호는 필수입니다.' }, 400)
   }
 
-  const phoneClean = phone.replace(/[^0-9]/g, '')
+  // 길이 제한 — 스팸/이상 페이로드 차단
+  if (String(name).length > 50 || String(message || '').length > 2000 ||
+      String(treatment_type || '').length > 100) {
+    return c.json({ error: '입력값이 너무 깁니다.' }, 400)
+  }
+
+  const phoneClean = String(phone).replace(/[^0-9]/g, '')
   if (phoneClean.length < 10 || phoneClean.length > 11) {
     return c.json({ error: '올바른 전화번호를 입력해주세요.' }, 400)
   }

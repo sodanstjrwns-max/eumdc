@@ -86,12 +86,20 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## 🤖 업로드 자동 최적화 (2026-06-12) — CWV 다이어트 영구 유지
+관리자가 어떤 크기의 이미지를 올려도 자동으로 최적화되는 근본 해결:
+- **클라이언트 자동 변환** (`admin.js optimizeImage`): 업로드 직전 Canvas로 최대 1600px 리사이즈 + WebP(quality 0.82) 변환. 검증: 5.7MB PNG → **20KB WebP** 자동 변환 확인.
+  - 적용 범위: 단일 업로드(uploadFile), 다중 업로드(uploadMulti), Toast 에디터 본문 삽입(addImageBlobHook) 전부
+  - 안전장치: GIF/SVG 통과(애니메이션·벡터 보존), 변환 결과가 원본보다 크면 원본 유지, 어떤 실패든 원본 업로드 폴백
+- **서버 가드** (`upload.ts`): 8MB 초과 업로드 413 거부 (최적화 우회 방어)
+- 이제 직원 교육 없이도 신규 이미지가 항상 수십~수백 KB 수준으로 유지됨
+
 ## ⚡ Core Web Vitals 2차 — R2 이미지 + GSAP 분리 (2026-06-12)
 - **R2 이미지 전수 WebP 전환**: 블로그 썸네일·본문 인라인·blog_images·notice_images 등 38장 — 원본 PNG/JPG **48MB → WebP 3.7MB (-92%)**, 최대 1600px 리사이즈, quality 82. 원본은 R2에 보존(롤백 가능).
 - **D1 참조 마이그레이션**: blogs(thumbnail/content/content_html), blog_images, notice_images, doctors, cases 전 컬럼 `.png/.jpg → .webp` 일괄 UPDATE. 전 발행 블로그 잔존 구참조 0건 검증 완료.
 - **GSAP 홈 전용 분리**: gsap.min.js + ScrollTrigger(CDN ~130KB) + gsap-init.js(52KB)를 홈에서만 로드. 서브페이지는 app.js IntersectionObserver 리빌로 동작 (per-page **-180KB**).
 - **폴링 가드**: gsap-init/scroll-perf-patch의 waitForGsap·waitForST에 5초 타임아웃 — GSAP 미로드 페이지 무한 setTimeout 제거.
-- ⚠️ **운영 주의**: 관리자에서 새 이미지 업로드 시 원본 그대로 저장됨. 업로드 전 [Squoosh](https://squoosh.app) 등으로 WebP 변환(1600px 이하) 권장.
+- ~~운영 주의: 새 이미지 업로드 시 원본 저장~~ → **해결됨**: 업로드 자동 최적화 적용 (2026-06-12)
 
 ## ⚡ Core Web Vitals 튜닝 (2026-06-11)
 LCP/CLS/전송 바이트 최적화 라운드:

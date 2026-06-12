@@ -68,8 +68,8 @@ export function localBusinessJsonLd() {
     },
     image: [
       DEFAULT_IMAGE,
-      `${SITE_URL}/static/img/photo_7.jpg`,
-      `${SITE_URL}/static/img/photo_8.jpg`
+      `${SITE_URL}/static/img/photo_7.webp`,
+      `${SITE_URL}/static/img/photo_8.webp`
     ],
     telephone: PHONE,
     email: EMAIL,
@@ -151,7 +151,7 @@ export function personJsonLd() {
     name: '최효영',
     jobTitle: '대표원장',
     description: '이음치과의원 대표원장. 강원대학교 치과대학 치의학과 졸업(2021). 임플란트, 심미보철 전문.',
-    image: `${SITE_URL}/static/img/photo_5.jpg`,
+    image: `${SITE_URL}/static/img/photo_5.webp`,
     alumniOf: { '@type': 'CollegeOrUniversity', name: '강원대학교 치과대학' },
     worksFor: { '@type': 'Dentist', name: SITE_NAME, '@id': `${SITE_URL}/#organization` },
     knowsAbout: ['임플란트', '심미보철', '턱관절치료', '디지털치과', '보존치료'],

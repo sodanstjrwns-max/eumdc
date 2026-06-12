@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { getCookie, setCookie } from 'hono/cookie'
 import type { HonoEnv } from '../types'
-import { createHmacToken, verifyHmacToken } from './auth'
+import { createHmacToken, verifyHmacToken, getAuthSecret, checkLoginRateLimit, clientIp } from './auth'
 
 const users = new Hono<HonoEnv>()
 
@@ -73,7 +73,11 @@ users.post('/api/user/register', async (c) => {
 
   // Auto-login after registration (HMAC signed token)
   const userId = result.meta.last_row_id
-  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const secret = getAuthSecret(c.env)
+  if (!secret) {
+    // 가입은 성공했으나 자동로그인 쿠키는 발급 불가(서버 설정 누락)
+    return c.json({ ok: true, id: userId, name, autoLogin: false }, 201)
+  }
   const token = await createHmacToken(`eum-user:${userId}:${Date.now()}`, secret)
   setCookie(c, 'eum_user', token, {
     path: '/',
@@ -91,6 +95,11 @@ users.post('/api/user/login', async (c) => {
   const { phone, password } = await c.req.json()
   if (!phone || !password) {
     return c.json({ error: '전화번호와 비밀번호를 입력해주세요.' }, 400)
+  }
+
+  const allowed = await checkLoginRateLimit(c.env.DB, `user:${clientIp(c)}`)
+  if (!allowed) {
+    return c.json({ error: '로그인 시도가 너무 많습니다. 15분 후 다시 시도해주세요.' }, 429)
   }
 
   const phoneClean = phone.replace(/[^0-9]/g, '')
@@ -112,7 +121,10 @@ users.post('/api/user/login', async (c) => {
     'UPDATE users SET last_login_at = CURRENT_TIMESTAMP WHERE id = ?'
   ).bind(user.id).run()
 
-  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const secret = getAuthSecret(c.env)
+  if (!secret) {
+    return c.json({ error: '서버 인증 설정이 누락되었습니다.' }, 503)
+  }
   const token = await createHmacToken(`eum-user:${user.id}:${Date.now()}`, secret)
   setCookie(c, 'eum_user', token, {
     path: '/',
@@ -136,7 +148,8 @@ users.get('/api/user/check', async (c) => {
   const session = getCookie(c, 'eum_user')
   if (!session) return c.json({ authenticated: false })
   
-  const secret = c.env.AUTH_SECRET || 'fallback-secret'
+  const secret = getAuthSecret(c.env)
+  if (!secret) return c.json({ authenticated: false })
   const payload = await verifyHmacToken(session, secret)
   if (!payload) return c.json({ authenticated: false })
   
