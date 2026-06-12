@@ -122,6 +122,15 @@ LCP/CLS/전송 바이트 최적화 라운드:
 - **`public/_headers`**: `/static/*` → `Cache-Control: public, max-age=31536000, immutable` (반복 방문 즉시 로드).
 - **nav/footer 심볼**: 1017px PNG(28KB) → 112px WebP(8KB).
 
+## 💰 SEO/AEO 가격 데이터 업그레이드 (2026-06-12)
+가장 큰 AEO 공백이었던 "가격(수가) 데이터의 크롤러/AI 비가시성" 해소:
+- **가격 SSR 전환**: 치료상세 페이지(`/treatments/:slug`)에 서버렌더 가격표 (`#treat-price-section`). 기존엔 클라이언트 fetch만 — AI/크롤러에 보이지 않았음.
+- **Offer 스키마**: `parseKrwPrice()`로 "129만원"/"99~129만원" → KRW 숫자 파싱, schema.org `Offer`/`PriceSpecification`/`OfferCatalog` JSON-LD 출력 (치료상세 + /prices).
+- **`/prices` 페이지 신설**: TL;DR 요약 박스 + 치료별 SSR 수가표(39항목) + 비용 FAQ(`<details>` SSR) + 유의사항. sitemap priority 0.9, 전역 메뉴·푸터 "비용 안내" 링크 (홈+서브 레이아웃).
+- **.md 엔드포인트 확장** (AI 에이전트용, `X-Robots-Tag: noindex`): `/treatments/:slug.md` (개요+핵심정보+수가표+FAQ), `/prices.md` (전체 수가표), `/faq.md` (FAQ 112문항 전체).
+- **llms.txt**: "진료 비용 요약" 섹션 + ⚠️ CBCT 진단 후 안내 문구 + .md 엔드포인트 목록. **llms-full.txt**: 수가표 전체 섹션 (만원 언급 0 → 32회).
+- **버그픽스**: X-Robots-Tag 미들웨어가 라우트별 noindex를 덮어쓰던 문제 수정 (.md 중복 색인 방지 복원).
+
 ## 🤖 SEO/AEO 머신 업그레이드 (2026-06-11)
 "보이는 콘텐츠 = 구조화 데이터" 원칙으로 클로킹 리스크를 제거하고, AI 검색엔진(AEO) 인용 가능성을 극대화:
 - **① FAQ 페이지 진짜 SSR 전환**: 기존 `sr-only` 숨김 콘텐츠 + JS-only 렌더링(클로킹 오인 리스크) → `<details>` 기반 가시 SSR 콘텐츠가 기본. JS는 검색/필터 향상만 담당. 크롤러·AI·사용자가 100% 동일 콘텐츠를 봄.
@@ -172,4 +181,4 @@ GSC "Discovered – currently not indexed" 270페이지(도배성/중복 도어�
 - **Platform**: Cloudflare Pages (project: `eumdc`)
 - **Status**: ✅ Active
 - **Stack**: Hono 4 + Vite 6 + TypeScript + TailwindCSS(CDN) + GSAP(CDN) + Cloudflare D1/R2
-- **Last Updated**: 2026-06-11
+- **Last Updated**: 2026-06-12
