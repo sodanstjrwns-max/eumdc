@@ -86,6 +86,13 @@ npm run deploy:prod  # wrangler pages deploy dist --project-name eumdc
 pm2 start ecosystem.config.cjs
 ```
 
+## ⚡ Core Web Vitals 2차 — R2 이미지 + GSAP 분리 (2026-06-12)
+- **R2 이미지 전수 WebP 전환**: 블로그 썸네일·본문 인라인·blog_images·notice_images 등 38장 — 원본 PNG/JPG **48MB → WebP 3.7MB (-92%)**, 최대 1600px 리사이즈, quality 82. 원본은 R2에 보존(롤백 가능).
+- **D1 참조 마이그레이션**: blogs(thumbnail/content/content_html), blog_images, notice_images, doctors, cases 전 컬럼 `.png/.jpg → .webp` 일괄 UPDATE. 전 발행 블로그 잔존 구참조 0건 검증 완료.
+- **GSAP 홈 전용 분리**: gsap.min.js + ScrollTrigger(CDN ~130KB) + gsap-init.js(52KB)를 홈에서만 로드. 서브페이지는 app.js IntersectionObserver 리빌로 동작 (per-page **-180KB**).
+- **폴링 가드**: gsap-init/scroll-perf-patch의 waitForGsap·waitForST에 5초 타임아웃 — GSAP 미로드 페이지 무한 setTimeout 제거.
+- ⚠️ **운영 주의**: 관리자에서 새 이미지 업로드 시 원본 그대로 저장됨. 업로드 전 [Squoosh](https://squoosh.app) 등으로 WebP 변환(1600px 이하) 권장.
+
 ## ⚡ Core Web Vitals 튜닝 (2026-06-11)
 LCP/CLS/전송 바이트 최적화 라운드:
 - **폰트 다이어트**: Google Fonts `@import` 이중 로딩 제거(style.css/admin.css), Noto Sans KR weight 200·900 컷(미사용) → 8종→6종. `media="print" onload` 패턴으로 폰트 CSS 비차단 로딩 + noscript 폴백.
