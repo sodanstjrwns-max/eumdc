@@ -4,7 +4,7 @@
 
 ## 🌐 Production URL
 - **공식 도메인**: https://ieumdc.kr
-- **최신 배포**: https://f46953de.ieumdc.pages.dev
+- **최신 배포**: https://c83dc14b.eumdc.pages.dev (2026-06-12 보안 하드닝)
 
 ## ✅ 현재 완료된 기능
 
