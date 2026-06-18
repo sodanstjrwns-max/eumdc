@@ -2385,13 +2385,16 @@ app.get('/sitemap-pages.xml', async (c) => {
   <url><loc>${SITE_URL}/dictionary</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${SITE_URL}/notices</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
   <url><loc>${SITE_URL}/regions</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>${SITE_URL}/best</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>${SITE_URL}/near-me</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>${SITE_URL}/open-now</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${SITE_URL}/weekend-dental</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>${SITE_URL}/night-dental</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
 `
+  // 폐지/별칭(301 리디렉트) slug는 사이트맵에서 제외 — GSC "리디렉션이 포함된 페이지" 방지
+  // (glownate→laminate, prosthetics→aesthetic 등 TREATMENT_SLUG_ALIASES와 동일 목록)
+  const REDIRECTED_TREATMENT_SLUGS = new Set(['glownate', 'prosthetics'])
   for (const t of (treatments || [])) {
+    if (REDIRECTED_TREATMENT_SLUGS.has(t.slug)) continue
     xml += `  <url><loc>${SITE_URL}/treatments/${t.slug}</loc><lastmod>${isoLastmod(t.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>\n`
   }
   for (const d of (doctors || [])) {
