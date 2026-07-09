@@ -1285,7 +1285,7 @@ app.get('/regions', async (c) => {
     seo: {
       title: '부산 명지 이음치과 진료지역 30곳 | 강서구·사하구·사상구·북구·김해',
       description: '이음치과의원 진료 가능 30개 지역 안내. 강서구(명지·녹산·신호·에코델타·대저·지사·미음), 사하구(하단·다대·괴정·신평), 사상구(사상·감전·주례), 북구(덕천·화명·구포·금곡), 김해시(장유·삼계·진영·봉림). 자차 6~30분 거리, 2시간 무료 주차. ☎ 051-206-5888',
-      keywords: '명지치과, 강서구치과, 사하구치과, 사상구치과, 북구치과, 김해치과, 부산치과, 이음치과, 임플란트, 인비절라인, 라미네이트, 치아교정',
+      keywords: '명지치과, 강서구치과, 사하구치과, 사상구치과, 북구치과, 김해치과, 부산치과, 이음치과, 임플란트, 투명교정, 라미네이트, 치아교정',
       canonical: `${SITE_URL}/regions`,
       ogUrl: `${SITE_URL}/regions`,
       jsonLd: [
@@ -1318,15 +1318,15 @@ app.get('/regions/:slug', async (c) => {
 
   // 핵심 진료 5개를 메타 키워드에 포함 (원장님 지시)
   const metaTitle = region?.meta_title
-    || `${regionName} 치과 이음치과의원 | 임플란트·인비절라인·라미네이트·치아교정`
+    || `${regionName} 치과 이음치과의원 | 임플란트·투명교정·라미네이트·치아교정`
   const metaDesc = region?.meta_description
-    || `${regionName} 치과 — 이음치과의원. 임플란트·인비절라인·라미네이트·치아교정 전문. ${regionMatrix?.distance || '명지국제8로 265'}. ☎ 051-206-5888`
+    || `${regionName} 치과 — 이음치과의원. 임플란트·투명교정·라미네이트·치아교정 전문. ${regionMatrix?.distance || '명지국제8로 265'}. ☎ 051-206-5888`
 
   return c.render(seoRegionPage(slug, region?.h1_title || `${regionName} 치과 이음치과의원`, region, regionMatrix, regionTreatments || [], nearbyAreas), {
     seo: {
       title: metaTitle,
       description: metaDesc,
-      keywords: `${lsiKeywords} 치과, ${regionName} 임플란트, ${regionName} 인비절라인, ${regionName} 라미네이트, ${regionName} 치아교정, 이음치과, 부산치과`,
+      keywords: `${lsiKeywords} 치과, ${regionName} 임플란트, ${regionName} 투명교정, ${regionName} 라미네이트, ${regionName} 치아교정, 이음치과, 부산치과`,
       canonical: `${SITE_URL}/regions/${slug}`,
       ogUrl: `${SITE_URL}/regions/${slug}`,
       jsonLd: [
@@ -1341,7 +1341,7 @@ app.get('/regions/:slug', async (c) => {
           '@context': 'https://schema.org',
           '@type': 'Place',
           'name': `${regionName} - 이음치과의원 진료 권역`,
-          'description': `${regionName} 거주민의 임플란트·인비절라인·라미네이트·치아교정 전문 디지털 치과`,
+          'description': `${regionName} 거주민의 임플란트·투명교정·라미네이트·치아교정 전문 디지털 치과`,
           'url': `${SITE_URL}/regions/${slug}`,
           'geo': {
             '@type': 'GeoCircle',
@@ -1833,7 +1833,7 @@ app.get('/best/:slug', async (c) => {
 app.get('/best', async (c) => {
   const canonical = `${SITE_URL}/best`
   const seoTitle = '부산·강서구·명지 잘하는 치과 추천 가이드 | 이음치과의원'
-  const seoDesc = '명지·강서구·부산에서 임플란트, 인비절라인, 라미네이트, 치아교정 잘하는 치과 고르는 객관적 기준. 이음치과의원 추천 가이드.'
+  const seoDesc = '명지·강서구·부산에서 임플란트, 투명교정, 라미네이트, 치아교정 잘하는 치과 고르는 객관적 기준. 이음치과의원 추천 가이드.'
 
   return c.render(
     <div class="page-best-list">
@@ -1999,7 +1999,7 @@ app.get('/feed.xml', async (c) => {
 <channel>
   <title>이음치과의원 블로그 | 부산 강서구 명지동 임플란트·심미보철·교정</title>
   <link>${SITE_URL}/blogs</link>
-  <description>부산 명지동 이음치과의원 공식 블로그. 임플란트, 인비절라인, 라미네이트, 치아교정 등 진료 정보와 환자 가이드.</description>
+  <description>부산 명지동 이음치과의원 공식 블로그. 임플란트, 투명교정, 라미네이트, 치아교정 등 진료 정보와 환자 가이드.</description>
   <language>ko-KR</language>
   <copyright>© 이음치과의원</copyright>
   <lastBuildDate>${lastBuildDate}</lastBuildDate>

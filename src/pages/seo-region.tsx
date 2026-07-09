@@ -105,7 +105,7 @@ export function seoRegionPage(
             </details>
             <details class="region-faq-item">
               <summary><strong>{regionName} 치과 중 이음치과는 어떤 점이 다른가요?</strong></summary>
-              <p>이음치과의원은 CBCT 3D 진단, 디지털 가이드 임플란트, 인비절라인 다이아몬드 제공자, 라미네이트·올세라믹 심미보철 전문 진료를 제공합니다. {regionName} 거주민의 통원 편의를 고려한 진료 동선과 야간진료를 운영합니다.</p>
+              <p>이음치과의원은 CBCT 3D 진단, 디지털 가이드 임플란트, MEG Aligner 투명교정, 라미네이트·올세라믹 심미보철 전문 진료를 제공합니다. {regionName} 거주민의 통원 편의를 고려한 진료 동선과 야간진료를 운영합니다.</p>
             </details>
           </div>
         </div>
@@ -159,7 +159,7 @@ export function seoRegionListPage(regionsByDistrict?: Record<string, any[]>) {
           <p class="page-subtitle">
             <strong>이음치과의원</strong>은 부산광역시 강서구 명지국제신도시를 중심으로
             강서구·사하구·사상구·북구·김해시 등 <strong>30개 지역 거주민</strong>을 위한
-            <strong>임플란트·인비절라인·라미네이트·치아교정</strong> 전문 디지털 치과입니다.
+            <strong>임플란트·투명교정·라미네이트·치아교정</strong> 전문 디지털 치과입니다.
             가까운 지역에서 이음치과를 찾으세요.
           </p>
         </div>
@@ -172,13 +172,13 @@ export function seoRegionListPage(regionsByDistrict?: Record<string, any[]>) {
             <h2 class="section-title">왜 이음치과를 찾는 30개 지역이 있을까요?</h2>
             <p>
               이음치과의원은 <strong>부산광역시 강서구 명지국제신도시 명지국제8로 265</strong>에 위치한
-              디지털 치과입니다. CBCT·디지털 가이디드 서저리·인비절라인 다이아몬드 제공자·라미네이트 심미보철 등
+              디지털 치과입니다. CBCT·디지털 가이디드 서저리·MEG Aligner 투명교정·라미네이트 심미보철 등
               부산 전역에서 보기 드문 진료 시스템을 갖추고 있어, 명지신도시 외에도 강서구 전역(녹산·신호·에코델타시티·대저·지사),
               낙동강 건너 사하구(하단·다대포·신평·괴정), 사상구(사상·감전·주례), 북구(덕천·화명·구포·금곡),
               김해시(장유·삼계·진영·봉림)에서 자차 6~30분 거리로 찾아오십니다.
             </p>
             <ul class="regions-intro-features">
-              <li><strong>4대 핵심 진료</strong> — 임플란트, 인비절라인, 라미네이트, 치아교정</li>
+              <li><strong>4대 핵심 진료</strong> — 임플란트, 투명교정, 라미네이트, 치아교정</li>
               <li><strong>주말진료 운영</strong> — 토·일 10시~17시 운영으로 직장인·학부모님 편의 제공</li>
               <li><strong>2시간 무료 주차</strong> — 자차 방문 거주민 편의 보장</li>
               <li><strong>김해공항 인접</strong> — 김해·진영·삼계 권역 25~30분</li>

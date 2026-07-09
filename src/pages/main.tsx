@@ -642,7 +642,7 @@ export function mainPage() {
         <div class="container-wide">
           <span class="section-label">08 — AREA GUIDE</span>
           <h2 class="region-hub-title">우리 동네 진료 안내</h2>
-          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·인비절라인·라미네이트·치아교정 안내를 확인하세요.</p>
+          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요.</p>
 
           {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
             const t = SEO_TREATMENTS_MAP[tSlug]

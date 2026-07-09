@@ -49,8 +49,8 @@ export const SEO_COSTS: CostInfo[] = [
     unit: '1악당 (위 또는 아래)',
     factors: [
       { factor: '치료 단계 수 (스테이지)', explanation: '간단한 부분교정부터 전체교정까지 단계 수에 따라 비용이 결정됩니다.' },
-      { factor: '인비절라인 라인 선택', explanation: 'Lite·Moderate·Comprehensive·Teen 등 라인별로 가격대가 다릅니다.' },
-      { factor: '진단 영상·시뮬레이션 비용', explanation: 'iTero 스캔·ClinCheck 셋업이 포함됩니다.' },
+      { factor: '교정 범위·난이도', explanation: '부분교정·전체교정 등 교정 범위와 난이도에 따라 가격대가 다릅니다.' },
+      { factor: '진단 영상·시뮬레이션 비용', explanation: '구강스캔·디지털 셋업 시뮬레이션이 포함됩니다.' },
       { factor: '유지장치(리테이너)', explanation: '치료 종료 후 영구적인 안정성을 위한 리테이너가 필요합니다.' }
     ],
     insuranceCovered: false,
@@ -59,7 +59,7 @@ export const SEO_COSTS: CostInfo[] = [
     installmentNote: '6·12·24개월 무이자/유이자 분납 가능 — 카드사 행사에 따라 조건 변동',
     consultationFee: '정밀 진단료 — 진단 결과 패키지에 포함',
     beforeAfterTip: '디지털 셋업 시뮬레이션을 미리 확인하면 치료 종료 시점·결과를 사전 예측할 수 있어 후회 없는 결정이 가능합니다.',
-    longTailKeywords: ['인비절라인 가격', '인비절라인 비용', '투명교정 가격', '인비절라인 얼마', '인비절라인 분납', '인비절라인 분할결제']
+    longTailKeywords: ['투명교정 가격', '투명교정 비용', 'MEG Aligner 가격', '투명교정 얼마', '투명교정 분납', '투명교정 분할결제']
   },
   {
     treatmentSlug: 'laminate',
@@ -84,7 +84,7 @@ export const SEO_COSTS: CostInfo[] = [
     priceRange: '교정 방식·기간에 따라 폭이 큼 (정밀진단 후 안내)',
     unit: '1악당 (위 또는 아래)',
     factors: [
-      { factor: '교정 방식', explanation: '메탈·세라믹·설측(혀쪽)·인비절라인 순으로 가격대가 올라갑니다.' },
+      { factor: '교정 방식', explanation: '메탈·세라믹·설측(혀쪽)·투명교정(MEG Aligner) 순으로 가격대가 올라갑니다.' },
       { factor: '치료 기간', explanation: '평균 18~30개월. 케이스 난이도에 따라 변동됩니다.' },
       { factor: '진단 영상', explanation: 'CBCT·세팔로 분석·구강스캔이 포함됩니다.' },
       { factor: '유지장치', explanation: '리테이너 종류(고정·가철식)에 따라 약간의 추가비가 있을 수 있습니다.' }
