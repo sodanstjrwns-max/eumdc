@@ -4,7 +4,13 @@
 
 ## 🌐 Production URL
 - **공식 도메인**: https://ieumdc.kr
-- **최신 배포**: https://c83dc14b.eumdc.pages.dev (2026-06-12 보안 하드닝)
+- **최신 배포**: https://27bcb03f.eumdc.pages.dev (2026-07-21 GSC 색인 부진 3대 원인 수정)
+
+## 🔧 2026-07-21 SEO 색인 부진 긴급 수정 (GSC 3개월 클릭 3회 진단)
+- **가짜 lastmod 제거**: sitemap index/pages/matrix의 `lastmod`가 매 요청 `now()`로 찍히던 것을 D1 실제 `MAX(updated_at)` 기반으로 변경 — 구글이 사이트맵 신호를 무시하던 핵심 원인
+- **pages.dev 중복 색인 차단**: `eumdc.pages.dev`/`ieumdc.pages.dev` → `ieumdc.kr` 301, 해시 프리뷰 URL(`*.pages.dev`)은 `X-Robots-Tag: noindex, nofollow`
+- **빈 sitemap-news.xml 제거**: robots.txt와 sitemap index에서 삭제 (0건 뉴스 사이트맵)
+- **배포 후 수동 조치 필요**: GSC 사이트맵 재제출 + 핵심 페이지 색인 요청, 백링크 확보(네이버 플레이스/카카오맵/디렉토리), 구 도메인(eumdc.kr) GSC 주소 변경 도구 확인
 
 ## ✅ 현재 완료된 기능
 
