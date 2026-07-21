@@ -65,8 +65,12 @@ app.use('*', async (c, next) => {
   let needsRedirect = false
 
   // 1) 도메인 정규화
-  if (host === 'eumdc.kr' || host === 'www.eumdc.kr' || host === 'www.ieumdc.kr') {
+  // pages.dev 프로덕션 별칭도 301 — 중복 색인 방지 (해시 프리뷰 URL은 테스트용으로 유지)
+  if (host === 'eumdc.kr' || host === 'www.eumdc.kr' || host === 'www.ieumdc.kr' ||
+      host === 'eumdc.pages.dev' || host === 'ieumdc.pages.dev') {
     url.hostname = 'ieumdc.kr'
+    url.protocol = 'https:'
+    url.port = ''
     needsRedirect = true
   }
 
@@ -90,7 +94,11 @@ app.use('*', async (c, next) => {
   c.header('X-Frame-Options', 'SAMEORIGIN')
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
   // SEO: 검색엔진이 X-Robots-Tag도 읽음 (라우트에서 이미 설정한 경우 보존 — .md 엔드포인트의 noindex 등)
-  if (!c.req.path.startsWith('/admin') && !c.req.path.startsWith('/api/') && !c.res.headers.get('X-Robots-Tag')) {
+  const reqHost = new URL(c.req.url).hostname.toLowerCase()
+  if (reqHost.endsWith('.pages.dev')) {
+    // 프리뷰/해시 배포 URL은 절대 색인 금지 (중복 콘텐츠 방지)
+    c.res.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  } else if (!c.req.path.startsWith('/admin') && !c.req.path.startsWith('/api/') && !c.res.headers.get('X-Robots-Tag')) {
     c.header('X-Robots-Tag', 'index, follow')
   }
 })
@@ -2252,7 +2260,6 @@ Sitemap: ${SITE_URL}/sitemap-cases.xml
 Sitemap: ${SITE_URL}/sitemap-matrix.xml
 Sitemap: ${SITE_URL}/sitemap-dictionary.xml
 Sitemap: ${SITE_URL}/sitemap-images.xml
-Sitemap: ${SITE_URL}/sitemap-news.xml
 
 # RSS 피드 (네이버/구글 뉴스 + AI 크롤러용)
 RSS: ${SITE_URL}/feed.xml
@@ -2342,16 +2349,28 @@ const xmlResponse = (xml: string, maxAge: number = 3600) => new Response(xml, {
 // 🌐 마스터 Sitemap Index (sitemap.xml)
 // ─────────────────────────────────────────────
 app.get('/sitemap.xml', async (c) => {
-  const now = new Date().toISOString()
+  // ⚠️ lastmod는 반드시 실제 콘텐츠 갱신일 기반 — 매 요청 now()를 넣으면
+  //    구글이 사이트맵 신호를 신뢰하지 않게 됨 (색인 지연/거부의 주 원인)
+  const q = async (sql: string) => {
+    try {
+      const r = await c.env.DB.prepare(sql).first() as any
+      return isoLastmod(r?.m)
+    } catch { return isoLastmod(undefined) }
+  }
+  const [blogMod, caseMod, dictMod, pageMod] = await Promise.all([
+    q('SELECT MAX(updated_at) AS m FROM blogs WHERE is_published = 1'),
+    q('SELECT MAX(updated_at) AS m FROM cases WHERE is_published = 1'),
+    q('SELECT MAX(updated_at) AS m FROM dict_terms WHERE is_published = 1'),
+    q('SELECT MAX(updated_at) AS m FROM treatments WHERE is_published = 1')
+  ])
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap><loc>${SITE_URL}/sitemap-pages.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-blogs.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-cases.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-matrix.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-dictionary.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-images.xml</loc><lastmod>${now}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-news.xml</loc><lastmod>${now}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-pages.xml</loc><lastmod>${pageMod}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-blogs.xml</loc><lastmod>${blogMod}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-cases.xml</loc><lastmod>${caseMod}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-matrix.xml</loc><lastmod>${pageMod}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-dictionary.xml</loc><lastmod>${dictMod}</lastmod></sitemap>
+  <sitemap><loc>${SITE_URL}/sitemap-images.xml</loc><lastmod>${blogMod}</lastmod></sitemap>
 </sitemapindex>`
   return xmlResponse(xml, 1800)  // 30분 캐시 (인덱스는 자주 갱신)
 })
@@ -2360,7 +2379,19 @@ app.get('/sitemap.xml', async (c) => {
 // 📄 sitemap-pages.xml: 정적 페이지 + 진료/의료진/지역/메인
 // ─────────────────────────────────────────────
 app.get('/sitemap-pages.xml', async (c) => {
-  const now = new Date().toISOString().split('T')[0]
+  // 정적 페이지 lastmod: 실제 콘텐츠 최신 갱신일 사용 (매일 now()로 찍으면 구글이 무시함)
+  let siteMod: string
+  try {
+    const r = await c.env.DB.prepare(
+      `SELECT MAX(m) AS m FROM (
+         SELECT MAX(updated_at) AS m FROM blogs WHERE is_published = 1
+         UNION ALL SELECT MAX(updated_at) FROM treatments WHERE is_published = 1
+         UNION ALL SELECT MAX(updated_at) FROM cases WHERE is_published = 1
+       )`
+    ).first() as any
+    siteMod = isoLastmod(r?.m)
+  } catch { siteMod = isoLastmod(undefined) }
+  const now = siteMod
   const { results: treatments } = await c.env.DB.prepare(
     'SELECT slug, updated_at FROM treatments WHERE is_published = 1 ORDER BY sort_order'
   ).all() as any
@@ -2484,7 +2515,14 @@ app.get('/sitemap-cases.xml', async (c) => {
 // 🎯 sitemap-matrix.xml: 지역×진료 매트릭스 (135개)
 // ─────────────────────────────────────────────
 app.get('/sitemap-matrix.xml', async (c) => {
-  const now = new Date().toISOString().split('T')[0]
+  // matrix 페이지는 진료 콘텐츠 기반 → treatments 최신 갱신일을 lastmod로 사용
+  let now: string
+  try {
+    const r = await c.env.DB.prepare(
+      'SELECT MAX(updated_at) AS m FROM treatments WHERE is_published = 1'
+    ).first() as any
+    now = isoLastmod(r?.m)
+  } catch { now = isoLastmod(undefined) }
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `
