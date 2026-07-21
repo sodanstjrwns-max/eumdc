@@ -179,6 +179,15 @@ export function dictionaryDetailPage(slug: string, term?: any) {
   const categoryName = term?.category_name || ''
   const relatedService = term?.related_service || ''
 
+  // 맞춤 FAQ 파싱 (JSON 배열: [{"q":"...","a":"..."}]) — 없으면 generic fallback
+  let customFaqs: { q: string; a: string }[] = []
+  try {
+    if (term?.faqs) {
+      const parsed = JSON.parse(term.faqs)
+      if (Array.isArray(parsed)) customFaqs = parsed.filter((f: any) => f && f.q && f.a)
+    }
+  } catch { /* 파싱 실패 시 generic FAQ 사용 */ }
+
   // 관련 진료 슬러그 매핑 (가능하면 직링크)
   const relatedTreatmentLink = (() => {
     const map: Record<string, string> = {
@@ -240,21 +249,32 @@ export function dictionaryDetailPage(slug: string, term?: any) {
                 </div>
               )}
 
-              {/* 자동 FAQ — 색인 강화 */}
+              {/* FAQ — 맞춤 FAQ 우선, 없으면 generic (색인/AEO 강화) */}
               <div class="dict-section dict-faq-section">
                 <h2 class="dict-section-title">{termName} 자주 묻는 질문</h2>
-                <details class="dict-faq-item">
-                  <summary><strong>{termName}이란 무엇인가요?</strong></summary>
-                  <p>{shortDesc || `${termName}은 ${categoryName} 분야에서 사용되는 치과 용어입니다.`}</p>
-                </details>
-                <details class="dict-faq-item">
-                  <summary><strong>{termName}는 어떤 경우에 필요한가요?</strong></summary>
-                  <p>{relatedService ? `${termName}는 ${relatedService} 진료와 관련하여 사용되는 개념입니다. 정확한 상담은 이음치과에서 받아보실 수 있습니다.` : `${termName}에 대한 자세한 안내는 이음치과 상담을 통해 받아보실 수 있습니다.`}</p>
-                </details>
-                <details class="dict-faq-item">
-                  <summary><strong>{termName} 관련 진료 상담은 어디서 받나요?</strong></summary>
-                  <p>이음치과의원에서 {termName} 관련 진료 상담을 받으실 수 있습니다. ☎ 051-206-5888 또는 네이버 예약을 통해 문의해주세요.</p>
-                </details>
+                {customFaqs.length > 0 ? (
+                  customFaqs.map((f) => (
+                    <details class="dict-faq-item">
+                      <summary><strong>{f.q}</strong></summary>
+                      <p>{f.a}</p>
+                    </details>
+                  ))
+                ) : (
+                  <>
+                    <details class="dict-faq-item">
+                      <summary><strong>{termName}이란 무엇인가요?</strong></summary>
+                      <p>{shortDesc || `${termName}은 ${categoryName} 분야에서 사용되는 치과 용어입니다.`}</p>
+                    </details>
+                    <details class="dict-faq-item">
+                      <summary><strong>{termName}는 어떤 경우에 필요한가요?</strong></summary>
+                      <p>{relatedService ? `${termName}는 ${relatedService} 진료와 관련하여 사용되는 개념입니다. 정확한 상담은 이음치과에서 받아보실 수 있습니다.` : `${termName}에 대한 자세한 안내는 이음치과 상담을 통해 받아보실 수 있습니다.`}</p>
+                    </details>
+                    <details class="dict-faq-item">
+                      <summary><strong>{termName} 관련 진료 상담은 어디서 받나요?</strong></summary>
+                      <p>이음치과의원에서 {termName} 관련 진료 상담을 받으실 수 있습니다. ☎ 051-206-5888 또는 네이버 예약을 통해 문의해주세요.</p>
+                    </details>
+                  </>
+                )}
               </div>
 
               {/* CTA */}

@@ -1145,6 +1145,15 @@ app.get('/dictionary/:slug', async (c) => {
   const termEn = term.english || ''
   const catName = term.category_name || ''
 
+  // 맞춤 FAQ 파싱 — 있으면 JSON-LD도 페이지 가시 FAQ와 1:1 일치
+  let dictCustomFaqs: { q: string; a: string }[] = []
+  try {
+    if (term.faqs) {
+      const parsed = JSON.parse(term.faqs)
+      if (Array.isArray(parsed)) dictCustomFaqs = parsed.filter((f: any) => f && f.q && f.a)
+    }
+  } catch { /* fallback to generic */ }
+
   return c.render(dictionaryDetailPage(slug, term), {
     seo: {
       title: `${termName} 뜻 | ${catName} 용어 — 이음치과 백과사전`,
@@ -1167,32 +1176,38 @@ app.get('/dictionary/:slug', async (c) => {
           url: `${SITE_URL}/dictionary/${slug}`,
           inLanguage: 'ko-KR'
         },
-        // 페이지 가시 FAQ(3개 details)와 1:1 일치하는 FAQPage — AEO 강화
+        // 페이지 가시 FAQ와 1:1 일치하는 FAQPage — 맞춤 FAQ 우선 (AEO 강화)
         {
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
-          mainEntity: [
-            {
-              '@type': 'Question',
-              name: `${termName}이란 무엇인가요?`,
-              acceptedAnswer: { '@type': 'Answer', text: termDesc || `${termName}은 ${catName} 분야에서 사용되는 치과 용어입니다.` }
-            },
-            {
-              '@type': 'Question',
-              name: `${termName}는 어떤 경우에 필요한가요?`,
-              acceptedAnswer: {
-                '@type': 'Answer',
-                text: term.related_service
-                  ? `${termName}는 ${term.related_service} 진료와 관련하여 사용되는 개념입니다. 정확한 상담은 이음치과에서 받아보실 수 있습니다.`
-                  : `${termName}에 대한 자세한 안내는 이음치과 상담을 통해 받아보실 수 있습니다.`
-              }
-            },
-            {
-              '@type': 'Question',
-              name: `${termName} 관련 진료 상담은 어디서 받나요?`,
-              acceptedAnswer: { '@type': 'Answer', text: `이음치과의원에서 ${termName} 관련 진료 상담을 받으실 수 있습니다. ☎ 051-206-5888 또는 네이버 예약을 통해 문의해주세요.` }
-            }
-          ]
+          mainEntity: dictCustomFaqs.length > 0
+            ? dictCustomFaqs.map(f => ({
+                '@type': 'Question',
+                name: f.q,
+                acceptedAnswer: { '@type': 'Answer', text: f.a }
+              }))
+            : [
+                {
+                  '@type': 'Question',
+                  name: `${termName}이란 무엇인가요?`,
+                  acceptedAnswer: { '@type': 'Answer', text: termDesc || `${termName}은 ${catName} 분야에서 사용되는 치과 용어입니다.` }
+                },
+                {
+                  '@type': 'Question',
+                  name: `${termName}는 어떤 경우에 필요한가요?`,
+                  acceptedAnswer: {
+                    '@type': 'Answer',
+                    text: term.related_service
+                      ? `${termName}는 ${term.related_service} 진료와 관련하여 사용되는 개념입니다. 정확한 상담은 이음치과에서 받아보실 수 있습니다.`
+                      : `${termName}에 대한 자세한 안내는 이음치과 상담을 통해 받아보실 수 있습니다.`
+                  }
+                },
+                {
+                  '@type': 'Question',
+                  name: `${termName} 관련 진료 상담은 어디서 받나요?`,
+                  acceptedAnswer: { '@type': 'Answer', text: `이음치과의원에서 ${termName} 관련 진료 상담을 받으실 수 있습니다. ☎ 051-206-5888 또는 네이버 예약을 통해 문의해주세요.` }
+                }
+              ]
         },
         breadcrumbJsonLd([
           { name: '홈', url: '/' },
