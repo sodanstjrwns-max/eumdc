@@ -281,7 +281,8 @@ function _markdownToHtmlImpl(md: string, opts?: { autoToc?: boolean }): string {
       i++
     }
     if (para.length) {
-      out.push(`<p class="md-p">${inlineFormat(para.join(' '))}</p>`)
+      // 문단 내부 줄바꿈(엔터 1번)은 <br/>로 보존 — 빈 줄(엔터 2번)만 새 문단(<p>)으로 분리됨
+      out.push(`<p class="md-p">${inlineFormat(para.join('<br/>'))}</p>`)
     }
   }
 
