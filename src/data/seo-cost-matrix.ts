@@ -30,7 +30,7 @@ export const SEO_COSTS: CostInfo[] = [
     unit: '1개당',
     factors: [
       { factor: '임플란트 픽스처 제조사', explanation: '오스템·스트라우만·노벨 등 제조사·국가별로 가격대가 다릅니다.' },
-      { factor: '뼈이식·상악동거상술 여부', explanation: '잇몸뼈 부족 시 추가 시술이 동반되어 비용이 늘어납니다.' },
+      { factor: '뼈이식·상악동(위턱 공간)거상술 여부', explanation: '잇몸뼈 부족 시 추가 시술이 동반되어 비용이 늘어납니다.' },
       { factor: '크라운 재료', explanation: '지르코니아·PFM·골드 등 보철 재료에 따라 차이가 있습니다.' },
       { factor: '디지털 가이드·네비게이션 사용 여부', explanation: '정밀 가이드 사용 시 약간의 추가 비용이 있을 수 있습니다.' },
       { factor: '진정·수면치료', explanation: '수면 임플란트의 경우 추가 마취관리 비용이 발생합니다.' }
