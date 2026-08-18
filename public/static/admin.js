@@ -2015,7 +2015,7 @@
       ) {
         para.push(lines[i].trim()); i++;
       }
-      if (para.length) out.push('<p class="md-p">' + _inline(para.join(' ')) + '</p>');
+      if (para.length) out.push('<p class="md-p">' + _inline(para.join('<br/>')) + '</p>');
     }
 
     var html = out.filter(function (l) { return l !== ''; }).join('\n');
