@@ -2257,6 +2257,7 @@ app.get('/llms-full.txt', async (c) => {
 // ═══════════════════════════════════════════
 // robots.txt + sitemap.xml (SEO 필수)
 // ═══════════════════════════════════════════
+app.get('/1c20b7a224344e4bacbb4bf922039648.txt', (c) => c.text('1c20b7a224344e4bacbb4bf922039648'))
 app.get('/robots.txt', (c) => {
   return c.text(`User-agent: *
 Allow: /
