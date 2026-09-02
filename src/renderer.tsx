@@ -58,6 +58,9 @@ export const renderer = jsxRenderer(({ children, seo }) => {
 
         {/* 동적 SEO 메타 + JSON-LD */}
         {raw(seoHead)}
+        {/* GA4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZF8ERCFZ6Q"></script>
+        <script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZF8ERCFZ6Q',{anonymize_ip:true});" }} />
       </head>
       <body>{children}</body>
     </html>
