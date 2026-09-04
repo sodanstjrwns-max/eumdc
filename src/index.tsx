@@ -9,6 +9,7 @@ import blogsRoutes from './routes/blogs'
 import noticesRoutes from './routes/notices'
 import uploadRoutes from './routes/upload'
 import authRoutes, { requireAdmin } from './routes/auth'
+import adminStatsRoutes from './routes/admin-stats'
 import usersRoutes from './routes/users'
 import faqRoutes from './routes/faq'
 import reservationRoutes from './routes/reservations'
@@ -148,6 +149,7 @@ app.use('*', async (c, next) => {
 
 // === Auth routes (public, before admin middleware) ===
 app.route('', authRoutes)
+app.route('', adminStatsRoutes)
 
 // === Admin auth middleware ===
 // /api/upload은 R2 보호 - 관리자만 업로드 가능

@@ -42,6 +42,7 @@ export function adminPage() {
                 <button class="admin-tab" data-tab="notices">공지사항</button>
                 <button class="admin-tab" data-tab="faq">FAQ</button>
                 <button class="admin-tab" data-tab="users">회원관리</button>
+                <a href="/admin/stats" class="admin-tab" style="text-decoration:none;display:inline-block">검색·방문 통계</a>
               </nav>
               <button id="logoutBtn" class="admin-logout">로그아웃</button>
             </header>
