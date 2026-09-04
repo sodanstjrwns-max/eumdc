@@ -32,7 +32,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png?v=20260419c" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="mask-icon" href="/static/favicon.svg" color="#00306A" />
-        <link rel="alternate" type="application/rss+xml" title="이음치과 블로그 RSS" href="/feed.xml" />
+        <link rel="alternate" type="application/rss+xml" title="이음치과 블로그 RSS" href="/rss.xml" />
         <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
         {/* 폰트 preconnect + preload (CLS 방지) */}

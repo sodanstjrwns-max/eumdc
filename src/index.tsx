@@ -2006,7 +2006,7 @@ app.get('/7a4e9c2b3f1d8e6a5c0b9d2e4f6a8c1b3d5e7f9a2c4b6d8e0f1a3c5b7d9e2f4a.txt',
 // ═══════════════════════════════════════════
 // RSS 피드 (네이버/구글 뉴스/RSS 리더 + AEO 봇)
 // ═══════════════════════════════════════════
-app.get('/feed.xml', async (c) => {
+app.on('GET', ['/feed.xml', '/rss.xml'], async (c) => {
   const { results: blogs } = await c.env.DB.prepare(
     'SELECT id, slug, title, content, thumbnail, created_at, updated_at, author_name FROM blogs WHERE is_published = 1 ORDER BY created_at DESC LIMIT 30'
   ).all() as any
@@ -2027,7 +2027,7 @@ app.get('/feed.xml', async (c) => {
   <copyright>© 이음치과의원</copyright>
   <lastBuildDate>${lastBuildDate}</lastBuildDate>
   <generator>이음치과 자동 RSS</generator>
-  <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
+  <atom:link href="${SITE_URL}${c.req.path}" rel="self" type="application/rss+xml" />
   <image>
     <url>${SITE_URL}/static/og-image.jpg</url>
     <title>이음치과의원</title>

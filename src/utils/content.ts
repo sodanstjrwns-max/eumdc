@@ -414,7 +414,7 @@ function inlineFormat(s: string): string {
     if (alt && alt.trim()) {
       return `<figure class="md-figure"><img src="${escapeAttr(url)}" alt="${escapeAttr(alt)}" class="md-img" loading="lazy"/><figcaption class="md-figcaption">${escapeHtml(alt)}</figcaption></figure>`
     }
-    return `<img src="${escapeAttr(url)}" alt="" class="md-img" loading="lazy"/>`
+    return `<img src="${escapeAttr(url)}" alt="" role="presentation" class="md-img" loading="lazy"/>`
   })
   // 링크 [text](url)
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, text, url) =>

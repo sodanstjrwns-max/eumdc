@@ -18,7 +18,7 @@ export function mainPage() {
       {/* === NAVIGATION === */}
       <nav id="nav">
         <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
-          <img src="/static/images/symbol-112.webp" alt="" class="nav-brand-symbol" width="40" height="44" loading="eager" />
+          <img src="/static/images/symbol-112.webp" alt="이음치과의원 로고" class="nav-brand-symbol" width="40" height="44" loading="eager" />
           <span class="nav-brand-mark">이음치과</span>
           <span class="nav-brand-sub">IEUM · EST.2025</span>
         </a>
@@ -321,12 +321,12 @@ export function mainPage() {
           <div class="gallery-item" data-hover><img src="/static/img/photo_4.webp" width="1200" height="801" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
           <div class="gallery-item" data-hover><img src="/static/img/photo_9.webp" width="1200" height="801" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
           <div class="gallery-item" data-hover><img src="/static/img/photo_1.webp" width="1200" height="800" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.webp" width="1200" height="801" alt="" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.webp" width="1200" height="800" alt="" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.webp" width="1200" height="800" alt="이음치과 접수" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.webp" width="1200" height="800" alt="이음치과 대기실" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.webp" width="1200" height="801" alt="이음치과 진료실" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.webp" width="1200" height="801" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.webp" width="1200" height="801" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
+          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.webp" width="1200" height="800" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
         </div>
       </div>
 
