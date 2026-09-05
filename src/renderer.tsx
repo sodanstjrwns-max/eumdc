@@ -62,6 +62,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZF8ERCFZ6Q"></script>
         <script dangerouslySetInnerHTML={{ __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-ZF8ERCFZ6Q',{anonymize_ip:true});" }} />
         <script dangerouslySetInnerHTML={{ __html: '(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","yc808lh5fe");' }} />
+        <script defer src="https://pf-dashboard-2nt.pages.dev/beacon.js"></script>
       </head>
       <body>{children}</body>
     </html>
