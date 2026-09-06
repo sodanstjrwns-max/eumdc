@@ -15,6 +15,7 @@ import faqRoutes from './routes/faq'
 import reservationRoutes from './routes/reservations'
 import dictionaryRoutes from './routes/dictionary'
 import treatmentsRoutes from './routes/treatments'
+import pricesRoutes from './routes/prices'
 import doctorsRoutes from './routes/doctors'
 import regionsRoutes from './routes/regions'
 import { mainPage } from './pages/main'
@@ -172,6 +173,8 @@ app.use('/api/admin/reservations', requireAdmin())
 app.use('/api/admin/reservations/*', requireAdmin())
 app.use('/api/admin/doctors', requireAdmin())
 app.use('/api/admin/doctors/*', requireAdmin())
+app.use('/api/admin/prices', requireAdmin())
+app.use('/api/admin/prices/*', requireAdmin())
 app.use('/api/admin/seo', requireAdmin())
 app.use('/api/admin/seo/*', requireAdmin())
 
@@ -214,6 +217,7 @@ app.route('', faqRoutes)
 app.route('', reservationRoutes)
 app.route('', dictionaryRoutes)
 app.route('', treatmentsRoutes)
+app.route('', pricesRoutes)
 app.route('', doctorsRoutes)
 app.route('', regionsRoutes)
 

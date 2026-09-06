@@ -12,7 +12,7 @@ export function adminPage() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="/static/admin.css?v=20260612a" rel="stylesheet" />
+        <link href="/static/admin.css?v=20260906a" rel="stylesheet" />
         {/* Toast UI Editor — WYSIWYG with markdown compatibility, Excel-like table editing */}
         <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
       </head>
@@ -41,6 +41,7 @@ export function adminPage() {
                 <button class="admin-tab" data-tab="blogs">블로그</button>
                 <button class="admin-tab" data-tab="notices">공지사항</button>
                 <button class="admin-tab" data-tab="faq">FAQ</button>
+                <button class="admin-tab" data-tab="prices">수가표</button>
                 <button class="admin-tab" data-tab="users">회원관리</button>
                 <a href="/admin/stats" class="admin-tab" style="text-decoration:none;display:inline-block">검색·방문 통계</a>
               </nav>
@@ -466,6 +467,77 @@ export function adminPage() {
               </div>
             </div>
 
+            {/* ===== PRICES (수가표) TAB ===== */}
+            <div class="admin-panel" id="panel-prices">
+              <div class="panel-header">
+                <h2>비급여 수가표 관리</h2>
+                <button class="btn-primary" id="newPriceBtn">+ 새 항목</button>
+              </div>
+              <p class="admin-meta" style="margin:0 0 12px">
+                의료법 제45조 비급여 진료비 고지 항목입니다. 각 항목의 <strong>공개/비공개</strong>를 전환하면
+                홈페이지 비용 안내(<a href="/prices" target="_blank" rel="noopener">/prices</a>)에 즉시 반영됩니다.
+                비공개 항목은 홈페이지에 노출되지 않습니다.
+              </p>
+              <div class="admin-list" id="pricesList"></div>
+
+              {/* Price Form Modal */}
+              <div class="modal-overlay" id="priceModal" style="display:none">
+                <div class="modal-card">
+                  <div class="modal-header">
+                    <h3 id="priceModalTitle">새 수가 항목</h3>
+                    <button class="modal-close" data-close="priceModal">&times;</button>
+                  </div>
+                  <form id="priceForm" class="admin-form">
+                    <input type="hidden" id="priceId" />
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>진료과목</label>
+                        <select id="priceTreatment">
+                          <option value="">선택 안함 (기타)</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>항목명 *</label>
+                        <input type="text" id="priceItemName" placeholder="예: 국산 임플란트 (1치)" required />
+                      </div>
+                    </div>
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label>비용</label>
+                        <input type="text" id="pricePriceText" placeholder="예: 90만원~ / 상담 후 결정" />
+                      </div>
+                      <div class="form-group">
+                        <label>정렬 순서</label>
+                        <input type="number" id="priceSortOrder" value="0" min="0" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>비고</label>
+                      <input type="text" id="priceNote" placeholder="예: CBCT 진단 후 확정" />
+                    </div>
+                    <div class="form-row-2">
+                      <div class="form-group">
+                        <label class="checkbox-label">
+                          <input type="checkbox" id="priceInsurance" />
+                          보험 적용 항목
+                        </label>
+                      </div>
+                      <div class="form-group">
+                        <label class="checkbox-label">
+                          <input type="checkbox" id="pricePublished" checked />
+                          홈페이지에 공개
+                        </label>
+                      </div>
+                    </div>
+                    <div class="form-actions">
+                      <button type="button" class="btn-secondary" data-close="priceModal">취소</button>
+                      <button type="submit" class="btn-primary">저장</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
             {/* ===== NOTICES TAB ===== */}
             <div class="admin-panel" id="panel-notices">
               <div class="panel-header">
@@ -541,7 +613,7 @@ export function adminPage() {
         {/* Toast UI Editor (WYSIWYG + 마크다운 + 엑셀식 표 편집) */}
         <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
         <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.min.js"></script>
-        <script src="/static/admin.js?v=20260612a"></script>
+        <script src="/static/admin.js?v=20260906a"></script>
       </body>
     </html>
   )

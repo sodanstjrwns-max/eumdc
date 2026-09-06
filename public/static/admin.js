@@ -22,6 +22,7 @@
       initBlogsAdmin();
       initNoticesAdmin();
       initFaqAdmin();
+      initPricesAdmin();
       initUsersAdmin();
       initRegionAutocomplete();
     });
@@ -79,6 +80,7 @@
     loadBlogs();
     loadNotices();
     loadFaq();
+    loadPrices();
     loadUsers();
   }
 
@@ -2516,6 +2518,174 @@
     document.getElementById('faqAnswer').value = f.answer || '';
     document.getElementById('faqSortOrder').value = f.sort_order || 0;
     document.getElementById('faqModal').style.display = '';
+  }
+
+  // =============================
+  // PRICES (수가표) ADMIN
+  // =============================
+  var priceTreatments = [];
+
+  function initPricesAdmin() {
+    var newBtn = document.getElementById('newPriceBtn');
+    if (!newBtn) return;
+
+    newBtn.addEventListener('click', function () {
+      document.getElementById('priceModalTitle').textContent = '새 수가 항목';
+      document.getElementById('priceForm').reset();
+      document.getElementById('priceId').value = '';
+      document.getElementById('priceSortOrder').value = '0';
+      document.getElementById('pricePublished').checked = true;
+      document.getElementById('priceInsurance').checked = false;
+      document.getElementById('priceModal').style.display = '';
+    });
+
+    document.getElementById('priceForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var id = document.getElementById('priceId').value;
+      var tval = document.getElementById('priceTreatment').value;
+      var payload = {
+        treatment_id: tval ? parseInt(tval) : null,
+        item_name: document.getElementById('priceItemName').value,
+        price_text: document.getElementById('pricePriceText').value,
+        note: document.getElementById('priceNote').value,
+        sort_order: parseInt(document.getElementById('priceSortOrder').value) || 0,
+        insurance_covered: document.getElementById('priceInsurance').checked ? 1 : 0,
+        is_published: document.getElementById('pricePublished').checked ? 1 : 0
+      };
+      if (!payload.item_name.trim()) return;
+
+      var url = id ? '/api/admin/prices/' + id : '/api/admin/prices';
+      var method = id ? 'PUT' : 'POST';
+
+      fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload)
+      }).then(function () {
+        document.getElementById('priceModal').style.display = 'none';
+        loadPrices();
+      });
+    });
+  }
+
+  function loadPrices() {
+    var list = document.getElementById('pricesList');
+    if (!list) return;
+    fetch('/api/admin/prices', { cache: 'no-store', credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        priceTreatments = data.treatments || [];
+        populatePriceTreatmentSelect();
+
+        var rows = data.prices || [];
+        if (rows.length === 0) {
+          list.innerHTML = '<div class="admin-empty">등록된 수가 항목이 없습니다</div>';
+          return;
+        }
+
+        // 진료과목별 그룹핑
+        var grouped = {};
+        var order = [];
+        rows.forEach(function (p) {
+          var key = p.treatment_name || '기타';
+          if (!grouped[key]) { grouped[key] = []; order.push(key); }
+          grouped[key].push(p);
+        });
+
+        list.innerHTML = '';
+        order.forEach(function (catName) {
+          var catHeader = document.createElement('div');
+          catHeader.className = 'admin-section-header';
+          catHeader.innerHTML = '<h3>' + escapeHtml(catName) +
+            ' <span class="admin-meta">(' + grouped[catName].length + ')</span></h3>';
+          list.appendChild(catHeader);
+
+          grouped[catName].forEach(function (p) {
+            var published = p.is_published != 0;
+            var row = document.createElement('div');
+            row.className = 'admin-row';
+            if (!published) row.style.opacity = '0.55';
+            row.innerHTML =
+              '<div class="admin-row-info" style="flex:1">' +
+                '<h4>' + escapeHtml(p.item_name || '') +
+                  ' <span class="admin-meta">' + escapeHtml(p.price_text || '-') + '</span>' +
+                  (p.insurance_covered ? ' <span class="consent-tag">보험</span>' : '') +
+                  (published
+                    ? ' <span class="consent-tag marketing">공개</span>'
+                    : ' <span class="consent-tag">비공개</span>') +
+                '</h4>' +
+                '<span class="admin-meta">순서 ' + (p.sort_order || 0) +
+                  (p.note ? ' · ' + escapeHtml(p.note) : '') + '</span>' +
+              '</div>' +
+              '<div class="admin-row-actions">' +
+                '<button class="btn-edit" data-toggle-price="' + p.id + '" data-pub="' +
+                  (published ? '1' : '0') + '">' + (published ? '비공개로' : '공개로') + '</button>' +
+                '<button class="btn-edit" data-edit-price="' + p.id + '">수정</button>' +
+                '<button class="btn-delete" data-del-price="' + p.id + '">삭제</button>' +
+              '</div>';
+            list.appendChild(row);
+          });
+        });
+
+        list.querySelectorAll('[data-toggle-price]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var next = btn.dataset.pub === '1' ? 0 : 1;
+            fetch('/api/admin/prices/' + btn.dataset.togglePrice + '/publish', {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'same-origin',
+              body: JSON.stringify({ is_published: next })
+            }).then(function () { loadPrices(); });
+          });
+        });
+
+        list.querySelectorAll('[data-edit-price]').forEach(function (btn) {
+          btn.addEventListener('click', function () { editPrice(btn.dataset.editPrice, rows); });
+        });
+
+        list.querySelectorAll('[data-del-price]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            if (!confirm('이 수가 항목을 삭제하시겠습니까?')) return;
+            fetch('/api/admin/prices/' + btn.dataset.delPrice, {
+              method: 'DELETE', credentials: 'same-origin'
+            }).then(function () { loadPrices(); });
+          });
+        });
+      }).catch(function () {});
+  }
+
+  function populatePriceTreatmentSelect() {
+    var sel = document.getElementById('priceTreatment');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">선택 안함 (기타)</option>';
+    priceTreatments.forEach(function (t) {
+      var opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function editPrice(id, allPrices) {
+    var p = allPrices.find(function (x) { return x.id == id; });
+    if (!p) return;
+    document.getElementById('priceModalTitle').textContent = '수가 항목 수정';
+    document.getElementById('priceId').value = p.id;
+    document.getElementById('priceTreatment').value = p.treatment_id || '';
+    document.getElementById('priceItemName').value = p.item_name || '';
+    document.getElementById('pricePriceText').value = p.price_text || '';
+    document.getElementById('priceNote').value = p.note || '';
+    document.getElementById('priceSortOrder').value = p.sort_order || 0;
+    document.getElementById('priceInsurance').checked = !!p.insurance_covered;
+    document.getElementById('pricePublished').checked = p.is_published != 0;
+    document.getElementById('priceModal').style.display = '';
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
   // =============================
