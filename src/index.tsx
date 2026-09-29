@@ -43,6 +43,7 @@ import {
   PRIORITY_TREATMENT_SLUGS, PRIORITY_REGION_SLUGS
 } from './data/seo-matrix'
 import { SEO_COSTS_MAP } from './data/seo-cost-matrix'
+import { PRICES_DATE } from './data/content-dates'
 import {
   defaultSeo, localBusinessJsonLd, websiteJsonLd, breadcrumbJsonLd,
   faqPageJsonLd, blogPostingJsonLd, medicalWebPageJsonLd,
@@ -1119,7 +1120,7 @@ app.get('/prices', async (c) => {
 // /prices.md — AI 에이전트용 마크다운 수가표 (토큰 효율 + 인용 정확도)
 app.get('/prices.md', async (c) => {
   const groups = await loadPriceGroups(c.env.DB)
-  let md = `# 이음치과의원 진료 비용 안내 (수가표)\n\n> 출처: ${SITE_URL}/prices | 기준일: ${new Date().toISOString().split('T')[0]}\n> ©이음치과의원 — 인용 시 출처 표기 필수. 비용은 구강 상태에 따라 달라질 수 있으며, 정확한 비용은 CBCT 진단 후 안내됩니다.\n\n`
+  let md = `# 이음치과의원 진료 비용 안내 (수가표)\n\n> 출처: ${SITE_URL}/prices | 기준일: ${PRICES_DATE}\n> ©이음치과의원 — 인용 시 출처 표기 필수. 비용은 구강 상태에 따라 달라질 수 있으며, 정확한 비용은 CBCT 진단 후 안내됩니다.\n\n`
   for (const g of groups) {
     md += `## ${g.treatment.name} (${SITE_URL}/treatments/${g.treatment.slug})\n\n| 항목 | 비용 | 보험 | 비고 |\n|---|---|---|---|\n`
     for (const p of g.prices) {

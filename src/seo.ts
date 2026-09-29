@@ -4,6 +4,8 @@
 // Naver 웹마스터, Speakable, HowTo, 리뷰, Service 스키마
 // =============================================
 
+import { PRICES_DATE } from './data/content-dates'
+
 export const SITE_URL = 'https://ieumdc.kr'
 export const SITE_NAME = '이음치과의원'
 export const SITE_NAME_EN = 'Eum Dental Clinic'
@@ -1161,7 +1163,7 @@ export function allPricesJsonLd(groups: { treatment: { name: string; slug: strin
     description: '부산 명지 이음치과의원 진료 비용 안내. 임플란트, 라미네이트, 올세라믹 등 주요 진료 수가를 투명하게 공개합니다.',
     url: `${SITE_URL}/prices`,
     isPartOf: { '@id': `${SITE_URL}/#website` },
-    lastReviewed: new Date().toISOString().split('T')[0],
+    lastReviewed: PRICES_DATE,
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     inLanguage: 'ko-KR',
     mainEntity: {

@@ -1,4 +1,5 @@
 import { subPageLayout } from './layout'
+import { PRICES_DATE } from '../data/content-dates'
 
 export type PriceGroup = {
   treatment: { name: string; slug: string }
@@ -7,7 +8,7 @@ export type PriceGroup = {
 
 /** 전체 진료 비용 안내 페이지 — 완전 SSR (AEO: AI/크롤러가 JS 없이 가격 즉시 수집) */
 export function pricesPage(groups: PriceGroup[], faqs: { question: string; answer: string }[]) {
-  const updatedDate = new Date().toISOString().split('T')[0]
+  const updatedDate = PRICES_DATE
   return subPageLayout('PRICES', (
     <div class="page-prices">
       <section class="page-hero-mini">
