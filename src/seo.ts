@@ -81,8 +81,8 @@ export function localBusinessJsonLd() {
     address: {
       '@type': 'PostalAddress',
       streetAddress: '명지국제8로 265, 201호',
-      addressLocality: '부산광역시',
-      addressRegion: '강서구',
+      addressLocality: '강서구',
+      addressRegion: '부산광역시',
       postalCode: '46726',
       addressCountry: 'KR'
     },
@@ -148,10 +148,11 @@ export function localBusinessJsonLd() {
 export function personJsonLd() {
   return {
     '@context': 'https://schema.org',
-    '@type': 'Person',
+    '@type': ['Person', 'Physician'],
     '@id': `${SITE_URL}/#director`,
     name: '최효영',
     jobTitle: '대표원장',
+    url: `${SITE_URL}/doctors/choi-hyoyoung`,
     description: '이음치과의원 대표원장. 강원대학교 치과대학 치의학과 졸업(2021). 임플란트, 심미보철 전문.',
     image: `${SITE_URL}/static/img/photo_5.webp`,
     alumniOf: { '@type': 'CollegeOrUniversity', name: '강원대학교 치과대학' },
@@ -245,12 +246,13 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
 // 4. FAQPage (AEO 핵심! — AI 검색 엔진 직접 파싱)
 // ═══════════════════════════════════════════
 
-export function faqPageJsonLd(faqs: { question: string; answer: string }[]) {
+export function faqPageJsonLd(faqs: { question: string; answer: string }[], opts?: { id?: string; name?: string }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    '@id': `${SITE_URL}/faq/#faqpage`,
-    name: '이음치과의원 자주 묻는 질문 (FAQ)',
+    // 페이지마다 다른 FAQ 이므로 @id 도 페이지별로 (진료 페이지는 opts.id 지정)
+    '@id': opts?.id || `${SITE_URL}/faq/#faqpage`,
+    name: opts?.name || '이음치과의원 자주 묻는 질문 (FAQ)',
     description: `이음치과의원에서 환자분들이 가장 많이 궁금해하시는 질문 ${faqs.length}개와 답변을 정리했습니다.`,
     mainEntity: faqs.map(faq => ({
       '@type': 'Question',
@@ -430,7 +432,8 @@ export function medicalWebPageJsonLd(page: {
     url: `${SITE_URL}${page.url}`,
     specialty: page.specialty || undefined,
     image: page.image ? (page.image.startsWith('http') ? page.image : `${SITE_URL}${page.image}`) : DEFAULT_IMAGE,
-    lastReviewed: page.lastReviewed || new Date().toISOString().split('T')[0],
+    // 오늘 날짜 자동 채움 금지 — 값이 있을 때만
+    ...(page.lastReviewed ? { lastReviewed: page.lastReviewed } : {}),
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     isPartOf: { '@id': `${SITE_URL}/#website` },
     about: { '@id': `${SITE_URL}/#organization` },
@@ -726,30 +729,73 @@ export function renderSeoHead(meta: SeoMeta): string {
 // 12. 진료과목 상세 스키마
 // ═══════════════════════════════════════════
 
+/** DB updated_at('2026-04-15 02:04:27') → ISO 날짜('2026-04-15'). 값이 없거나 형식이 다르면 undefined */
+export function isoDateOnly(v?: string | null): string | undefined {
+  const m = String(v || '').match(/^(\d{4}-\d{2}-\d{2})/)
+  return m ? m[1] : undefined
+}
+
+/** 진료 페이지 상단 답변 요약 — 기존 개요(overview) 앞 2문장, 없으면 short_desc (새 문장 생성 없음) */
+export function treatmentAnswer(treatment: any): string {
+  const plain = String(treatment?.overview || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (plain) {
+    const sentences = (plain.match(/.+?[.!?。](?=\s|$)/g) || [plain]).map((x) => x.trim())
+    // 앞 2문장, 합이 너무 짧으면(80자 미만) 3문장까지
+    let n = Math.min(2, sentences.length)
+    if (sentences.slice(0, n).join(' ').length < 80 && sentences.length > n) n++
+    const out = sentences.slice(0, n).join(' ').trim()
+    if (out) return out
+  }
+  return String(treatment?.short_desc || '').trim()
+}
+
+export const TREATMENT_SPEAKABLE = ['.treat-hero-title', '#tx-answer']
+
 export function treatmentJsonLd(treatment: any) {
+  const url = `${SITE_URL}/treatments/${treatment.slug}`
+  const lastReviewed = isoDateOnly(treatment.updated_at)
   return {
     '@context': 'https://schema.org',
     '@type': 'MedicalWebPage',
+    '@id': `${url}#webpage`,
     name: treatment.name,
     description: treatment.meta_description || treatment.short_desc || `이음치과의원 ${treatment.name} 전문 진료`,
-    url: `${SITE_URL}/treatments/${treatment.slug}`,
+    url,
     specialty: treatment.name,
     image: treatment.hero_image ? (treatment.hero_image.startsWith('http') ? treatment.hero_image : `${SITE_URL}${treatment.hero_image}`) : DEFAULT_IMAGE,
-    lastReviewed: treatment.updated_at || new Date().toISOString().split('T')[0],
+    // DB 콘텐츠의 최종 수정일(updated_at) — 화면 '최종 검토' 표기와 동일, 오늘 날짜 자동 채움 없음
+    ...(lastReviewed ? { lastReviewed } : {}),
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     isPartOf: { '@id': `${SITE_URL}/#website` },
-    about: {
-      '@type': 'MedicalProcedure',
-      name: treatment.name,
-      description: treatment.short_desc || '',
-      bodyLocation: '구강',
-      ...(treatment.duration ? { estimatedTime: treatment.duration } : {})
-    },
+    about: { '@id': `${url}#procedure` },
+    mainEntity: { '@id': `${url}#procedure` },
+    speakable: { '@type': 'SpeakableSpecification', cssSelector: TREATMENT_SPEAKABLE },
     mainContentOfPage: {
       '@type': 'WebPageElement',
       cssSelector: '.treat-detail-hero, .treat-section'
     },
     inLanguage: 'ko-KR'
+  }
+}
+
+/** 진료 페이지 MedicalProcedure (MedicalWebPage.about 대상) — DB 진료 데이터만 사용 */
+export function treatmentProcedureJsonLd(treatment: any) {
+  const url = `${SITE_URL}/treatments/${treatment.slug}`
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'MedicalProcedure',
+    '@id': `${url}#procedure`,
+    name: treatment.name,
+    ...(treatment.name_en ? { alternateName: treatment.name_en } : {}),
+    description: treatmentAnswer(treatment) || treatment.short_desc || '',
+    url,
+    bodyLocation: '구강',
+    procedureType: 'https://schema.org/TherapeuticProcedure',
+    performer: { '@id': `${SITE_URL}/#organization` }
   }
 }
 

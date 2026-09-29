@@ -113,6 +113,8 @@ export function blogDetailPage(
 
   // 마크다운 → HTML 변환 (content_html 있으면 우선)
   let contentHtml = blog.content_html || markdownToHtml(blog.content || '')
+  // 저장된 HTML 본문 안의 <h1> 도 H2로 강등 (페이지 H1은 글 제목 하나)
+  contentHtml = contentHtml.replace(/<h1(\s[^>]*)?>/gi, (_m: string, attrs?: string) => `<h2${(attrs || '').replace(/\bmd-h1\b/, 'md-h2')}>`).replace(/<\/h1>/gi, '</h2>')
   // 치과용어 자동링크
   if (dictTerms && dictTerms.length > 0) {
     contentHtml = linkDictionaryTerms(contentHtml, dictTerms)

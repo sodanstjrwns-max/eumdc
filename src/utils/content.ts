@@ -155,7 +155,8 @@ function _markdownToHtmlImpl(md: string, opts?: { autoToc?: boolean }): string {
     // 헤딩 H4~H1 (SEO용 id 자동 생성)
     const hMatch = trimmed.match(/^(#{1,4})\s+(.+)$/)
     if (hMatch) {
-      const level = hMatch[1].length
+      // 본문 '# 제목'은 H2로 — 페이지 H1(글 제목)은 하나만 (블로그·공지·의료진·케이스 본문 공통)
+      const level = Math.max(2, hMatch[1].length)
       const rawText = hMatch[2].trim()
       const content = inlineFormat(rawText)
       const slug = uniqueSlug(slugifyKoEn(stripMdInline(rawText)))

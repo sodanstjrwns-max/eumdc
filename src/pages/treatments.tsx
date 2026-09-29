@@ -1,5 +1,6 @@
 import { subPageLayout } from './layout'
 import { SEO_TREATMENTS_MAP } from '../data/seo-matrix'
+import { treatmentAnswer, isoDateOnly } from '../seo'
 
 /** 진료과목 목록 페이지
  *  카드 목록은 SSR로 먼저 그림(검색엔진은 robots.txt의 /api/ 차단 때문에 /api/treatments를 못 읽음 →
@@ -71,7 +72,7 @@ export function treatmentsPage(treatments: any[] = []) {
 }
 
 /** 진료과목 상세 페이지 (SSR-first for SEO) */
-export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any, prices?: any[]) {
+export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any, prices?: any[], faqs?: { question: string; answer: string }[]) {
   // benefits / process_steps / content_sections는 JSON 문자열 → 안전 파싱
   const safeParse = (s: any): any[] => {
     if (!s) return []
@@ -84,6 +85,9 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
   const subtitle = treatment?.hero_subtitle || treatment?.short_desc || ''
   const overview = treatment?.overview || ''
   const ssrPrices = prices || []
+  const ssrFaqs = faqs || []
+  const answer = treatment ? treatmentAnswer(treatment) : ''
+  const lastReviewed = isoDateOnly(treatment?.updated_at)
 
   return subPageLayout('TREATMENT', (
     <div class="page-treatment-detail">
@@ -105,6 +109,23 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
           </div>
         </div>
       </section>
+
+      {/* 핵심 답변 요약 + 감수 줄 — #treatDetailContent 밖에 둬서 treatments.js 재렌더 후에도 유지 */}
+      {(answer || lastReviewed) && (
+        <section class="treat-section treat-answer-first" style="padding:40px 0 8px">
+          <div class="container-wide">
+            {answer && (
+              <div class="tx-answer-box" style="border-left:4px solid var(--brand-mint, #4ABCBD);background:rgba(0,0,0,.03);padding:18px 22px;border-radius:10px">
+                <p style="font-size:.85rem;font-weight:700;opacity:.7;margin:0 0 6px">핵심 답변</p>
+                <p id="tx-answer" style="font-size:1.05rem;line-height:1.75;margin:0">{answer}</p>
+              </div>
+            )}
+            <p class="tx-reviewed" style="font-size:.9rem;opacity:.75;margin:12px 0 0">
+              감수: <a href="/doctors/choi-hyoyoung">최효영 대표원장</a>{lastReviewed ? <> · 최종 검토 <time datetime={lastReviewed}>{lastReviewed}</time></> : null}
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* SSR 본문 — Googlebot이 즉시 읽을 수 있게 */}
       <div id="treatDetailContent" data-slug={slug}>
@@ -205,6 +226,27 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
                 </table>
               </div>
               <p class="treat-price-note">※ 환자 상태에 따라 비용이 달라질 수 있습니다. 정확한 비용은 CBCT 진단 후 상담 시 안내해 드립니다. <a href="/prices">전체 진료 비용 안내 →</a></p>
+            </div>
+          </section>
+        )}
+
+        {/* FAQ SSR — FAQPage 스키마와 같은 배열 (treatments.js 도 같은 API 목록으로 다시 그림) */}
+        {ssrFaqs.length > 0 && (
+          <section class="treat-section bg-alt" id="treat-faq">
+            <div class="container-wide">
+              <h2 class="treat-section-title">{treatmentName} 자주 묻는 질문</h2>
+              <div class="treat-faq-list">
+                {ssrFaqs.map((f, i) => (
+                  <div class="treat-faq-item">
+                    <button class="treat-faq-q" type="button" onclick="this.parentElement.classList.toggle('open')">
+                      <span class="treat-faq-num">{String(i + 1).padStart(2, '0')}</span>
+                      <span>Q. {f.question}</span>
+                      <span class="treat-faq-toggle">+</span>
+                    </button>
+                    <div class="treat-faq-a"><p>{f.answer}</p></div>
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}
