@@ -1,7 +1,26 @@
 import { subPageLayout } from './layout'
+import { SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 
-/** 진료과목 목록 페이지 */
-export function treatmentsPage() {
+/** 진료과목 목록 페이지
+ *  카드 목록은 SSR로 먼저 그림(검색엔진은 robots.txt의 /api/ 차단 때문에 /api/treatments를 못 읽음 →
+ *  예전엔 "불러오는 중..."만 색인됨). treatments.js가 로드되면 같은 마크업(+아이콘)으로 다시 그림. */
+function ssrTreatCards(items: any[], isCore: boolean) {
+  if (items.length === 0) return <div class="loading-spinner">불러오는 중...</div>
+  return items.map((t: any) => (
+    <a href={`/treatments/${t.slug}`} class={`treat-card${isCore ? ' core' : ''}`} data-hover>
+      <div class="treat-card-body">
+        <h3 class="treat-card-name">{t.name}</h3>
+        {t.name_en && <span class="treat-card-en">{t.name_en}</span>}
+        <p class="treat-card-desc">{t.short_desc || ''}</p>
+      </div>
+      <span class="treat-card-arrow">→</span>
+    </a>
+  ))
+}
+
+export function treatmentsPage(treatments: any[] = []) {
+  const core = treatments.filter((t: any) => t.category === 'core')
+  const standard = treatments.filter((t: any) => t.category !== 'core')
   return subPageLayout('TREATMENTS', (
     <div class="page-treatments">
       <section class="page-hero-mini">
@@ -18,7 +37,7 @@ export function treatmentsPage() {
           <div class="treat-category-section">
             <h2 class="treat-cat-title"><span class="treat-cat-badge core">SIGNATURE</span> 핵심 진료</h2>
             <div class="treat-grid core" id="treatCoreGrid">
-              <div class="loading-spinner">불러오는 중...</div>
+              {ssrTreatCards(core, true)}
             </div>
           </div>
 
@@ -26,7 +45,7 @@ export function treatmentsPage() {
           <div class="treat-category-section">
             <h2 class="treat-cat-title"><span class="treat-cat-badge standard">GENERAL</span> 일반 진료</h2>
             <div class="treat-grid standard" id="treatStandardGrid">
-              <div class="loading-spinner">불러오는 중...</div>
+              {ssrTreatCards(standard, false)}
             </div>
           </div>
         </div>
@@ -195,15 +214,26 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
           <div class="container-wide">
             <h2 class="treat-section-title">{treatmentName} 관련 안내</h2>
             <div class="treat-related-grid">
-              <a href={`/regions/myeongji/${slug}`} class="treat-related-card">
-                <strong>명지동 {treatmentName}</strong><span>지역 정보 →</span>
-              </a>
-              <a href={`/regions/myeongji/${slug}/cost`} class="treat-related-card">
-                <strong>{treatmentName} 비용</strong><span>비용 안내 →</span>
-              </a>
-              <a href={`/best/myeongji-${slug}`} class="treat-related-card">
-                <strong>{treatmentName} 잘하는 곳</strong><span>비교 가이드 →</span>
-              </a>
+              {/* 지역×진료 매트릭스에 있는 진료만 명지동 페이지가 존재 (없는 진료는 404였음 → 숨김) */}
+              {SEO_TREATMENTS_MAP[slug] && (
+                <a href={`/regions/myeongji/${slug}`} class="treat-related-card">
+                  <strong>명지동 {treatmentName}</strong><span>지역 정보 →</span>
+                </a>
+              )}
+              {SEO_TREATMENTS_MAP[slug] && (
+                <a href={`/regions/myeongji/${slug}/cost`} class="treat-related-card">
+                  <strong>{treatmentName} 비용</strong><span>비용 안내 →</span>
+                </a>
+              )}
+              {SEO_TREATMENTS_MAP[slug] ? (
+                <a href={`/best/myeongji-${slug}`} class="treat-related-card">
+                  <strong>{treatmentName} 잘하는 곳</strong><span>비교 가이드 →</span>
+                </a>
+              ) : (
+                <a href="/prices" class="treat-related-card">
+                  <strong>{treatmentName} 비용</strong><span>비용 안내 →</span>
+                </a>
+              )}
               <a href="/cases" class="treat-related-card">
                 <strong>비포애프터 케이스</strong><span>실제 결과 →</span>
               </a>

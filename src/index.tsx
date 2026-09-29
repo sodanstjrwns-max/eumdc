@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { getCookie } from 'hono/cookie'
 import { renderer } from './renderer'
+import { isThinDictTerm, isThinCase, isThinNotice, NOINDEX_FOLLOW } from './utils/thin-content'
 import type { HonoEnv } from './types'
 import { verifyHmacToken } from './routes/auth'
 import casesRoutes from './routes/cases'
@@ -56,6 +57,20 @@ import {
 
 const app = new Hono<HonoEnv>()
 
+// 고정 별칭 경로 → 최종 경로 (DB 조회가 필요 없는 것만)
+function resolvePathAlias(p: string): string {
+  let m: RegExpMatchArray | null
+  if (p === '/blog') return '/blogs'
+  if ((m = p.match(/^\/blog\/(.+)$/))) return `/blogs/${m[1]}`
+  if (p === '/contact') return '/visit'
+  if (p === '/services') return '/treatments'
+  if ((m = p.match(/^\/services\/([^/]+)$/))) p = `/treatments/${m[1]}`
+  if ((m = p.match(/^\/treatments\/(prosthetics|glownate)$/))) return `/treatments/${m[1] === 'prosthetics' ? 'aesthetic' : 'laminate'}`
+  if ((m = p.match(/^\/regions\/([^/]+)\/glownate(\/cost)?$/))) return `/regions/${m[1]}/laminate${m[2] || ''}`
+  if ((m = p.match(/^\/best\/(.+)-glownate$/))) return `/best/${m[1]}-laminate`
+  return p
+}
+
 // === SEO: 도메인 정규화 301 리다이렉트 ===
 // - 기존 도메인(eumdc.kr, www.eumdc.kr) → 신규 도메인(ieumdc.kr)
 // - www.ieumdc.kr → ieumdc.kr (non-www 통일)
@@ -81,6 +96,14 @@ app.use('*', async (c, next) => {
       !url.pathname.startsWith('/.well-known') &&
       !url.pathname.startsWith('/static/')) {
     url.pathname = url.pathname.replace(/\/+$/, '')
+    needsRedirect = true
+  }
+
+  // 3) 고정 별칭 경로를 같은 301 한 번에 최종 URL로 (도메인·슬래시·별칭이 겹칠 때 2~3단 체인 방지)
+  //    아래 개별 라우트의 301(/blog, /contact, /services, prosthetics·glownate)과 동일 매핑
+  const aliased = resolvePathAlias(url.pathname)
+  if (aliased !== url.pathname) {
+    url.pathname = aliased
     needsRedirect = true
   }
 
@@ -232,8 +255,9 @@ app.get('/', (c) => {
       title: '이음치과의원 | 부산 명지 임플란트·심미보철 전문',
       description: '부산 강서구 명지국제신도시 이음치과의원. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철 전문. 충치·신경치료, 잇몸치료, 턱관절 등 일반진료까지 한 곳에서. 월~목 야간 21시, 토·일 주말 진료, 금요일 휴무. ☎ 051-206-5888. 무료주차 2시간.',
       keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
-      canonical: SITE_URL,
-      ogUrl: SITE_URL,
+      // 홈 정규 URL은 슬래시 포함(https://ieumdc.kr/) — 사이트맵·og:url과 통일
+      canonical: `${SITE_URL}/`,
+      ogUrl: `${SITE_URL}/`,
       speakable: ['.hero-title', '.manifesto-text', '.director-quote'],
       jsonLd: [
         localBusinessJsonLd(),
@@ -249,8 +273,15 @@ app.get('/', (c) => {
 })
 
 // === 진료과목 목록 ===
-app.get('/treatments', (c) => {
-  return c.render(treatmentsPage(), {
+app.get('/treatments', async (c) => {
+  let treatmentList: any[] = []
+  try {
+    const { results } = await c.env.DB.prepare(
+      'SELECT name, name_en, slug, category, short_desc FROM treatments WHERE is_published = 1 ORDER BY sort_order'
+    ).all() as any
+    treatmentList = results || []
+  } catch { /* DB 오류 시 클라이언트 렌더로 폴백 */ }
+  return c.render(treatmentsPage(treatmentList), {
     seo: {
       title: '진료 안내 | 이음치과 임플란트·심미보철·레진·일반진료·턱관절',
       description: '부산 명지 이음치과 진료과목 안내. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철, 턱관절(TMJ), 심미레진, 충치·근관치료, 잇몸치료까지 전문의 시스템. 투명한 설명과 정직한 수가, 확실한 결과를 약속합니다.',
@@ -586,6 +617,10 @@ app.get('/cases/:id', async (c) => {
     )
   }
 
+  // 얇은 증례(치료 설명 300자 미만): noindex, follow + 사이트맵 제외 — 설명 보강 시 자동 복귀
+  const thinCase = isThinCase(caseData)
+  if (thinCase) c.header('X-Robots-Tag', NOINDEX_FOLLOW)
+
   const doctor = caseData.doctor_id
     ? await c.env.DB.prepare('SELECT id, name, slug, title, photo, greeting FROM doctors WHERE id = ?').bind(caseData.doctor_id).first()
     : null
@@ -627,6 +662,7 @@ app.get('/cases/:id', async (c) => {
       keywords: autoKeywords,
       canonical: `${SITE_URL}/cases/${id}`,
       ogUrl: `${SITE_URL}/cases/${id}`,
+      noindexFollow: thinCase,
       ogImage: loggedIn ? (caseData?.pano_after || caseData?.intra_after || undefined) : undefined,
       jsonLd: (() => {
         const arr: any[] = [
@@ -883,6 +919,10 @@ app.get('/notices/:id', async (c) => {
     )
   }
 
+  // 얇은 공지(본문 300자 미만 — 휴진·일정 안내 등): noindex, follow + 사이트맵 제외
+  const thinNotice = isThinNotice(notice)
+  if (thinNotice) c.header('X-Robots-Tag', NOINDEX_FOLLOW)
+
   const { results: noticeImages } = await c.env.DB.prepare('SELECT * FROM notice_images WHERE notice_id = ? ORDER BY sort_order').bind(id).all() as any
   const title = notice.title
   const desc = notice.content?.substring(0, 160) || '이음치과의원 공지사항'
@@ -904,6 +944,7 @@ app.get('/notices/:id', async (c) => {
       description: desc,
       canonical: `${SITE_URL}/notices/${id}`,
       ogUrl: `${SITE_URL}/notices/${id}`,
+      noindexFollow: thinNotice,
       ogImage: noticeImgAbs,
       ogType: 'article',
       ogArticle: {
@@ -1150,6 +1191,9 @@ app.get('/dictionary/:slug', async (c) => {
   const termFull = term.full_desc || termDesc
   const termEn = term.english || ''
   const catName = term.category_name || ''
+  // 얇은 용어(고유 본문 800자 미만): noindex, follow + 사이트맵 제외 — 본문 보강 시 자동 복귀
+  const thinTerm = isThinDictTerm(term)
+  if (thinTerm) c.header('X-Robots-Tag', NOINDEX_FOLLOW)
 
   // 맞춤 FAQ 파싱 — 있으면 JSON-LD도 페이지 가시 FAQ와 1:1 일치
   let dictCustomFaqs: { q: string; a: string }[] = []
@@ -1167,6 +1211,7 @@ app.get('/dictionary/:slug', async (c) => {
       keywords: `${termName}, ${termEn || ''}, ${catName}, 치과 용어, 치과 백과사전, 이음치과`,
       canonical: `${SITE_URL}/dictionary/${slug}`,
       ogUrl: `${SITE_URL}/dictionary/${slug}`,
+      noindexFollow: thinTerm,
       jsonLd: [
         localBusinessJsonLd(),
         {
@@ -2509,6 +2554,7 @@ app.get('/sitemap-cases.xml', async (c) => {
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 `
   for (const cs of (cases || [])) {
+    if (isThinCase(cs)) continue  // 얇은 증례는 noindex → 사이트맵 제외 (설명 보강 시 자동 복귀)
     const fr = freshnessHelper(cs.updated_at)
     xml += `  <url>\n    <loc>${SITE_URL}/cases/${cs.id}</loc>\n    <lastmod>${isoLastmod(cs.updated_at)}</lastmod>\n    <changefreq>${fr.changefreq}</changefreq>\n    <priority>${fr.priority}</priority>\n`
     if (cs.pano_before) {
@@ -2523,9 +2569,10 @@ app.get('/sitemap-cases.xml', async (c) => {
   }
   // 공지사항도 cases sitemap에 합침 (소량이므로)
   const { results: notices } = await c.env.DB.prepare(
-    'SELECT id, updated_at FROM notices WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100'
+    'SELECT id, updated_at, content, content_html FROM notices WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100'
   ).all() as any
   for (const n of (notices || [])) {
+    if (isThinNotice(n)) continue  // 짧은 휴진·일정 공지는 noindex → 사이트맵 제외
     const fr = freshnessHelper(n.updated_at)
     xml += `  <url><loc>${SITE_URL}/notices/${n.id}</loc><lastmod>${isoLastmod(n.updated_at)}</lastmod><changefreq>${fr.changefreq}</changefreq><priority>${fr.priority}</priority></url>\n`
   }
@@ -2590,13 +2637,14 @@ app.get('/sitemap-best.xml', async (c) => {
 // ─────────────────────────────────────────────
 app.get('/sitemap-dictionary.xml', async (c) => {
   const { results: dictTerms } = await c.env.DB.prepare(
-    'SELECT slug, updated_at FROM dict_terms WHERE is_published = 1 ORDER BY term LIMIT 1000'
+    'SELECT slug, updated_at, short_desc, full_desc, faqs FROM dict_terms WHERE is_published = 1 ORDER BY term LIMIT 1000'
   ).all() as any
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `
   for (const dt of (dictTerms || [])) {
+    if (isThinDictTerm(dt)) continue  // 얇은 용어(고유 본문 800자 미만)는 noindex → 사이트맵 제외
     xml += `  <url><loc>${SITE_URL}/dictionary/${dt.slug}</loc><lastmod>${isoLastmod(dt.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
   }
   xml += '</urlset>'
@@ -2641,6 +2689,7 @@ app.get('/sitemap-images.xml', async (c) => {
   }
   // 케이스 이미지 (before/after)
   for (const cs of (cases || [])) {
+    if (isThinCase(cs)) continue  // noindex 증례 페이지는 이미지 사이트맵에서도 제외
     const images: Array<{ url: string; label: string }> = []
     if (cs.pano_before) images.push({ url: cs.pano_before, label: '치료 전' })
     if (cs.pano_after) images.push({ url: cs.pano_after, label: '치료 후' })
@@ -2681,7 +2730,7 @@ app.get('/sitemap-news.xml', async (c) => {
      ORDER BY created_at DESC LIMIT 100`
   ).bind(twoDaysAgo).all() as any
   const { results: notices } = await c.env.DB.prepare(
-    `SELECT id, title, created_at FROM notices
+    `SELECT id, title, created_at, content, content_html FROM notices
      WHERE is_published = 1 AND DATE(created_at) >= ?
      ORDER BY created_at DESC LIMIT 50`
   ).bind(twoDaysAgo).all() as any
@@ -2707,6 +2756,7 @@ app.get('/sitemap-news.xml', async (c) => {
 `
   }
   for (const n of (notices || [])) {
+    if (isThinNotice(n)) continue
     const loc = `${SITE_URL}/notices/${n.id}`
     const pubDate = new Date(n.created_at.replace(' ', 'T') + 'Z').toISOString()
     xml += `  <url>

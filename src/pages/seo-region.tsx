@@ -1,4 +1,5 @@
 import { subPageLayout } from './layout'
+import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 
 /** 지역 SEO 랜딩 페이지 — SSR-first */
 export function seoRegionPage(
@@ -51,17 +52,23 @@ export function seoRegionPage(
         <div class="container-wide">
           <h2 class="section-heading">{regionName}에서 받을 수 있는 주요 진료</h2>
           <div class="region-treat-grid" id="regionTreatGrid">
-            {treats.length > 0 ? treats.slice(0, 9).map((t: any) => (
-              <a href={`/regions/${slug}/${t.slug}`} class="region-treat-card">
-                <h3 class="region-treat-name">{regionName} {t.name}</h3>
-                <p class="region-treat-desc">{t.short_desc || `${regionName} 거주민을 위한 ${t.name} 전문 진료입니다.`}</p>
-                <div class="region-treat-links">
-                  <a href={`/regions/${slug}/${t.slug}`}>정보 →</a>
-                  <a href={`/regions/${slug}/${t.slug}/cost`}>비용 →</a>
-                  <a href={`/best/${slug}-${t.slug}`}>잘하는 곳 →</a>
-                </div>
-              </a>
-            )) : null}
+            {treats.length > 0 ? treats.slice(0, 9).map((t: any) => {
+              // 지역×진료 매트릭스(seo-matrix.ts)에 있는 조합만 /regions/:r/:t·cost·best 페이지가 존재.
+              // 없는 조합은 404였음(2026-09-29 실측 585개 깨진 링크) → 진료 상세로 연결
+              const hasMatrix = !!(SEO_REGIONS_MAP[slug] && SEO_TREATMENTS_MAP[t.slug])
+              const infoHref = hasMatrix ? `/regions/${slug}/${t.slug}` : `/treatments/${t.slug}`
+              return (
+                <a href={infoHref} class="region-treat-card">
+                  <h3 class="region-treat-name">{regionName} {t.name}</h3>
+                  <p class="region-treat-desc">{t.short_desc || `${regionName} 거주민을 위한 ${t.name} 전문 진료입니다.`}</p>
+                  <div class="region-treat-links">
+                    <a href={infoHref}>정보 →</a>
+                    {hasMatrix && <a href={`/regions/${slug}/${t.slug}/cost`}>비용 →</a>}
+                    {hasMatrix && <a href={`/best/${slug}-${t.slug}`}>잘하는 곳 →</a>}
+                  </div>
+                </a>
+              )
+            }) : null}
           </div>
         </div>
       </section>
@@ -239,7 +246,7 @@ export function seoRegionListPage(regionsByDistrict?: Record<string, any[]>) {
             </p>
             <div class="regions-cta-buttons">
               <a href="tel:051-206-5888" class="btn btn-primary"><i class="ri-phone-line"></i> 051-206-5888 전화 예약</a>
-              <a href="/booking" class="btn btn-outline"><i class="ri-calendar-check-line"></i> 온라인 예약</a>
+              <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="btn btn-outline"><i class="ri-calendar-check-line"></i> 온라인 예약</a>
             </div>
           </div>
         </div>

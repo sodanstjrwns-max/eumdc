@@ -32,6 +32,8 @@ export interface SeoMeta {
     tags?: string[]
   }
   noindex?: boolean
+  /** 얇은 상세 페이지: 색인 제외하되 링크는 따라가도록 (noindex, follow) */
+  noindexFollow?: boolean
   jsonLd?: object | object[]
   // AEO 전용
   speakable?: string[]   // CSS 선택자 배열 (구글 스피커블)
@@ -661,6 +663,8 @@ export function renderSeoHead(meta: SeoMeta): string {
   // Robots
   if (m.noindex) {
     html += '<meta name="robots" content="noindex, nofollow" />\n'
+  } else if (m.noindexFollow) {
+    html += '<meta name="robots" content="noindex, follow" />\n'
   } else {
     html += '<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />\n'
   }
