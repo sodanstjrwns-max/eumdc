@@ -16,9 +16,24 @@ function lastCommitDate(paths: string[]): string {
   }
 }
 
+// 파일이 처음 추가된 커밋 날짜(게시일 용도). 얕은 클론·git 없음 → '' (content-dates.ts 폴백).
+function firstCommitDate(path: string): string {
+  try {
+    const run = (cmd: string) => execSync(cmd, { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim()
+    if (run('git rev-parse --is-shallow-repository') === 'true') return ''
+    const lines = run(`git log --diff-filter=A --format=%cs -- ${path}`).split('\n').filter(Boolean)
+    return lines[lines.length - 1] || ''
+  } catch {
+    return ''
+  }
+}
+
 export default defineConfig({
   define: {
     __PRICES_DATE__: JSON.stringify(lastCommitDate(['migrations/0020_price_guide_from_excel.sql'])),
+    // 지역×진료 추천(/best/:slug) 페이지: 게시일 = 템플릿 최초 커밋, 수정일 = 템플릿·지역/진료 데이터 마지막 커밋
+    __BEST_PUBLISHED_DATE__: JSON.stringify(firstCommitDate('src/pages/region-treatment-best.tsx')),
+    __BEST_MODIFIED_DATE__: JSON.stringify(lastCommitDate(['src/pages/region-treatment-best.tsx', 'src/data/seo-matrix.ts'])),
   },
   plugins: [
     build(),

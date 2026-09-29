@@ -43,7 +43,7 @@ import {
   PRIORITY_TREATMENT_SLUGS, PRIORITY_REGION_SLUGS
 } from './data/seo-matrix'
 import { SEO_COSTS_MAP } from './data/seo-cost-matrix'
-import { PRICES_DATE } from './data/content-dates'
+import { PRICES_DATE, BEST_PUBLISHED_DATE, BEST_MODIFIED_DATE } from './data/content-dates'
 import {
   defaultSeo, localBusinessJsonLd, websiteJsonLd, breadcrumbJsonLd,
   faqPageJsonLd, blogPostingJsonLd, medicalWebPageJsonLd,
@@ -677,7 +677,8 @@ app.get('/cases/:id', async (c) => {
               description: caseData.description,
               pano_before: caseData.pano_before, pano_after: caseData.pano_after,
               intra_before: caseData.intra_before, intra_after: caseData.intra_after,
-              treatment_date: caseData.treatment_date, created_at: caseData.created_at
+              treatment_date: caseData.treatment_date, created_at: caseData.created_at,
+              updated_at: caseData.updated_at
             }),
             keywords: autoKeywords,
             inLanguage: 'ko-KR'
@@ -836,7 +837,7 @@ ${mdBlog.content || ''}
               title: rawTitle, description: desc, slug,
               content: blog?.content,
               thumbnail: blog?.thumbnail,
-              created_at: blog?.created_at || new Date().toISOString(),
+              created_at: blog?.created_at,  // 없으면 datePublished 생략 (오늘 날짜로 채우지 않음)
               updated_at: blog?.updated_at,
               author: blog?.author_name || '최효영'
             }),
@@ -1856,7 +1857,8 @@ app.get('/best/:slug', async (c) => {
           'url': `${SITE_URL}/static/images/symbol.png`
         }
       },
-      'datePublished': new Date().toISOString().split('T')[0],
+      'datePublished': BEST_PUBLISHED_DATE,
+      'dateModified': BEST_MODIFIED_DATE,
       'mainEntityOfPage': { '@type': 'WebPage', '@id': canonical }
     },
     // FAQPage with Speakable
@@ -2071,7 +2073,14 @@ app.on('GET', ['/feed.xml', '/rss.xml'], async (c) => {
   ).all() as any
 
   const escXmlLocal = (s: string) => (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;')
-  const lastBuildDate = new Date().toUTCString()
+  // lastBuildDate = 피드 항목 중 가장 최근 작성/수정 시각 (요청 시각 new Date() 대신, 없으면 생략)
+  const lastBuildTs = [...(blogs || []), ...(notices || [])]
+    .map((r: any) => r.updated_at || r.created_at)
+    .filter(Boolean)
+    .map((v: string) => new Date(v.replace(' ', 'T') + (v.includes('Z') ? '' : 'Z')).getTime())
+    .filter((t: number) => !isNaN(t))
+    .reduce((a: number, b: number) => Math.max(a, b), 0)
+  const lastBuildDate = lastBuildTs ? new Date(lastBuildTs).toUTCString() : ''
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -2081,8 +2090,7 @@ app.on('GET', ['/feed.xml', '/rss.xml'], async (c) => {
   <description>부산 명지동 이음치과의원 공식 블로그. 임플란트, 투명교정, 라미네이트, 치아교정 등 진료 정보와 환자 가이드.</description>
   <language>ko-KR</language>
   <copyright>© 이음치과의원</copyright>
-  <lastBuildDate>${lastBuildDate}</lastBuildDate>
-  <generator>이음치과 자동 RSS</generator>
+${lastBuildDate ? `  <lastBuildDate>${lastBuildDate}</lastBuildDate>\n` : ''}  <generator>이음치과 자동 RSS</generator>
   <atom:link href="${SITE_URL}${c.req.path}" rel="self" type="application/rss+xml" />
   <image>
     <url>${SITE_URL}/static/og-image.jpg</url>
@@ -2401,15 +2409,17 @@ function freshnessHelper(dateStr?: string): { priority: string; changefreq: stri
 }
 
 // W3C ISO 8601 형식 lastmod (시간까지 포함하면 더 정확)
+// 날짜가 없거나 잘못되면 '' → xmlResponse 가 빈 <lastmod></lastmod> 를 제거(lastmod 생략).
+// ※ 오늘 날짜로 채우지 않는다 (2026-09-29 SEO/AEO 감사 — 매 요청 오늘 lastmod 는 신뢰 신호 훼손).
 function isoLastmod(dateStr?: string): string {
-  if (!dateStr) return new Date().toISOString().split('T')[0]
+  if (!dateStr) return ''
   const t = new Date(dateStr.replace(' ', 'T') + (dateStr.includes('Z') ? '' : 'Z'))
-  if (isNaN(t.getTime())) return new Date().toISOString().split('T')[0]
+  if (isNaN(t.getTime())) return ''
   return t.toISOString().split('T')[0]
 }
 
 // XML 응답 헬퍼
-const xmlResponse = (xml: string, maxAge: number = 3600) => new Response(xml, {
+const xmlResponse = (xml: string, maxAge: number = 3600) => new Response(xml.replace(/[ \t]*<lastmod><\/lastmod>\n?/g, ''), {
   headers: {
     'Content-Type': 'application/xml; charset=utf-8',
     'Cache-Control': `public, max-age=${maxAge}, s-maxage=${maxAge * 2}`,

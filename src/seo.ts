@@ -456,7 +456,7 @@ export function caseDetailJsonLd(caseData: {
   id: number; title: string; category: string; description?: string;
   pano_before?: string; pano_after?: string;
   intra_before?: string; intra_after?: string;
-  treatment_date?: string; created_at?: string;
+  treatment_date?: string; created_at?: string; updated_at?: string;
 }) {
   const images = [caseData.pano_before, caseData.pano_after, caseData.intra_before, caseData.intra_after]
     .filter(Boolean)
@@ -470,8 +470,11 @@ export function caseDetailJsonLd(caseData: {
     url: `${SITE_URL}/cases/${caseData.id}`,
     specialty: categoryKrMap[caseData.category] || caseData.category,
     image: images.length > 0 ? images : DEFAULT_IMAGE,
-    datePublished: caseData.created_at || new Date().toISOString(),
-    lastReviewed: caseData.treatment_date || caseData.created_at || new Date().toISOString().split('T')[0],
+    // 날짜는 케이스 실제 등록/수정 시각만 사용, 없으면 필드 생략 (오늘 날짜로 채우지 않음 — 2026-09-29)
+    ...(isoDateOnly(caseData.created_at) ? { datePublished: isoDateOnly(caseData.created_at) } : {}),
+    ...(isoDateOnly(caseData.updated_at) ? { dateModified: isoDateOnly(caseData.updated_at) } : {}),
+    ...(isoDateOnly(caseData.updated_at || caseData.created_at)
+      ? { lastReviewed: isoDateOnly(caseData.updated_at || caseData.created_at) } : {}),
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     isPartOf: { '@id': `${SITE_URL}/#website` },
     about: {
