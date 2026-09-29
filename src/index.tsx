@@ -258,15 +258,15 @@ app.get('/', (c) => {
       // 홈 정규 URL은 슬래시 포함(https://ieumdc.kr/) — 사이트맵·og:url과 통일
       canonical: `${SITE_URL}/`,
       ogUrl: `${SITE_URL}/`,
-      speakable: ['.hero-title', '.manifesto-text', '.director-quote'],
+      speakable: ['.hero-title', '.director-quote'],
       jsonLd: [
         localBusinessJsonLd(),
         websiteJsonLd(),
         personJsonLd(),
         visitHowToJsonLd(),
-        speakableJsonLd(SITE_URL, ['.hero-title', '.manifesto-text', '.director-quote']),
+        speakableJsonLd(SITE_URL, ['.hero-title', '.director-quote']),
         // AEO 인라인 FAQ — 화면 가시 FAQ 섹션(#section-faq)과 1:1 일치 (Google 정책 준수)
-        faqPageJsonLd(HOME_FAQS)
+        faqPageJsonLd(HOME_FAQS, { id: `${SITE_URL}/#faq`, name: '이음치과의원 자주 묻는 질문' })
       ]
     }
   })
