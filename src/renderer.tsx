@@ -52,7 +52,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
 
         {/* CSS — versioned to bust edge cache */}
         <link href="/static/style.css?v=20260611b" rel="stylesheet" />
-        <link href="/static/style-patch.css?v=20260611b" rel="stylesheet" />
+        <link href="/static/style-patch.css?v=20261003a" rel="stylesheet" />
 
         {/* GSAP은 홈(main.tsx)에서만 로드 — 서브페이지는 app.js IntersectionObserver로 충분 */}
 

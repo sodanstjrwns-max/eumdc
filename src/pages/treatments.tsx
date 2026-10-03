@@ -1,3 +1,4 @@
+import { caseHeadline } from './cases'
 import { subPageLayout } from './layout'
 import { SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 import { treatmentAnswer, isoDateOnly } from '../seo'
@@ -72,7 +73,7 @@ export function treatmentsPage(treatments: any[] = []) {
 }
 
 /** 진료과목 상세 페이지 (SSR-first for SEO) */
-export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any, prices?: any[], faqs?: { question: string; answer: string }[]) {
+export function treatmentDetailPage(slug: string, treatmentName?: string, heroTitle?: string, treatment?: any, prices?: any[], faqs?: { question: string; answer: string }[], related?: { blogs?: any[]; cases?: any[] }) {
   // benefits / process_steps / content_sections는 JSON 문자열 → 안전 파싱
   const safeParse = (s: any): any[] => {
     if (!s) return []
@@ -303,6 +304,31 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
           </div>
         </section>
       </div>
+
+      {/* 관련 칼럼·비포애프터 — #treatDetailContent 밖(treatments.js 재렌더 영향 없음) */}
+      {related && ((related.blogs && related.blogs.length > 0) || (related.cases && related.cases.length > 0)) && (
+        <section class="treat-section col-tx-related" aria-label={`${treatmentName} 관련 글·사례`}>
+          <div class="container-wide">
+            {related.blogs && related.blogs.length > 0 && (
+              <>
+                <h2 class="treat-section-title">{treatmentName} 관련 칼럼</h2>
+                <ul class="col-case-list">
+                  {related.blogs.map((b: any) => <li><a href={`/blogs/${b.slug || b.id}`}>{b.title}</a></li>)}
+                </ul>
+              </>
+            )}
+            {related.cases && related.cases.length > 0 && (
+              <>
+                <h2 class="treat-section-title">{treatmentName} 비포애프터 사례</h2>
+                <ul class="col-case-list">
+                  {related.cases.map((cs: any) => <li><a href={`/cases/${cs.id}`}>{caseHeadline(cs)}</a></li>)}
+                </ul>
+                <p><a href={`/cases?category=${slug}`} class="col-topic-chip">{treatmentName} 사례 전체 보기 →</a></p>
+              </>
+            )}
+          </div>
+        </section>
+      )}
 
       <script src="/static/treatments.js"></script>
     </div>

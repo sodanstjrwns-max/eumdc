@@ -724,7 +724,8 @@ export function renderSeoHead(meta: SeoMeta): string {
 
   // --- JSON-LD ---
   jsonLdArray.forEach(ld => {
-    html += `<script type="application/ld+json">${JSON.stringify(ld)}</script>\n`
+    // '</script>' 등 본문 문자열이 스크립트를 닫지 않도록 '<' 이스케이프 (JSON 의미는 동일)
+    html += `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n`
   })
 
   return html

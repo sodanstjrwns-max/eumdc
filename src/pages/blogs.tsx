@@ -1,7 +1,25 @@
 import { subPageLayout } from './layout'
 import { markdownToHtml, linkDictionaryTerms, escapeHtml } from '../utils/content'
+import { polishArticleImages, TOPIC_NAME, ymd } from '../utils/column-seo'
 
-export function blogsPage(blogs?: any[]) {
+/** 서버 렌더 페이지 이동 링크 (?page=N, a 태그) */
+export function pagerNav(base: string, page: number, pages: number, label = '페이지') {
+  if (pages <= 1) return null
+  const href = (n: number) => (n <= 1 ? base : `${base}${base.includes('?') ? '&' : '?'}page=${n}`)
+  return (
+    <nav class="ssr-pager" aria-label={label}>
+      {page > 1 ? <a href={href(page - 1)} rel="prev" class="ssr-pager-step">← 이전</a> : null}
+      {Array.from({ length: pages }, (_, i) => i + 1).map(n => (
+        n === page
+          ? <span class="ssr-pager-num current" aria-current="page">{n}</span>
+          : <a href={href(n)} class="ssr-pager-num">{n}</a>
+      ))}
+      {page < pages ? <a href={href(page + 1)} rel="next" class="ssr-pager-step">다음 →</a> : null}
+    </nav>
+  )
+}
+
+export function blogsPage(blogs?: any[], pager?: { page: number; pages: number }) {
   const items = blogs || []
   return subPageLayout('BLOG', (
     <div class="page-blogs">
@@ -60,6 +78,7 @@ export function blogsPage(blogs?: any[]) {
               ))}
             </div>
           )}
+          {pager ? pagerNav('/blogs', pager.page, pager.pages, '블로그 목록 페이지') : null}
         </div>
       </section>
     </div>
@@ -88,7 +107,13 @@ export function blogDetailPage(
   id: string,
   blog?: any,
   dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>,
-  relatedBlogs?: any[]
+  relatedBlogs?: any[],
+  extra?: {
+    doctor?: any
+    topics?: string[]
+    relatedCases?: any[]
+    faqs?: { question: string; answer: string }[]
+  }
 ) {
   if (!blog) {
     return subPageLayout('BLOG', (
@@ -119,6 +144,8 @@ export function blogDetailPage(
   if (dictTerms && dictTerms.length > 0) {
     contentHtml = linkDictionaryTerms(contentHtml, dictTerms)
   }
+  // 본문 이미지: 파일명 alt(1.png 등)·빈 alt → 제목 기반 alt, lazy/async (히어로가 없으면 첫 이미지만 eager)
+  contentHtml = polishArticleImages(contentHtml, blog.title, !blog.thumbnail)
   // TL;DR 핵심 요약 (AEO — AI 검색엔진이 우선 인용하는 발췌 가능 블록)
   const keySentences = extractKeySentences(blog.content)
 
@@ -161,7 +188,7 @@ export function blogDetailPage(
 
             {/* TL;DR 핵심 요약 — AEO: AI 검색·피처드 스니펫이 우선 인용하는 블록 */}
             {keySentences.length >= 2 && (
-              <aside class="blog-tldr" id="blog-key-summary" aria-label="핵심 요약">
+              <aside class="blog-tldr answer-summary" id="blog-key-summary" aria-label="핵심 요약">
                 <h2 class="blog-tldr-title">핵심 요약</h2>
                 <ul class="blog-tldr-list">
                   {keySentences.map(s => <li>{s}</li>)}
@@ -179,6 +206,31 @@ export function blogDetailPage(
                   </figure>
                 ))}
               </div>
+            )}
+
+            {authorBox(blog, extra?.doctor)}
+
+            {/* 관련 진료 — 본문 진료 키워드 기준 (PFWE 칼럼 표준 A5) */}
+            {extra?.topics && extra.topics.length > 0 && (
+              <nav class="col-topic-links" aria-label="관련 진료">
+                <h2 class="col-sub-title">이 글과 관련된 진료</h2>
+                <div class="col-topic-row">
+                  {extra.topics.map(t => (
+                    <a href={`/treatments/${t}`} class="col-topic-chip">{TOPIC_NAME[t] || t} 진료 안내 →</a>
+                  ))}
+                </div>
+              </nav>
+            )}
+
+            {extra?.relatedCases && extra.relatedCases.length > 0 && (
+              <nav class="col-topic-links" aria-label="관련 비포애프터">
+                <h2 class="col-sub-title">관련 비포애프터 사례</h2>
+                <ul class="col-case-list">
+                  {extra.relatedCases.map((cs: any) => (
+                    <li><a href={`/cases/${cs.id}`}>{TOPIC_NAME[cs.category] || '치료'} 사례 — {cs.title}{cs.treatment_duration ? `, ${cs.treatment_duration}` : ''}</a></li>
+                  ))}
+                </ul>
+              </nav>
             )}
 
             <footer class="blog-article-footer">
@@ -230,6 +282,39 @@ export function blogDetailPage(
       </section>
     </div>
   ))
+}
+
+function parseJsonArr(v: any): any[] {
+  if (Array.isArray(v)) return v
+  try { const r = JSON.parse(v || '[]'); return Array.isArray(r) ? r : [] } catch { return [] }
+}
+
+/** 작성자·감수 박스 — 의료진 DB 값만 사용 (사진·이름·전문 분야·학력 1줄·최종 검토일) */
+function authorBox(blog: any, doctor?: any) {
+  const name = doctor?.name || blog.author_name || '최효영'
+  const title = doctor?.title || '대표원장'
+  const slug = doctor?.slug || 'choi-hyoyoung'
+  const specs = parseJsonArr(doctor?.specialties).map((x: any) => (typeof x === 'string' ? x : x?.name)).filter(Boolean)
+  const edu = parseJsonArr(doctor?.education)[0]
+  const eduLine = edu ? `${edu.school || ''} ${edu.degree || ''}${edu.year ? ` (${edu.year})` : ''}`.trim() : ''
+  const reviewed = ymd(blog.updated_at || blog.created_at)
+  return (
+    <aside class="col-author-box" aria-label="작성·감수">
+      {doctor?.photo && (
+        <a href={`/doctors/${slug}`} class="col-author-photo">
+          <img src={doctor.photo} alt={`${name} ${title}`} width="88" height="88" loading="lazy" decoding="async" />
+        </a>
+      )}
+      <div class="col-author-info">
+        <p class="col-author-role">작성·감수</p>
+        <p class="col-author-name"><a href={`/doctors/${slug}`}>{name} {title}</a> <span>이음치과의원</span></p>
+        {specs.length > 0 && <p class="col-author-line">진료 분야: {specs.join(' · ')}</p>}
+        {eduLine && <p class="col-author-line">{eduLine}</p>}
+        {reviewed && <p class="col-author-line">최종 검토일 <time datetime={reviewed}>{reviewed}</time></p>}
+        <p class="col-author-note">※ 이 글은 일반적인 건강 정보이며, 진단과 치료 결과는 개인의 구강 상태에 따라 다를 수 있습니다.</p>
+      </div>
+    </aside>
+  )
 }
 
 function formatDate(s?: string): string {

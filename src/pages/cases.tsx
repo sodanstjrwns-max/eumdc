@@ -1,5 +1,6 @@
 import { subPageLayout } from './layout'
 import { markdownToHtml, linkDictionaryTerms } from '../utils/content'
+import { pagerNav } from './blogs'
 
 const CATEGORY_NAMES: Record<string, string> = {
   implant: '임플란트',
@@ -13,8 +14,18 @@ const CATEGORY_NAMES: Record<string, string> = {
   prevention: '예방'
 }
 
-export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
+/** 목록 필터 = 서버 링크(?category=). 진료 상세 slug 와 같은 값 */
+export const CASE_FILTERS: { cat: string; label: string }[] = [
+  { cat: 'implant', label: '임플란트' },
+  { cat: 'aesthetic', label: '심미보철' },
+  { cat: 'resin', label: '심미 레진' },
+  { cat: 'tmj', label: '턱관절' },
+  { cat: 'general', label: '일반진료' },
+]
+
+export function casesPage(cases?: any[], isLoggedIn: boolean = false, opts?: { category?: string; page?: number; pages?: number }) {
   const items = cases || []
+  const activeCat = opts?.category || ''
   return subPageLayout('BEFORE & AFTER', (
     <div class="page-cases">
       <section class="page-hero-mini">
@@ -47,14 +58,13 @@ export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
 
       <section class="page-filter">
         <div class="container-wide">
-          <div class="filter-bar" id="caseFilter">
-            <button class="filter-btn active" data-cat="all">전체</button>
-            <button class="filter-btn" data-cat="implant">임플란트</button>
-            <button class="filter-btn" data-cat="aesthetic">심미보철</button>
-            <button class="filter-btn" data-cat="resin">심미 레진</button>
-            <button class="filter-btn" data-cat="tmj">턱관절</button>
-            <button class="filter-btn" data-cat="general">일반진료</button>
-          </div>
+          {/* 서버 렌더 필터 링크 (크롤 가능한 a 태그) */}
+          <nav class="filter-bar" aria-label="진료별 사례">
+            <a href="/cases" class={`filter-btn${activeCat ? '' : ' active'}`} aria-current={activeCat ? undefined : 'page'}>전체</a>
+            {CASE_FILTERS.map(f => (
+              <a href={`/cases?category=${f.cat}`} class={`filter-btn${activeCat === f.cat ? ' active' : ''}`} aria-current={activeCat === f.cat ? 'page' : undefined}>{f.label}</a>
+            ))}
+          </nav>
         </div>
       </section>
 
@@ -76,13 +86,13 @@ export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
                   <a href={`/cases/${cs.id}`} class="case-card-link" data-hover>
                     <div class="case-card-hero">
                       {cs.pano_before || cs.intra_before ? (
-                        <img class="case-hero-img" src={cs.pano_before || cs.intra_before} alt={`${cs.title} Before`} loading="lazy" />
+                        <img class="case-hero-img" src={cs.pano_before || cs.intra_before} alt={`${CATEGORY_NAMES[cs.category] || '치과'} 치료 전 — ${cs.title}`} loading="lazy" decoding="async" />
                       ) : <div class="case-thumb-placeholder">No Image</div>}
                       <span class="case-hero-label">BEFORE</span>
                       {isLoggedIn ? (
                         (cs.pano_after || cs.intra_after) && (
                           <div class="case-hero-after">
-                            <img src={cs.pano_after || cs.intra_after} alt={`${cs.title} After`} loading="lazy" />
+                            <img src={cs.pano_after || cs.intra_after} alt={`${CATEGORY_NAMES[cs.category] || '치과'} 치료 후 — ${cs.title}`} loading="lazy" decoding="async" />
                             <span class="case-hero-after-label">AFTER</span>
                           </div>
                         )
@@ -95,7 +105,7 @@ export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
                     </div>
                     <div class="case-card-body">
                       <span class="case-card-category">{CATEGORY_NAMES[cs.category] || cs.category}</span>
-                      <h2 class="case-card-title">{cs.title}</h2>
+                      <h2 class="case-card-title">{caseHeadline(cs)}</h2>
                       {cs.description && (
                         <p class="case-card-desc">{cs.description.substring(0, 70)}{cs.description.length > 70 ? '…' : ''}</p>
                       )}
@@ -127,10 +137,33 @@ export function casesPage(cases?: any[], isLoggedIn: boolean = false) {
               ))}
             </div>
           )}
+          {opts?.pages ? pagerNav(activeCat ? `/cases?category=${activeCat}` : '/cases', opts.page || 1, opts.pages, '비포애프터 목록 페이지') : null}
         </div>
       </section>
     </div>
   ))
+}
+
+/** 사례 제목 규칙: {진료명} 사례 — {부위/내용}, {치료 기간} (저장된 값만, 환자 식별정보 없음) */
+export function caseHeadline(cs: any): string {
+  const cat = CATEGORY_NAMES[cs.category] || '치과 치료'
+  const dur = String(cs.treatment_duration || '').trim()
+  return `${cat} 사례 — ${cs.title}${dur ? `, ${dur}` : ''}`
+}
+
+/** 구조 필드 → 공개 요약문 (데이터에 있는 값만, 문장 지어내지 않음) */
+export function caseSummaryLines(cs: any, doctor?: any): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = []
+  rows.push({ label: '진료', value: CATEGORY_NAMES[cs.category] || cs.category || '치과 치료' })
+  if (cs.title) rows.push({ label: '치료 부위·내용', value: cs.title })
+  const dur = String(cs.treatment_duration || '').trim()
+  if (dur) rows.push({ label: '치료 기간', value: dur })
+  const shots: string[] = []
+  if (cs.pano_before || cs.pano_after) shots.push('파노라마 X-ray')
+  if (cs.intra_before || cs.intra_after) shots.push('구강 사진')
+  if (shots.length) rows.push({ label: '기록 자료', value: `${shots.join('·')} (치료 전 공개 · 치료 후 회원 공개)` })
+  if (doctor?.name) rows.push({ label: '담당 원장', value: `${doctor.name} ${doctor.title || '원장'}` })
+  return rows
 }
 
 export function caseDetailPage(
@@ -138,7 +171,8 @@ export function caseDetailPage(
   caseData?: any,
   doctor?: any,
   dictTerms?: Array<{ name: string; slug: string; aliases?: string | null }>,
-  isLoggedIn: boolean = false
+  isLoggedIn: boolean = false,
+  related?: { blogs?: any[]; cases?: any[]; hasTreatmentPage?: boolean }
 ) {
   if (!caseData) {
     return subPageLayout('CASE DETAIL', (
@@ -210,7 +244,7 @@ export function caseDetailPage(
           <article class="case-article">
             <header class="case-article-header">
               <span class="case-article-category">{CATEGORY_NAMES[caseData.category] || caseData.category}</span>
-              <h1 class="case-article-title">{caseData.title}</h1>
+              <h1 class="case-article-title">{caseHeadline(caseData)}</h1>
               <div class="case-article-meta">
                 {caseData.patient_age_group && <span class="meta-chip">{caseData.patient_age_group}</span>}
                 {caseData.patient_gender && <span class="meta-chip">{caseData.patient_gender}</span>}
@@ -219,6 +253,15 @@ export function caseDetailPage(
                 {caseData.patient_consent ? <span class="meta-chip consent">✓ 환자 동의</span> : null}
               </div>
             </header>
+
+            {/* 사례 요약 — 구조 필드에서 자동 생성 (공개 텍스트, speakable) */}
+            <section class="case-summary-box answer-summary" id="case-summary" aria-label="사례 요약">
+              <h2 class="case-summary-title">사례 요약</h2>
+              <dl class="case-summary-dl">
+                {caseSummaryLines(caseData, doctor).map(r => (<><dt>{r.label}</dt><dd>{r.value}</dd></>))}
+              </dl>
+              <p class="case-summary-note">촬영 조건(장비·각도)을 가능한 한 동일하게 맞춰 기록했으며, 치료 결과에는 개인차가 있습니다.</p>
+            </section>
 
             {/* 비포애프터 비교 이미지 */}
             <div class="case-compare-grid">
@@ -229,14 +272,14 @@ export function caseDetailPage(
                     <figure class="compare-item">
                       <span class="compare-label">BEFORE</span>
                       {caseData.pano_before ? (
-                        <img src={caseData.pano_before} alt={`${caseData.title} 파노라마 비포`} loading="eager" />
+                        <img src={caseData.pano_before} alt={`${CATEGORY_NAMES[caseData.category] || '치과'} 치료 전 — 파노라마 X-ray`} decoding="async" loading="eager" />
                       ) : <div class="compare-placeholder">No Image</div>}
                     </figure>
                     <figure class={`compare-item${!isLoggedIn ? ' locked' : ''}`}>
                       <span class="compare-label after">AFTER</span>
                       {isLoggedIn ? (
                         caseData.pano_after ? (
-                          <img src={caseData.pano_after} alt={`${caseData.title} 파노라마 애프터`} loading="eager" />
+                          <img src={caseData.pano_after} alt={`${CATEGORY_NAMES[caseData.category] || '치과'} 치료 후 — 파노라마 X-ray`} decoding="async" loading="eager" />
                         ) : <div class="compare-placeholder">No Image</div>
                       ) : lockedAfter}
                     </figure>
@@ -250,14 +293,14 @@ export function caseDetailPage(
                     <figure class="compare-item">
                       <span class="compare-label">BEFORE</span>
                       {caseData.intra_before ? (
-                        <img src={caseData.intra_before} alt={`${caseData.title} 구강 비포`} loading="lazy" />
+                        <img src={caseData.intra_before} alt={`${CATEGORY_NAMES[caseData.category] || '치과'} 치료 전 — 구강 사진`} decoding="async" loading="lazy" />
                       ) : <div class="compare-placeholder">No Image</div>}
                     </figure>
                     <figure class={`compare-item${!isLoggedIn ? ' locked' : ''}`}>
                       <span class="compare-label after">AFTER</span>
                       {isLoggedIn ? (
                         caseData.intra_after ? (
-                          <img src={caseData.intra_after} alt={`${caseData.title} 구강 애프터`} loading="lazy" />
+                          <img src={caseData.intra_after} alt={`${CATEGORY_NAMES[caseData.category] || '치과'} 치료 후 — 구강 사진`} decoding="async" loading="lazy" />
                         ) : <div class="compare-placeholder">No Image</div>
                       ) : lockedAfter}
                     </figure>
@@ -295,6 +338,27 @@ export function caseDetailPage(
                 </div>
               </section>
             )}
+
+            {/* 내부 링크: 사례 ↔ 진료 상세 ↔ 관련 글 (PFWE 표준 B) */}
+            <nav class="col-topic-links" aria-label="관련 진료·글">
+              <h2 class="col-sub-title">함께 보면 좋은 안내</h2>
+              <div class="col-topic-row">
+                {related?.hasTreatmentPage !== false && (
+                  <a href={`/treatments/${caseData.category}`} class="col-topic-chip">{CATEGORY_NAMES[caseData.category] || '진료'} 진료 안내 →</a>
+                )}
+                <a href={`/cases?category=${caseData.category}`} class="col-topic-chip">{CATEGORY_NAMES[caseData.category] || '같은 진료'} 사례 더 보기 →</a>
+              </div>
+              {related?.blogs && related.blogs.length > 0 && (
+                <ul class="col-case-list">
+                  {related.blogs.map((b: any) => <li><a href={`/blogs/${b.slug || b.id}`}>{b.title}</a></li>)}
+                </ul>
+              )}
+              {related?.cases && related.cases.length > 0 && (
+                <ul class="col-case-list">
+                  {related.cases.map((cs: any) => <li><a href={`/cases/${cs.id}`}>{caseHeadline(cs)}</a></li>)}
+                </ul>
+              )}
+            </nav>
 
             <footer class="case-article-footer">
               <p class="case-disclaimer">
