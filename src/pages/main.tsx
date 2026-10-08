@@ -118,7 +118,7 @@ export function mainPage() {
         <div class="hero-content">
           <div class="hero-tag">
             <span class="tag-line" aria-hidden="true"></span>
-            <span class="tag-text">IEUM DENTAL CLINIC — BUSAN · 명지</span>
+            <span class="tag-text">IEUM DENTAL CLINIC — 명지 치과 · 부산 강서구</span>
           </div>
           <h1 class="hero-title">
             <span class="title-line"><span class="title-word" data-split>치과가</span></span>
@@ -642,7 +642,7 @@ export function mainPage() {
         <div class="container-wide">
           <span class="section-label">08 — AREA GUIDE</span>
           <h2 class="region-hub-title">우리 동네 진료 안내</h2>
-          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요.</p>
+          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요. 위치·진료시간·주차·버스는 <a href="/regions/myeongji">명지 치과 안내</a>에 한눈에 정리했습니다.</p>
 
           {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
             const t = SEO_TREATMENTS_MAP[tSlug]
@@ -741,6 +741,7 @@ export function mainPage() {
               <h4>안내</h4>
               <a href="/about">병원 소개</a>
               <a href="/visit">내원 안내</a>
+              <a href="/regions/myeongji">명지 치과</a>
               <a href="tel:051-206-5888">전화 상담</a>
               <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener">카카오톡 상담</a>
             </div>

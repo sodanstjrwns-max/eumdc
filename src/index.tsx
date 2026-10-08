@@ -28,6 +28,9 @@ import { noticesPage, noticeDetailPage } from './pages/notices'
 import { adminPage } from './pages/admin'
 import { faqPage } from './pages/faq'
 import { dictionaryPage, dictionaryDetailPage } from './pages/dictionary'
+import { applyDictEnrich, DICT_ALIASES, DICT_ALIAS_SQL_LIST, DICT_ENRICH_DATE } from './data/dict-enrich'
+import { applyTreatmentEnrich, treatmentEnrichFaqs, TREATMENT_ENRICH_DATE } from './data/treatment-enrich'
+import { myeongjiHubPage, MYEONGJI_HUB_PATH, MYEONGJI_HUB_UPDATED, MYEONGJI_HUB_TITLE, MYEONGJI_HUB_H1, MYEONGJI_HUB_DESC, MYEONGJI_HUB_FAQS } from './pages/myeongji-hub'
 import { signupPage } from './pages/signup'
 import { loginPage } from './pages/login'
 import { treatmentsPage, treatmentDetailPage } from './pages/treatments'
@@ -255,9 +258,9 @@ app.route('', regionsRoutes)
 app.get('/', (c) => {
   return c.render(mainPage(), {
     seo: {
-      title: '이음치과의원 | 부산 명지 임플란트·심미보철 전문',
-      description: '부산 강서구 명지국제신도시 이음치과의원. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철 전문. 충치·신경치료, 잇몸치료, 턱관절 등 일반진료까지 한 곳에서. 월~목 야간 21시, 토·일 주말 진료, 금요일 휴무. ☎ 051-206-5888. 무료주차 2시간.',
-      keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
+      title: '명지 치과 | 이음치과의원 — 부산 명지국제신도시 임플란트·심미보철',
+      description: '명지 치과 이음치과의원 — 부산 강서구 명지국제신도시. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철 전문. 충치·신경치료, 잇몸치료, 턱관절 등 일반진료까지 한 곳에서. 월~목 야간 21시, 토·일 주말 진료, 금요일 휴무. ☎ 051-206-5888. 무료주차 2시간.',
+      keywords: '명지 치과, 이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 턱관절, TMJ, 최효영, 강서구치과, 명지국제신도시, 야간진료, 주말진료, 부산임플란트, 부산라미네이트',
       // 홈 정규 URL은 슬래시 포함(https://ieumdc.kr/) — 사이트맵·og:url과 통일
       canonical: `${SITE_URL}/`,
       ogUrl: `${SITE_URL}/`,
@@ -316,13 +319,15 @@ app.get('/treatments/:slug', async (c) => {
   if (wantsMarkdown) {
     rawSlug = rawSlug.replace(/\.md$/, '')
     const mdSlug = TREATMENT_SLUG_ALIASES[rawSlug] || rawSlug
-    const t = await c.env.DB.prepare(
+    const tRow = await c.env.DB.prepare(
       'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
     ).bind(mdSlug).first() as any
-    if (!t) return c.notFound()
-    const { results: tFaqs } = await c.env.DB.prepare(
+    if (!tRow) return c.notFound()
+    const t = applyTreatmentEnrich(tRow)
+    const { results: tFaqRows } = await c.env.DB.prepare(
       'SELECT question, answer FROM treatment_faqs WHERE treatment_id = ? AND is_published = 1 ORDER BY sort_order LIMIT 20'
     ).bind(t.id).all() as any
+    const tFaqs = (tFaqRows && tFaqRows.length) ? tFaqRows : treatmentEnrichFaqs(t.slug)
     const { results: tPrices } = await c.env.DB.prepare(
       'SELECT item_name, price_text, insurance_covered, note FROM price_guide WHERE treatment_id = ? AND is_published = 1 ORDER BY sort_order'
     ).bind(t.id).all() as any
@@ -357,9 +362,11 @@ app.get('/treatments/:slug', async (c) => {
     return c.redirect(`/treatments/${TREATMENT_SLUG_ALIASES[rawSlug]}`, 301)
   }
   const slug = rawSlug
-  const treatment = await c.env.DB.prepare(
+  const treatmentRow = await c.env.DB.prepare(
     'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any
+  // 라미네이트·치아교정·MEG Aligner: D1 빈 칸을 레포 보강본으로 채움 (src/data/treatment-enrich.ts)
+  const treatment = treatmentRow ? applyTreatmentEnrich(treatmentRow) : treatmentRow
 
   // 존재하지 않는 slug는 404로 응답 (soft 404 방지 - SEO 안전)
   if (!treatment) {
@@ -392,7 +399,7 @@ app.get('/treatments/:slug', async (c) => {
     const { results: faqs } = await c.env.DB.prepare(
       'SELECT question, answer FROM treatment_faqs WHERE treatment_id = ? AND is_published = 1 ORDER BY sort_order'
     ).bind(treatment.id).all() as any
-    treatmentFaqs = faqs || []
+    treatmentFaqs = (faqs && faqs.length) ? faqs : treatmentEnrichFaqs(slug)
     if (treatmentFaqs.length > 0) {
       faqJsonLd = faqPageJsonLd(treatmentFaqs, { id: `${SITE_URL}/treatments/${slug}#faq`, name: `${name} 자주 묻는 질문` })
     }
@@ -1275,8 +1282,8 @@ app.get('/prices.md', async (c) => {
 
 // === 치과 용어 백과사전 ===
 app.get('/dictionary', async (c) => {
-  const totalQ = await c.env.DB.prepare('SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1').first() as any
-  const total = totalQ?.total || 219
+  const totalQ = await c.env.DB.prepare(`SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1 AND slug NOT IN (${DICT_ALIAS_SQL_LIST})`).first() as any
+  const total = totalQ?.total || 216
 
   return c.render(dictionaryPage(), {
     seo: {
@@ -1304,9 +1311,13 @@ app.get('/dictionary', async (c) => {
 
 app.get('/dictionary/:slug', async (c) => {
   const slug = c.req.param('slug')
-  const term = await c.env.DB.prepare(
+  // 동의어 중복 용어 → 대표 용어로 301 (src/data/dict-enrich.ts DICT_ALIASES)
+  if (DICT_ALIASES[slug]) return c.redirect(`/dictionary/${DICT_ALIASES[slug]}`, 301)
+  const termRow = await c.env.DB.prepare(
     `SELECT dt.*, dc.name as category_name FROM dict_terms dt JOIN dict_categories dc ON dt.category_id = dc.id WHERE dt.slug = ? AND dt.is_published = 1`
   ).bind(slug).first() as any
+  // 보강 오버레이(레포 데이터 파일) 적용 — 본문·FAQ·수정일
+  const term = termRow ? applyDictEnrich(termRow) : termRow
 
   // 존재하지 않는 용어 → 404
   if (!term) {
@@ -1346,7 +1357,18 @@ app.get('/dictionary/:slug', async (c) => {
     }
   } catch { /* fallback to generic */ }
 
-  return c.render(dictionaryDetailPage(slug, term), {
+  // 보강 용어: 관련 용어 이름(see) 조회 — 존재·공개된 용어만
+  let seeTerms: { slug: string; term: string }[] = []
+  if (term._enrich && term._enrich.see.length) {
+    const ph = term._enrich.see.map(() => '?').join(',')
+    const { results } = await c.env.DB.prepare(
+      `SELECT slug, term FROM dict_terms WHERE is_published = 1 AND slug IN (${ph})`
+    ).bind(...term._enrich.see).all() as any
+    const bySlug = new Map((results || []).map((r: any) => [r.slug, r]))
+    seeTerms = term._enrich.see.filter((s: string) => bySlug.has(s) && !DICT_ALIASES[s]).map((s: string) => bySlug.get(s) as any)
+  }
+
+  return c.render(dictionaryDetailPage(slug, term, seeTerms), {
     seo: {
       title: `${termName} 뜻 | ${catName} 용어 — 이음치과 백과사전`,
       description: `${termName}${termEn ? ` (${termEn})` : ''} — ${termDesc.substring(0, 100)}. 이음치과 치과 용어 백과사전.`,
@@ -1367,7 +1389,8 @@ app.get('/dictionary/:slug', async (c) => {
             name: '이음치과 치과 용어 백과사전'
           },
           url: `${SITE_URL}/dictionary/${slug}`,
-          inLanguage: 'ko-KR'
+          inLanguage: 'ko-KR',
+          ...(term._enrich ? { dateModified: DICT_ENRICH_DATE } : {})
         },
         // 페이지 가시 FAQ와 1:1 일치하는 FAQPage — 맞춤 FAQ 우선 (AEO 강화)
         {
@@ -1515,9 +1538,77 @@ app.get('/regions', async (c) => {
 
 app.get('/regions/:slug', async (c) => {
   const slug = c.req.param('slug')
+
+  // 🎯 "명지 치과" 대표 키워드 허브 (2026-10-08) — 확인된 사실만으로 렌더, 화면 FAQ = FAQPage 1:1
+  if (slug === 'myeongji') {
+    const hubUrl = `${SITE_URL}${MYEONGJI_HUB_PATH}`
+    return c.render(myeongjiHubPage(), {
+      seo: {
+        title: MYEONGJI_HUB_TITLE,
+        description: MYEONGJI_HUB_DESC,
+        keywords: '명지 치과, 명지동 치과, 명지국제신도시 치과, 부산 명지 치과, 강서구 치과, 이음치과, 명지 야간진료 치과, 명지 주말진료 치과',
+        canonical: hubUrl,
+        ogUrl: hubUrl,
+        speakable: ['#ssrH1', '#quick-answer'],
+        jsonLd: [
+          localBusinessJsonLd(),
+          {
+            '@context': 'https://schema.org',
+            '@type': ['WebPage', 'MedicalWebPage'],
+            '@id': `${hubUrl}#webpage`,
+            url: hubUrl,
+            name: MYEONGJI_HUB_TITLE,
+            headline: MYEONGJI_HUB_H1,
+            description: MYEONGJI_HUB_DESC,
+            inLanguage: 'ko-KR',
+            isPartOf: { '@id': `${SITE_URL}/#website` },
+            about: { '@id': `${SITE_URL}/#organization` },
+            mainEntity: { '@id': `${SITE_URL}/#organization` },
+            areaServed: [
+              { '@type': 'Place', name: '부산광역시 강서구 명지동' },
+              { '@type': 'Place', name: '명지국제신도시' }
+            ],
+            reviewedBy: { '@id': `${SITE_URL}/#director` },
+            lastReviewed: MYEONGJI_HUB_UPDATED,
+            dateModified: MYEONGJI_HUB_UPDATED,
+            speakable: { '@type': 'SpeakableSpecification', cssSelector: ['#ssrH1', '#quick-answer'] },
+            breadcrumb: { '@id': `${hubUrl}#breadcrumb` }
+          },
+          { ...breadcrumbJsonLd([
+            { name: '홈', url: '/' },
+            { name: '지역별 안내', url: '/regions' },
+            { name: '명지 치과', url: MYEONGJI_HUB_PATH }
+          ]), '@id': `${hubUrl}#breadcrumb` },
+          faqPageJsonLd(MYEONGJI_HUB_FAQS, { id: `${hubUrl}#faq`, name: '명지 치과 자주 묻는 질문' })
+        ]
+      }
+    })
+  }
+
   const region = await c.env.DB.prepare(
     'SELECT * FROM seo_regions WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any
+
+  // 없는 지역 slug → 진짜 404 + noindex (예전엔 '지역 치과' 템플릿이 200 으로 열리던 soft 404)
+  if (!region) {
+    c.status(404)
+    c.header('X-Robots-Tag', 'noindex')
+    return c.render(
+      <div class="container py-20 text-center">
+        <h1 class="text-4xl font-bold mb-4">404</h1>
+        <p class="text-lg mb-8">요청하신 지역 안내 페이지를 찾을 수 없습니다.</p>
+        <a href="/regions" class="btn-primary">진료 지역 전체 보기</a>
+      </div>,
+      {
+        seo: {
+          title: '지역 페이지를 찾을 수 없습니다 (404) | 이음치과의원',
+          description: '요청하신 지역 안내 페이지를 찾을 수 없습니다. 이음치과 진료 지역 목록을 확인해주세요.',
+          canonical: `${SITE_URL}/regions`,
+          noindex: true
+        }
+      }
+    )
+  }
 
   const regionName = region?.region_name || '지역'
   // 매트릭스 데이터 보강 (인근지역·LSI 키워드)
@@ -2323,6 +2414,10 @@ app.get('/llms.txt', async (c) => {
 - 충치·신경치료, 잇몸치료(치주), 턱관절 치료, 소아진료
 - CBCT 촬영 후 데이터 기반 정밀 진단
 
+## 명지 치과 안내 (위치·진료시간·주차·버스·FAQ)
+
+- [명지 치과 | 이음치과의원](${SITE_URL}/regions/myeongji): 명지국제8로 265, 201호 · 월~목 12–21시(접수 20:30) · 토·일 10–17시 · 금요일 정기휴무 · 국민은행명지국제신도시지점 정류장 도보 1분
+
 ## 진료 안내 페이지
 
 ${treatmentLines || `- ${SITE_URL}/treatments`}
@@ -2456,10 +2551,26 @@ app.get('/llms-full.txt', async (c) => {
 })
 
 // ═══════════════════════════════════════════
+// sitemap-cases.xml 에 실릴 URL 이 하나라도 있는지 (얇은 증례·공지는 noindex 라 제외됨)
+// 비어 있으면 robots.txt·sitemap.xml 인덱스에서 빼서 '빈 사이트맵' 제출을 막는다 — 보강되면 자동 복귀 (2026-10-08)
+async function hasCaseSitemapUrls(db: any): Promise<boolean> {
+  try {
+    const { results: cases } = await db.prepare(
+      'SELECT description FROM cases WHERE is_published = 1 ORDER BY created_at DESC LIMIT 500'
+    ).all() as any
+    if ((cases || []).some((cs: any) => !isThinCase(cs))) return true
+    const { results: notices } = await db.prepare(
+      'SELECT content, content_html FROM notices WHERE is_published = 1 ORDER BY created_at DESC LIMIT 100'
+    ).all() as any
+    return (notices || []).some((n: any) => !isThinNotice(n))
+  } catch { return true }
+}
+
 // robots.txt + sitemap.xml (SEO 필수)
 // ═══════════════════════════════════════════
 app.get('/1c20b7a224344e4bacbb4bf922039648.txt', (c) => c.text('1c20b7a224344e4bacbb4bf922039648'))
-app.get('/robots.txt', (c) => {
+app.get('/robots.txt', async (c) => {
+  const casesLine = (await hasCaseSitemapUrls(c.env.DB)) ? `Sitemap: ${SITE_URL}/sitemap-cases.xml\n` : ''
   return c.text(`User-agent: *
 Allow: /
 Disallow: /admin
@@ -2473,8 +2584,7 @@ Sitemap: ${SITE_URL}/sitemap.xml
 # 카테고리별 sitemap (개별 제출 가능)
 Sitemap: ${SITE_URL}/sitemap-pages.xml
 Sitemap: ${SITE_URL}/sitemap-blogs.xml
-Sitemap: ${SITE_URL}/sitemap-cases.xml
-Sitemap: ${SITE_URL}/sitemap-matrix.xml
+${casesLine}Sitemap: ${SITE_URL}/sitemap-matrix.xml
 Sitemap: ${SITE_URL}/sitemap-dictionary.xml
 Sitemap: ${SITE_URL}/sitemap-images.xml
 
@@ -2576,18 +2686,22 @@ app.get('/sitemap.xml', async (c) => {
       return isoLastmod(r?.m)
     } catch { return isoLastmod(undefined) }
   }
-  const [blogMod, caseMod, dictMod, pageMod] = await Promise.all([
+  const [blogMod, caseMod, dictModDb, pageModDb, hasCases] = await Promise.all([
     q('SELECT MAX(updated_at) AS m FROM blogs WHERE is_published = 1'),
     q('SELECT MAX(updated_at) AS m FROM cases WHERE is_published = 1'),
     q('SELECT MAX(updated_at) AS m FROM dict_terms WHERE is_published = 1'),
-    q('SELECT MAX(updated_at) AS m FROM treatments WHERE is_published = 1')
+    q('SELECT MAX(updated_at) AS m FROM treatments WHERE is_published = 1'),
+    hasCaseSitemapUrls(c.env.DB)
   ])
+  // 코드 데이터 파일로 보강한 콘텐츠의 실제 수정일(고정값)도 반영
+  const maxYmd = (...ds: string[]) => ds.filter(Boolean).sort().pop() || ''
+  const dictMod = maxYmd(dictModDb, DICT_ENRICH_DATE)
+  const pageMod = maxYmd(pageModDb, MYEONGJI_HUB_UPDATED, TREATMENT_ENRICH_DATE)
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap><loc>${SITE_URL}/sitemap-pages.xml</loc><lastmod>${pageMod}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-blogs.xml</loc><lastmod>${blogMod}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-cases.xml</loc><lastmod>${caseMod}</lastmod></sitemap>
-  <sitemap><loc>${SITE_URL}/sitemap-matrix.xml</loc><lastmod>${pageMod}</lastmod></sitemap>
+${hasCases ? `  <sitemap><loc>${SITE_URL}/sitemap-cases.xml</loc><lastmod>${caseMod}</lastmod></sitemap>\n` : ''}  <sitemap><loc>${SITE_URL}/sitemap-matrix.xml</loc><lastmod>${pageMod}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-dictionary.xml</loc><lastmod>${dictMod}</lastmod></sitemap>
   <sitemap><loc>${SITE_URL}/sitemap-images.xml</loc><lastmod>${blogMod}</lastmod></sitemap>
 </sitemapindex>`
@@ -2612,7 +2726,7 @@ app.get('/sitemap-pages.xml', async (c) => {
   } catch { siteMod = isoLastmod(undefined) }
   const now = siteMod
   const { results: treatments } = await c.env.DB.prepare(
-    'SELECT slug, updated_at FROM treatments WHERE is_published = 1 ORDER BY sort_order'
+    'SELECT slug, updated_at, process_steps, benefits, content_sections, warnings, meta_title, meta_description, keywords FROM treatments WHERE is_published = 1 ORDER BY sort_order'
   ).all() as any
   const { results: doctors } = await c.env.DB.prepare(
     'SELECT slug, updated_at FROM doctors WHERE is_published = 1 ORDER BY sort_order'
@@ -2645,13 +2759,16 @@ app.get('/sitemap-pages.xml', async (c) => {
   const REDIRECTED_TREATMENT_SLUGS = new Set(['glownate', 'prosthetics'])
   for (const t of (treatments || [])) {
     if (REDIRECTED_TREATMENT_SLUGS.has(t.slug)) continue
-    xml += `  <url><loc>${SITE_URL}/treatments/${t.slug}</loc><lastmod>${isoLastmod(t.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>\n`
+    xml += `  <url><loc>${SITE_URL}/treatments/${t.slug}</loc><lastmod>${isoLastmod(applyTreatmentEnrich(t).updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>\n`
   }
   for (const d of (doctors || [])) {
     xml += `  <url><loc>${SITE_URL}/doctors/${d.slug}</loc><lastmod>${isoLastmod(d.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`
   }
   for (const sr of (seoRegions || [])) {
-    xml += `  <url><loc>${SITE_URL}/regions/${sr.slug}</loc><lastmod>${isoLastmod(sr.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>\n`
+    // 명지 치과 허브는 코드(src/pages/myeongji-hub.tsx) 본문 — 실제 수정일 고정값, 우선순위 상향
+    const isHub = sr.slug === 'myeongji'
+    const srMod = isHub ? MYEONGJI_HUB_UPDATED : isoLastmod(sr.updated_at)
+    xml += `  <url><loc>${SITE_URL}/regions/${sr.slug}</loc><lastmod>${srMod}</lastmod><changefreq>monthly</changefreq><priority>${isHub ? '0.9' : '0.7'}</priority></url>\n`
   }
   xml += '</urlset>'
   return xmlResponse(xml, 3600)
@@ -2795,7 +2912,9 @@ app.get('/sitemap-dictionary.xml', async (c) => {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `
-  for (const dt of (dictTerms || [])) {
+  for (const row of (dictTerms || [])) {
+    if (DICT_ALIASES[row.slug]) continue  // 동의어 301 대상은 제외
+    const dt = applyDictEnrich(row)     // 보강 오버레이 반영(본문·수정일)
     if (isThinDictTerm(dt)) continue  // 얇은 용어(고유 본문 800자 미만)는 noindex → 사이트맵 제외
     xml += `  <url><loc>${SITE_URL}/dictionary/${dt.slug}</loc><lastmod>${isoLastmod(dt.updated_at)}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>\n`
   }

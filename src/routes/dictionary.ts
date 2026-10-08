@@ -1,5 +1,10 @@
 import { Hono } from 'hono'
 import type { HonoEnv } from '../types'
+import { DICT_ALIAS_SQL_LIST, DICT_ALIASES, applyDictEnrich } from '../data/dict-enrich'
+
+// 동의어 301 대상(DICT_ALIASES)은 목록·검색·관련 용어에서 제외
+const NOT_ALIAS = `slug NOT IN (${DICT_ALIAS_SQL_LIST})`
+const DT_NOT_ALIAS = `dt.slug NOT IN (${DICT_ALIAS_SQL_LIST})`
 
 const app = new Hono<HonoEnv>()
 
@@ -13,7 +18,7 @@ app.get('/api/dictionary/categories', async (c) => {
   const { results: counts } = await c.env.DB.prepare(
     `SELECT dc.slug, COUNT(dt.id) as count
      FROM dict_categories dc
-     LEFT JOIN dict_terms dt ON dc.id = dt.category_id AND dt.is_published = 1
+     LEFT JOIN dict_terms dt ON dc.id = dt.category_id AND dt.is_published = 1 AND ${DT_NOT_ALIAS}
      GROUP BY dc.id
      ORDER BY dc.sort_order`
   ).all()
@@ -37,7 +42,7 @@ app.get('/api/dictionary', async (c) => {
   const limit = parseInt(c.req.query('limit') || '50')
   const offset = (page - 1) * limit
 
-  let where = 'dt.is_published = 1'
+  let where = `dt.is_published = 1 AND ${DT_NOT_ALIAS}`
   const params: any[] = []
 
   if (category && category !== 'all') {
@@ -95,7 +100,7 @@ app.get('/api/dictionary', async (c) => {
 // ─── 용어 인덱스 (자동 링크용, 가벼운 응답) ───
 app.get('/api/dictionary/terms-index', async (c) => {
   const { results } = await c.env.DB.prepare(
-    `SELECT term, slug FROM dict_terms WHERE is_published = 1 AND LENGTH(term) >= 2 ORDER BY LENGTH(term) DESC LIMIT 200`
+    `SELECT term, slug FROM dict_terms WHERE is_published = 1 AND ${NOT_ALIAS} AND LENGTH(term) >= 2 ORDER BY LENGTH(term) DESC LIMIT 200`
   ).all()
   c.header('Cache-Control', 'public, max-age=3600')
   return c.json({ terms: results })
@@ -110,12 +115,15 @@ app.get('/api/dictionary/:slug', async (c) => {
     return c.json({ error: 'Invalid slug' }, 400)
   }
 
-  const term = await c.env.DB.prepare(
+  if (DICT_ALIASES[slug]) return c.json({ error: 'Moved', slug: DICT_ALIASES[slug] }, 404)
+  const termRow = await c.env.DB.prepare(
     `SELECT dt.*, dc.name as category_name, dc.slug as category_slug, dc.icon as category_icon
      FROM dict_terms dt
      JOIN dict_categories dc ON dt.category_id = dc.id
      WHERE dt.slug = ? AND dt.is_published = 1`
-  ).bind(slug).first()
+  ).bind(slug).first() as any
+  // 보강 오버레이(레포 데이터 파일) — 화면 SSR 과 같은 본문
+  const term = termRow ? (({ _enrich, ...rest }) => rest)(applyDictEnrich(termRow) as any) : termRow
 
   if (!term) {
     return c.json({ error: 'Term not found' }, 404)
@@ -124,7 +132,7 @@ app.get('/api/dictionary/:slug', async (c) => {
   // 같은 카테고리의 관련 용어 (현재 용어 제외, 최대 6개)
   const { results: related } = await c.env.DB.prepare(
     `SELECT id, term, slug, short_desc, english FROM dict_terms
-     WHERE category_id = ? AND id != ? AND is_published = 1
+     WHERE category_id = ? AND id != ? AND is_published = 1 AND ${NOT_ALIAS}
      ORDER BY RANDOM() LIMIT 6`
   ).bind((term as any).category_id, (term as any).id).all()
 
@@ -143,7 +151,7 @@ app.get('/api/dictionary/service/:service', async (c) => {
     `SELECT dt.id, dt.term, dt.slug, dt.short_desc, dt.english, dc.name as category_name
      FROM dict_terms dt
      JOIN dict_categories dc ON dt.category_id = dc.id
-     WHERE dt.related_service = ? AND dt.is_published = 1
+     WHERE dt.related_service = ? AND dt.is_published = 1 AND ${DT_NOT_ALIAS}
      ORDER BY dt.term COLLATE NOCASE`
   ).bind(service).all()
 
@@ -164,7 +172,7 @@ app.get('/api/dictionary/stats/chosung', async (c) => {
 // ─── 전체 통계 ───
 app.get('/api/dictionary/stats/overview', async (c) => {
   const totalQ = await c.env.DB.prepare(
-    'SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1'
+    `SELECT COUNT(*) as total FROM dict_terms WHERE is_published = 1 AND ${NOT_ALIAS}`
   ).first() as any
 
   const catQ = await c.env.DB.prepare(
@@ -192,7 +200,7 @@ app.get('/api/dictionary/search/autocomplete', async (c) => {
     `SELECT dt.term, dt.slug, dt.english, dc.name as category_name
      FROM dict_terms dt
      JOIN dict_categories dc ON dt.category_id = dc.id
-     WHERE dt.is_published = 1 AND (dt.term LIKE ? OR dt.english LIKE ?)
+     WHERE dt.is_published = 1 AND ${DT_NOT_ALIAS} AND (dt.term LIKE ? OR dt.english LIKE ?)
      ORDER BY CASE WHEN dt.term LIKE ? THEN 0 ELSE 1 END, dt.views DESC
      LIMIT 8`
   ).bind(s, s, `${q}%`).all()

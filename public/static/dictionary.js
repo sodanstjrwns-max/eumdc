@@ -516,6 +516,9 @@
       })
       .then(function(data) {
         if (!data) return;
+        // SSR 본문(보강본·FAQ 포함)이 이미 있으면 덮어쓰지 않는다 — 조회수 집계만 (2026-10-08)
+        var ssrMain = document.getElementById('dictDetailMain');
+        if (ssrMain && ssrMain.querySelector('.dict-section')) return;
         render(data.term, data.related);
       })
       .catch(function(e) { console.error('Detail:', e); });

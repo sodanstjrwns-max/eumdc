@@ -123,6 +123,7 @@ export function subPageLayout(title: string, children: any) {
               <h4>안내</h4>
               <a href="/about">병원 소개</a>
               <a href="/visit">내원 안내</a>
+              <a href="/regions/myeongji">명지 치과</a>
               <a href="tel:051-206-5888">전화 상담</a>
               <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener">카카오톡 상담</a>
             </div>

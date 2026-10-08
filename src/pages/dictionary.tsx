@@ -169,8 +169,23 @@ export function dictionaryPage() {
   ))
 }
 
+const TX_LABELS: Record<string, string> = {
+  '/treatments/implant': '임플란트',
+  '/treatments/aesthetic': '심미보철',
+  '/treatments/laminate': '라미네이트',
+  '/treatments/resin': '심미레진',
+  '/treatments/general': '충치·신경치료',
+  '/treatments/periodontal': '잇몸치료',
+  '/treatments/wisdom-tooth': '사랑니 발치',
+  '/treatments/pediatric': '소아·예방치과',
+  '/treatments/prevention': '스케일링·예방',
+  '/treatments/tmj': '턱관절 치료',
+  '/treatments/invisalign': 'MEG Aligner 투명교정',
+  '/treatments/orthodontics': '치아교정',
+}
+
 /** 백과사전 상세 페이지 — SSR-first */
-export function dictionaryDetailPage(slug: string, term?: any) {
+export function dictionaryDetailPage(slug: string, term?: any, seeTerms: { slug: string; term: string }[] = []) {
   const termName = term?.term || ''
   const english = term?.english || ''
   const pronunciation = term?.pronunciation || ''
@@ -239,7 +254,24 @@ export function dictionaryDetailPage(slug: string, term?: any) {
                   <div class="dict-full-desc" dangerouslySetInnerHTML={{ __html: fullDesc }}></div>
                 </div>
               )}
-              {relatedService && (
+              {/* 보강 용어: 관련 진료·함께 보면 좋은 용어 (src/data/dict-enrich-content.ts) */}
+              {term?._enrich && (term._enrich.tx.length > 0 || seeTerms.length > 0) && (
+                <div class="dict-section dict-related-section">
+                  <h2 class="dict-section-title">{termName}와 함께 보면 좋은 내용</h2>
+                  {term._enrich.tx.length > 0 && (
+                    <p>관련 진료: {term._enrich.tx.map((href: string, i: number) => (
+                      <>{i > 0 ? ' · ' : ''}<a href={href} class="dict-related-link">{TX_LABELS[href] || href}</a></>
+                    ))}</p>
+                  )}
+                  {seeTerms.length > 0 && (
+                    <p>관련 용어: {seeTerms.map((t, i) => (
+                      <>{i > 0 ? ' · ' : ''}<a href={`/dictionary/${t.slug}`}>{t.term}</a></>
+                    ))}</p>
+                  )}
+                  <p class="dict-reviewed">감수 최효영 대표원장 · 최종 검토 {String(term.updated_at).slice(0, 10)}</p>
+                </div>
+              )}
+              {relatedService && !term?._enrich && (
                 <div class="dict-section dict-related-section">
                   <h2 class="dict-section-title">{termName} 관련 진료</h2>
                   <p>이 용어는 <strong>{relatedService}</strong> 진료와 관련됩니다.</p>

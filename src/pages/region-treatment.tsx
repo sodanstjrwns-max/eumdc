@@ -209,7 +209,7 @@ export function regionTreatmentPage(region: RegionInfo, treatment: TreatmentInfo
             </div>
             <div class="rt-visit-card">
               <h3>진료시간</h3>
-              <p>월~목 10:00~21:00<br/>금 10:00~18:00<br/>토·일 10:00~14:00</p>
+              <p>월~목 12:00~21:00 (접수 마감 20:30)<br/>금 정기휴무<br/>토·일 10:00~17:00 (접수 마감 16:30)</p>
             </div>
             <div class="rt-visit-card">
               <h3>주차</h3>

@@ -132,11 +132,11 @@ export function seoRegionPage(
             </div>
             <div class="region-info-card">
               <h3>진료시간</h3>
-              <p>월~목 10:00-21:00<br/>금 10:00-18:00<br/>토·일 10:00-14:00</p>
+              <p>월~목 12:00-21:00 (접수 마감 20:30)<br/>금 정기휴무<br/>토·일 10:00-17:00 (접수 마감 16:30)</p>
             </div>
             <div class="region-info-card">
               <h3>주차</h3>
-              <p>2시간 무료 주차</p>
+              <p>건물 뒤편 주차장(하이마트 옆) 2시간 지원</p>
             </div>
           </div>
           <div class="region-cta">
