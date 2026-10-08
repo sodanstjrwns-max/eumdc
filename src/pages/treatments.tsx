@@ -88,7 +88,9 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
   const ssrPrices = prices || []
   const ssrFaqs = faqs || []
   const answer = treatment ? treatmentAnswer(treatment) : ''
-  const lastReviewed = isoDateOnly(treatment?.updated_at)
+  // 보강 오버레이 진료는 원래 감수일(reviewed_at) 표기 + 보강일 '원장 검토 전' 안내
+  const lastReviewed = isoDateOnly(treatment?.reviewed_at || treatment?.updated_at)
+  const enrichDate = treatment?.enrich_date as string | undefined
 
   return subPageLayout('TREATMENT', (
     <div class="page-treatment-detail">
@@ -124,6 +126,11 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
             <p class="tx-reviewed" style="font-size:.9rem;opacity:.75;margin:12px 0 0">
               감수: <a href="/doctors/choi-hyoyoung">최효영 대표원장</a>{lastReviewed ? <> · 최종 검토 <time datetime={lastReviewed}>{lastReviewed}</time></> : null}
             </p>
+            {enrichDate && (
+              <p class="tx-enrich-note" style="font-size:.85rem;opacity:.7;margin:4px 0 0">
+                일부 설명은 <time datetime={enrichDate}>{enrichDate}</time> 보강되었으며 원장 검토 전입니다.
+              </p>
+            )}
           </div>
         </section>
       )}

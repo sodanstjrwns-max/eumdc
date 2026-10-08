@@ -140,7 +140,7 @@ const isEmptyJsonArray = (v: any) => {
 }
 const isBlank = (v: any) => !v || !String(v).replace(/<[^>]+>/g, '').trim()
 
-/** D1 진료 행의 빈 칸만 보강본으로 채운다. 보강이 적용되면 updated_at = 보강일(고정값) */
+/** D1 진료 행의 빈 칸만 보강본으로 채운다. 보강이 적용되면 updated_at = 보강일(고정값), reviewed_at = 원래 D1 updated_at(원장 감수 시점) */
 export function applyTreatmentEnrich<T extends Record<string, any>>(t: T): T {
   if (!t) return t
   const e = TREATMENT_ENRICH[t.slug]
@@ -159,6 +159,10 @@ export function applyTreatmentEnrich<T extends Record<string, any>>(t: T): T {
     // 개요·부제는 과장 표현(“끝판왕”·“가장 많이”)이 있던 원문을 사실 위주 문장으로 교체
     if (e.overview) out.overview = e.overview
     if (e.hero_subtitle) out.hero_subtitle = e.hero_subtitle
+    // 보강분은 원장 검토 전 → 감수일(lastReviewed·화면 '최종 검토')은 보강 전 D1 updated_at 을 유지하고,
+    // 수정일(dateModified·사이트맵 lastmod)만 보강일로 둔다. 화면에 '원장 검토 전' 안내를 붙인다.
+    out.reviewed_at = t.updated_at
+    out.enrich_date = TREATMENT_ENRICH_DATE
     out.updated_at = `${TREATMENT_ENRICH_DATE} 00:00:00`
   }
   return out

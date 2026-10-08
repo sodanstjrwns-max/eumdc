@@ -763,7 +763,9 @@ export const TREATMENT_SPEAKABLE = ['.treat-hero-title', '#tx-answer']
 
 export function treatmentJsonLd(treatment: any) {
   const url = `${SITE_URL}/treatments/${treatment.slug}`
-  const lastReviewed = isoDateOnly(treatment.updated_at)
+  // 감수일: 보강 오버레이가 적용된 진료는 보강 전 D1 updated_at(reviewed_at) — 보강분은 원장 검토 전
+  const lastReviewed = isoDateOnly(treatment.reviewed_at || treatment.updated_at)
+  const dateModified = treatment.enrich_date ? isoDateOnly(treatment.updated_at) : undefined
   return {
     '@context': 'https://schema.org',
     '@type': 'MedicalWebPage',
@@ -775,6 +777,7 @@ export function treatmentJsonLd(treatment: any) {
     image: treatment.hero_image ? (treatment.hero_image.startsWith('http') ? treatment.hero_image : `${SITE_URL}${treatment.hero_image}`) : DEFAULT_IMAGE,
     // DB 콘텐츠의 최종 수정일(updated_at) — 화면 '최종 검토' 표기와 동일, 오늘 날짜 자동 채움 없음
     ...(lastReviewed ? { lastReviewed } : {}),
+    ...(dateModified ? { dateModified } : {}),
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     isPartOf: { '@id': `${SITE_URL}/#website` },
     about: { '@id': `${url}#procedure` },
