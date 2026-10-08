@@ -11,7 +11,7 @@
 import { subPageLayout } from './layout'
 
 export const MYEONGJI_HUB_PATH = '/regions/myeongji'
-/** 허브 본문을 실제로 바꾼 날짜 (사이트맵 lastmod·dateModified·화면 검토일 공용, 고정값) */
+/** 허브 본문을 실제로 바꾼 날짜 (사이트맵 lastmod·dateModified·화면 기준일 공용, 고정값) */
 export const MYEONGJI_HUB_UPDATED = '2026-10-08'
 export const MYEONGJI_HUB_TITLE = '명지 치과 | 이음치과의원 — 명지국제신도시 명지국제8로 265'
 export const MYEONGJI_HUB_H1 = '명지 치과, 이음치과의원'
@@ -87,7 +87,7 @@ export function myeongjiHubPage() {
             <span class="region-meta-item"><strong>주차</strong> 건물 뒤 주차장 2시간</span>
             <span class="region-meta-item"><strong>전화</strong> <a href="tel:051-206-5888">051-206-5888</a></span>
           </div>
-          <p class="region-hub-reviewed">감수 최효영 대표원장 · 최종 검토 {MYEONGJI_HUB_UPDATED}</p>
+          <p class="region-hub-reviewed">일반 안내 정보입니다(기준일 {MYEONGJI_HUB_UPDATED}). 진료 판단은 내원 상담에서 원장이 직접 합니다.</p>
         </div>
       </section>
 

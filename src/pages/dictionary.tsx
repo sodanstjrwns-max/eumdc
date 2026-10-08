@@ -268,7 +268,7 @@ export function dictionaryDetailPage(slug: string, term?: any, seeTerms: { slug:
                       <>{i > 0 ? ' · ' : ''}<a href={`/dictionary/${t.slug}`}>{t.term}</a></>
                     ))}</p>
                   )}
-                  <p class="dict-reviewed">감수 최효영 대표원장 · 최종 검토 {String(term.updated_at).slice(0, 10)}</p>
+                  <p class="dict-reviewed">일반 건강정보입니다. 진료 판단은 내원 상담에서 원장이 직접 합니다.</p>
                 </div>
               )}
               {relatedService && !term?._enrich && (

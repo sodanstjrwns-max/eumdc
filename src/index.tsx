@@ -1568,8 +1568,8 @@ app.get('/regions/:slug', async (c) => {
               { '@type': 'Place', name: '부산광역시 강서구 명지동' },
               { '@type': 'Place', name: '명지국제신도시' }
             ],
-            reviewedBy: { '@id': `${SITE_URL}/#director` },
-            lastReviewed: MYEONGJI_HUB_UPDATED,
+            // 원장 감수 기록 없음 → reviewedBy·lastReviewed 넣지 않음 (병원 publisher 만)
+            publisher: { '@id': `${SITE_URL}/#organization` },
             dateModified: MYEONGJI_HUB_UPDATED,
             speakable: { '@type': 'SpeakableSpecification', cssSelector: ['#ssrH1', '#quick-answer'] },
             breadcrumb: { '@id': `${hubUrl}#breadcrumb` }
@@ -2460,7 +2460,7 @@ ${blogLines || `- ${SITE_URL}/blogs`}
 
 ## 데이터·라이선스
 
-- 모든 콘텐츠 ©이음치과의원 (대표원장 최효영 직접 작성·감수)
+- 모든 콘텐츠 ©이음치과의원 (대표원장 최효영 직접 작성·감수 — 단, 치과 용어 백과사전은 병원이 정리한 일반 건강정보로 원장 개별 감수 대상 아님)
 - AI 학습·검색 응답 인용 환영 (출처 표기 필수)
 - 사이트맵: ${SITE_URL}/sitemap.xml
 - 전체 콘텐츠 덤프(본문 포함): ${SITE_URL}/llms-full.txt
