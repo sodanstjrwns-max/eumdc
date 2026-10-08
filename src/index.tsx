@@ -1756,7 +1756,7 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
     breadcrumbJsonLd([
       { name: '홈', url: '/' },
       { name: '지역별 진료', url: '/regions' },
-      { name: region.name, url: `/regions/${region.slug}` },
+      { name: region.slug === 'myeongji' ? '명지 치과' : region.name, url: `/regions/${region.slug}` },
       { name: treatment.name, url: `/regions/${region.slug}/${treatment.slug}` }
     ]),
     // 3) MedicalWebPage (의료 페이지 — 신뢰도 ↑)
@@ -1924,7 +1924,7 @@ app.get('/regions/:regionSlug/:treatmentSlug/cost', async (c) => {
     breadcrumbJsonLd([
       { name: '홈', url: '/' },
       { name: '지역별 진료', url: '/regions' },
-      { name: region.name, url: `/regions/${region.slug}` },
+      { name: region.slug === 'myeongji' ? '명지 치과' : region.name, url: `/regions/${region.slug}` },
       { name: treatment.name, url: `/regions/${region.slug}/${treatment.slug}` },
       { name: '가격·비용', url: `/regions/${region.slug}/${treatment.slug}/cost` }
     ]),

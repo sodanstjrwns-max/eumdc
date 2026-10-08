@@ -1,6 +1,7 @@
 import { subPageLayout } from './layout'
 import { markdownToHtml, linkDictionaryTerms, escapeHtml } from '../utils/content'
 import { polishArticleImages, TOPIC_NAME, ymd } from '../utils/column-seo'
+import { HUB_PATH, HUB_ANCHOR, blogHubLine, htmlHasHubLink } from '../data/hub-link'
 
 /** 서버 렌더 페이지 이동 링크 (?page=N, a 태그) */
 export function pagerNav(base: string, page: number, pages: number, label = '페이지') {
@@ -207,6 +208,12 @@ export function blogDetailPage(
                 ))}
               </div>
             )}
+
+            {/* 지역 안내 1문장 — "명지 치과" 허브로 (본문에 이미 허브 링크가 있으면 생략: 페이지당 2개 이하) */}
+            {!htmlHasHubLink(contentHtml) && (() => {
+              const [pre, post] = blogHubLine(String(blog.slug || blog.id || ''))
+              return <p class="col-local-hub">{pre}<a href={HUB_PATH}>{HUB_ANCHOR}</a>{post}</p>
+            })()}
 
             {authorBox(blog, extra?.doctor)}
 

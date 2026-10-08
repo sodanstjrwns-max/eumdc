@@ -2,6 +2,7 @@ import { caseHeadline } from './cases'
 import { subPageLayout } from './layout'
 import { SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 import { treatmentAnswer, isoDateOnly } from '../seo'
+import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 
 /** 진료과목 목록 페이지
  *  카드 목록은 SSR로 먼저 그림(검색엔진은 robots.txt의 /api/ 차단 때문에 /api/treatments를 못 읽음 →
@@ -311,6 +312,13 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
           </div>
         </section>
       </div>
+
+      {/* 진료 안내 한 줄 — "명지 치과" 허브로 (#treatDetailContent 밖: treatments.js 재렌더 후에도 유지) */}
+      <section class="treat-section treat-hub-line" style="padding:8px 0 24px">
+        <div class="container-wide">
+          <p class="hub-line">명지국제신도시·명지동에서 {treatmentName || '치과 진료'} 상담을 알아보신다면, <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에서 이음치과의원의 위치·진료 시간·주차 정보를 확인하실 수 있습니다.</p>
+        </div>
+      </section>
 
       {/* 관련 칼럼·비포애프터 — #treatDetailContent 밖(treatments.js 재렌더 영향 없음) */}
       {related && ((related.blogs && related.blogs.length > 0) || (related.cases && related.cases.length > 0)) && (

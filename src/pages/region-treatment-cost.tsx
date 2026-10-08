@@ -1,4 +1,5 @@
 import { subPageLayout } from './layout'
+import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 import { RegionInfo, TreatmentInfo, SEO_REGIONS_MAP, SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 import { CostInfo } from '../data/seo-cost-matrix'
 
@@ -38,12 +39,16 @@ export function regionTreatmentCostPage(
             <span class="sep">›</span>
             <a href="/regions">지역별 진료</a>
             <span class="sep">›</span>
-            <a href={`/regions/${region.slug}`}>{region.name}</a>
+            {/* 명지동 = "명지 치과" 허브 → 대표 키워드 앵커 */}
+            <a href={`/regions/${region.slug}`}>{region.slug === 'myeongji' ? HUB_ANCHOR : region.name}</a>
             <span class="sep">›</span>
             <a href={`/regions/${region.slug}/${treatment.slug}`}>{treatment.name}</a>
             <span class="sep">›</span>
             <span aria-current="page">가격·비용</span>
           </nav>
+          {region.slug !== 'myeongji' && (
+            <p class="hub-line">명지국제8로 265 이음치과의원의 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에서 확인하실 수 있습니다.</p>
+          )}
 
           <div class="rt-cost-badge">💰 가격·비용 안내</div>
           <h1 class="rt-h1">

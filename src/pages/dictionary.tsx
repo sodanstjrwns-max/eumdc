@@ -3,6 +3,7 @@
 // 초성 검색, 카테고리 필터, 정렬, 자동완성, 통계
 // =============================================
 import { subPageLayout } from './layout'
+import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 
 /** 백과사전 메인 페이지 */
 export function dictionaryPage() {
@@ -313,6 +314,7 @@ export function dictionaryDetailPage(slug: string, term?: any, seeTerms: { slug:
               <div class="dict-section dict-cta-section">
                 <h2 class="dict-section-title">{termName} 관련 상담</h2>
                 <p>치과 용어가 어렵게 느껴지시나요? 이음치과는 환자가 이해할 때까지 친절히 설명해드립니다.</p>
+                <p class="hub-line">이음치과의원 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에 정리되어 있습니다.</p>
                 <div class="dict-cta-actions">
                   <a href="tel:051-206-5888" class="dict-cta-btn primary">051-206-5888 전화 상담</a>
                   <a href="/dictionary" class="dict-cta-btn secondary">다른 용어 둘러보기</a>

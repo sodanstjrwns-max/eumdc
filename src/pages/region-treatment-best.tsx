@@ -1,4 +1,5 @@
 import { subPageLayout } from './layout'
+import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 import { RegionInfo, TreatmentInfo, SEO_REGIONS_MAP, SEO_TREATMENTS } from '../data/seo-matrix'
 
 /**
@@ -80,6 +81,7 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
             <span class="sep">›</span>
             <span aria-current="page">{region.name} {treatment.name}</span>
           </nav>
+          <p class="hub-line">명지국제8로 265 이음치과의원의 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에서 확인하실 수 있습니다.</p>
 
           <div class="rt-best-badge">💎 잘하는 곳 비교 가이드</div>
           <h1 class="rt-h1">

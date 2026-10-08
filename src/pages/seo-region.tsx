@@ -1,4 +1,5 @@
 import { subPageLayout } from './layout'
+import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 
 /** 지역 SEO 랜딩 페이지 — SSR-first */
@@ -29,6 +30,9 @@ export function seoRegionPage(
         <div class="container-wide">
           {h1Title && <h1 class="page-title" id="ssrH1">{h1Title}</h1>}
           {heroText && <p class="region-hero-text">{heroText}</p>}
+          {slug !== 'myeongji' && (
+            <p class="hub-line">명지국제8로 265 이음치과의원의 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에서 확인하실 수 있습니다.</p>
+          )}
           <div class="region-hero-meta">
             {distance && <span class="region-meta-item"><strong>거리</strong> {distance}</span>}
             {transportInfo && <span class="region-meta-item"><strong>교통</strong> {transportInfo}</span>}
