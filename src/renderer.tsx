@@ -24,14 +24,13 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <meta name="author" content="이음치과의원" />
         <meta name="publisher" content="이음치과의원" />
 
-        {/* 파비콘 + PWA — 이음치과 로고 심볼 (치아 + 무한대) */}
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/svg+xml" href="/static/favicon.svg?v=20260419c" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png?v=20260419c" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16.png?v=20260419c" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/static/apple-touch-icon.png?v=20260419c" />
+        {/* 파비콘 + PWA — 2026-10-14 승인 파비콘 (tools/favicons/out/eumdc) */}
+        <link rel="icon" href="/favicon.ico?v=fav20261014" sizes="any" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png?v=fav20261014" />
+        <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96.png?v=fav20261014" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png?v=fav20261014" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=fav20261014" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="mask-icon" href="/static/favicon.svg" color="#00306A" />
         <link rel="alternate" type="application/rss+xml" title="이음치과 블로그 RSS" href="/rss.xml" />
         <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 

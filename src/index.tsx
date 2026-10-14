@@ -3052,14 +3052,9 @@ function escXml(s: string): string {
 }
 
 // === 루트 경로 파비콘/매니페스트 (브라우저가 기본 요청하는 경로) ===
-app.get('/favicon.ico', async (c) => {
-  return c.redirect('/static/favicon.ico', 301)
-})
-app.get('/apple-touch-icon.png', async (c) => {
-  return c.redirect('/static/apple-touch-icon.png', 301)
-})
+// /favicon.ico·/favicon-*.png·/apple-touch-icon.png 은 public/ 루트 정적 파일(2026-10-14 승인 파비콘)로 직접 서빙
 app.get('/apple-touch-icon-precomposed.png', async (c) => {
-  return c.redirect('/static/apple-touch-icon.png', 301)
+  return c.redirect('/apple-touch-icon.png', 301)
 })
 app.get('/manifest.json', async (c) => {
   return c.redirect('/static/manifest.json', 301)
