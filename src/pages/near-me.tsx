@@ -219,7 +219,7 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
               <div class="rt-faq-a">
                 <span class="rt-faq-a-icon">A</span>
                 <p class="rt-faq-a-text">
-                  네, 주말·야간 진료도 평일과 동일하게 통합치의학과 전문의가 진료합니다.
+                  네, 주말·야간 진료도 평일과 동일하게 최효영 대표원장이 진료합니다.
                   CBCT·디지털 스캐너 등 진단 장비도 모두 동일하게 사용 가능합니다.
                 </p>
               </div>

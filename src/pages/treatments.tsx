@@ -268,7 +268,7 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
               {/* 지역×진료 매트릭스에 있는 진료만 명지동 페이지가 존재 (없는 진료는 404였음 → 숨김) */}
               {SEO_TREATMENTS_MAP[slug] && (
                 <a href={`/regions/myeongji/${slug}`} class="treat-related-card">
-                  <strong>명지동 {treatmentName}</strong><span>지역 정보 →</span>
+                  <strong>명지 {treatmentName}</strong><span>명지 진료 안내 →</span>
                 </a>
               )}
               {SEO_TREATMENTS_MAP[slug] && (
@@ -278,7 +278,7 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
               )}
               {SEO_TREATMENTS_MAP[slug] ? (
                 <a href={`/best/myeongji-${slug}`} class="treat-related-card">
-                  <strong>{treatmentName} 잘하는 곳</strong><span>비교 가이드 →</span>
+                  <strong>{treatmentName} 치과 고르는 기준</strong><span>선택 가이드 →</span>
                 </a>
               ) : (
                 <a href="/prices" class="treat-related-card">
@@ -289,7 +289,7 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
                 <strong>비포애프터 케이스</strong><span>실제 결과 →</span>
               </a>
               <a href="/doctors" class="treat-related-card">
-                <strong>의료진 소개</strong><span>전문의 보기 →</span>
+                <strong>의료진 소개</strong><span>원장 소개 →</span>
               </a>
               <a href="/visit" class="treat-related-card">
                 <strong>내원 안내</strong><span>오시는 길 →</span>

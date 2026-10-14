@@ -68,7 +68,7 @@ export function seoRegionPage(
                   <div class="region-treat-links">
                     <a href={infoHref}>정보 →</a>
                     {hasMatrix && <a href={`/regions/${slug}/${t.slug}/cost`}>비용 →</a>}
-                    {hasMatrix && <a href={`/best/${slug}-${t.slug}`}>잘하는 곳 →</a>}
+                    {hasMatrix && <a href={`/best/${slug}-${t.slug}`}>고르는 기준 →</a>}
                   </div>
                 </a>
               )

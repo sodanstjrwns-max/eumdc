@@ -33,8 +33,8 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
   const checkList = [
     {
       title: '의료진 자격·경력',
-      criteria: '통합치의학과 전문의·해당 진료 인증의 여부',
-      ieumdc: '✅ 통합치의학과 전문의 진료 + 임플란트·교정 인증의 보유'
+      criteria: '의료진 경력과 직접 진료 여부',
+      ieumdc: '✅ 최효영 대표원장 직접 진료'
     },
     {
       title: '진단 장비',
@@ -77,15 +77,15 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
           <nav class="rt-breadcrumb" aria-label="breadcrumb">
             <a href="/">홈</a>
             <span class="sep">›</span>
-            <a href="/best">잘하는 치과</a>
+            <a href="/best">치과 선택 가이드</a>
             <span class="sep">›</span>
             <span aria-current="page">{region.name} {treatment.name}</span>
           </nav>
           <p class="hub-line">명지국제8로 265 이음치과의원의 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에서 확인하실 수 있습니다.</p>
 
-          <div class="rt-best-badge">💎 잘하는 곳 비교 가이드</div>
+          <div class="rt-best-badge">💎 치과 선택 기준</div>
           <h1 class="rt-h1">
-            {region.name} {treatment.name} <span class="rt-h1-accent">잘하는 곳 고르는 법</span>
+            {region.name} {treatment.name} <span class="rt-h1-accent">치과 고르는 기준</span>
           </h1>
           <p class="rt-subtitle">
             {region.fullName}에서 {treatment.name} 진료를 받기 전 꼭 확인할 7가지 기준을 안내드립니다.
@@ -107,7 +107,7 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
         <div class="container-wide">
           <h2 class="rt-h2">{region.name}에서 {treatment.name} 치과 고르는 객관적 기준</h2>
           <p class="rt-paragraph">
-            <strong>{region.fullName}</strong>에서 <strong>{treatment.name} 잘하는 곳</strong>을 찾는 분들이 많이 검색하시지만,
+            <strong>{region.fullName}</strong>에서 <strong>{treatment.name} 치과</strong>를 찾는 분들이 많이 검색하시지만,
             가장 중요한 건 <strong>객관적 기준으로 비교</strong>하는 것입니다.
             아래 7가지 체크리스트를 활용하시면 후회 없는 선택을 하실 수 있습니다.
           </p>
@@ -170,13 +170,13 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
             <details class="rt-faq-item" open>
               <summary class="rt-faq-q">
                 <span class="rt-faq-q-icon">Q</span>
-                <span class="rt-faq-q-text">{region.name}에서 {treatment.name} 잘하는 치과는 어디인가요?</span>
+                <span class="rt-faq-q-text">{region.name}에서 {treatment.name} 치과를 고를 때 무엇을 보나요?</span>
               </summary>
               <div class="rt-faq-a">
                 <span class="rt-faq-a-icon">A</span>
                 <p class="rt-faq-a-text">
-                  {region.fullName}에서 {treatment.name} 진료는 <strong>이음치과의원</strong>이 추천드릴 만한 곳입니다.
-                  통합치의학과 전문의 진료, CBCT·디지털 스캐너 풀세트, 야간·주말 진료, 무료주차, 그리고 {region.distance}의 접근성을 모두 갖추고 있습니다.
+                  {region.fullName}에서 {treatment.name} 진료는 <strong>이음치과의원</strong>은 다음을 갖추고 있습니다.
+                  최효영 대표원장 직접 진료, CBCT·디지털 스캐너, 야간·주말 진료, 무료주차, 그리고 {region.distance}의 접근성을 모두 갖추고 있습니다.
                   무엇보다 {treatment.shortBenefit}.
                 </p>
               </div>
@@ -235,7 +235,7 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
             <div class="rt-related-grid">
               {relatedTreatments.map(rt => (
                 <a class="rt-related-card" href={`/best/${region.slug}-${rt.slug}`}>
-                  <strong>{region.name} {rt.name} 잘하는 곳</strong>
+                  <strong>{region.name} {rt.name} 고르는 기준</strong>
                   <span>{rt.shortBenefit}</span>
                 </a>
               ))}
@@ -252,7 +252,7 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
             <div class="rt-nearby-grid">
               {nearbyRegions.map(nr => (
                 <a class="rt-nearby-card" href={`/best/${nr.slug}-${treatment.slug}`}>
-                  <strong>{nr.name} {treatment.name} 잘하는 곳</strong>
+                  <strong>{nr.name} {treatment.name} 고르는 기준</strong>
                   <span>{nr.fullName}</span>
                 </a>
               ))}

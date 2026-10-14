@@ -9,6 +9,7 @@
  * - region.js 를 싣지 않는다 (SSR H1·FAQ 를 클라이언트가 덮어쓰지 않도록).
  */
 import { subPageLayout } from './layout'
+import { myeongjiCardGrid } from './myeongji-cards'
 
 export const MYEONGJI_HUB_PATH = '/regions/myeongji'
 /** 허브 본문을 실제로 바꾼 날짜 (사이트맵 lastmod·dateModified·화면 기준일 공용, 고정값) */
@@ -141,9 +142,9 @@ export function myeongjiHubPage() {
               <li><a href={`/treatments/${t.slug}`}><strong>{t.name}</strong></a> — {t.note}</li>
             ))}
           </ul>
-          <p class="region-hub-matrix">
-            명지동 기준 상세 안내: <a href="/regions/myeongji/implant">명지동 임플란트</a> · <a href="/regions/myeongji/invisalign">명지동 투명교정</a> · <a href="/regions/myeongji/laminate">명지동 라미네이트</a> · <a href="/regions/myeongji/orthodontics">명지동 치아교정</a>
-          </p>
+          {/* 명지 치과 진료별 사진 카드 6개 — ItemList JSON-LD(#myeongji-cards)와 1:1 (2026-10-14) */}
+          <h3 class="region-hub-cards-title" id="myeongji-cards">명지 치과 진료별 안내</h3>
+          {myeongjiCardGrid('hub-mj')}
         </div>
       </section>
 
@@ -212,7 +213,7 @@ export function myeongjiHubPage() {
 .region-hub-treat-list{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:10px}
 .region-hub-treat-list li{line-height:1.6}
 .region-hub-steps{padding-left:1.4em;display:grid;gap:8px;line-height:1.7}
-.region-hub-matrix{font-size:.95rem;line-height:1.8}
+.region-hub-cards-title{font-size:1.15rem;font-weight:700;margin:28px 0 0}
 @media (max-width:640px){.region-hub-spec{grid-template-columns:1fr}.region-hub-hours{font-size:.85rem}}
 ` }} />
     </div>

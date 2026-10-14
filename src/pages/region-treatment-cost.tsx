@@ -224,8 +224,8 @@ export function regionTreatmentCostPage(
               <span>치료 과정·기간·차별점 자세히 보기</span>
             </a>
             <a class="rt-related-card" href={`/best/${region.slug}-${treatment.slug}`}>
-              <strong>{region.name} {treatment.name} 잘하는 곳 비교</strong>
-              <span>이음치과 추천 이유</span>
+              <strong>{region.name} {treatment.name} 치과 고르는 기준</strong>
+              <span>진단·설명·진료시간 확인 기준</span>
             </a>
           </div>
         </div>

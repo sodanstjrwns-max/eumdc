@@ -199,12 +199,12 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     nameEn: 'Dental Implant',
     category: 'implant',
     shortBenefit: '평생 쓰는 내 치아처럼 — 디지털 가이드 임플란트',
-    searchVariants: ['임플란트', '임플란트 비용', '임플란트 가격', '임플란트 잘하는곳', '임플란트 추천', '임플란트 전문', '임플란트 후기'],
+    searchVariants: ['임플란트', '임플란트 비용', '임플란트 가격', '임플란트 추천', '임플란트 전문', '임플란트 후기'],
     duration: '평균 3~6개월 (즉시 임플란트 시 단축 가능)',
     whyChoose: [
       '🦷 디지털 가이드 수술로 식립 정확도 ±0.1mm',
       '🏥 SLA·BLT 인증 정품 픽스처만 사용 (오스템·스트라우만)',
-      '👨‍⚕️ 통합치의학 전문의 직접 진단·수술·보철'
+      '👨‍⚕️ 최효영 대표원장 직접 진단·수술·보철'
     ],
     processSteps: [
       'CBCT·구강스캔 정밀 진단',
@@ -228,7 +228,7 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     nameEn: 'MEG Aligner',
     category: 'orthodontics',
     shortBenefit: '메가젠 디지털 통합 투명교정 — 눈에 안 띄게, 일상 그대로',
-    searchVariants: ['투명교정', 'MEG Aligner', '메가젠 투명교정', '투명교정 비용', '투명교정 가격', '투명교정 잘하는곳', '투명교정 추천', '투명 치아교정'],
+    searchVariants: ['투명교정', 'MEG Aligner', '메가젠 투명교정', '투명교정 비용', '투명교정 가격', '투명교정 추천', '투명 치아교정'],
     duration: '경증 6~12개월, 일반 12~24개월',
     whyChoose: [
       '✨ 메가젠 MEG Aligner — 디지털 통합 투명교정 솔루션',
@@ -257,7 +257,7 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     nameEn: 'Laminate',
     category: 'aesthetic',
     shortBenefit: '결혼·면접 전 가장 많이 찾는 심미 끝판왕',
-    searchVariants: ['라미네이트', '라미네이트 비용', '라미네이트 가격', '라미네이트 잘하는곳', '심미보철', '치아성형', '앞니라미네이트'],
+    searchVariants: ['라미네이트', '라미네이트 비용', '라미네이트 가격', '심미보철', '치아성형', '앞니라미네이트'],
     duration: '진단부터 부착까지 약 2~3주',
     whyChoose: [
       '🎨 디지털 가이드 설계로 자연스러운 형태·색상',
@@ -286,7 +286,7 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     nameEn: 'Orthodontics',
     category: 'orthodontics',
     shortBenefit: '투명교정(MEG Aligner)·설측·클리피씨 통합 교정 진단',
-    searchVariants: ['치아교정', '교정', '치아교정 비용', '교정 잘하는곳', '교정 추천', '성인교정', '부분교정', '돌출입 교정', '덧니 교정'],
+    searchVariants: ['치아교정', '교정', '치아교정 비용', '교정 추천', '성인교정', '부분교정', '돌출입 교정', '덧니 교정'],
     duration: '평균 18~30개월 (난이도별 차이)',
     whyChoose: [
       '🔀 투명교정(MEG Aligner)·설측·클리피씨·메탈 — 라이프스타일별 통합 진단',
@@ -345,7 +345,7 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     searchVariants: ['충치치료', '충치', '레진치료', '신경치료', '인레이', '온레이', '엔도'],
     duration: '단순 충치 1회, 신경치료 2~4회',
     whyChoose: [
-      '🔬 현미경 진료로 미세 충치도 정확히 제거',
+      '🔬 고배율 확대경으로 근관까지 세밀하게 확인',
       '🦷 신경치료 시 자연치 보존 최우선',
       '🎨 심미 레진·세라믹 인레이로 자연스럽게'
     ],
@@ -373,7 +373,7 @@ export const SEO_TREATMENTS: TreatmentInfo[] = [
     whyChoose: [
       '🦷 비외과·외과 단계별 치료 계획',
       '🔬 치주균 검사 기반 정밀 치료',
-      '⚕️ 통합치의학 전문의 직접 진단'
+      '⚕️ 최효영 대표원장 직접 진단'
     ],
     processSteps: [
       '치주 정밀 검진 (포켓 깊이 측정)',

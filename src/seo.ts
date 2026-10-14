@@ -25,6 +25,8 @@ export interface SeoMeta {
   canonical?: string
   ogType?: string        // website | article | profile
   ogImage?: string
+  /** og:image:alt (대표 사진이 있는 페이지) */
+  ogImageAlt?: string
   ogUrl?: string
   ogArticle?: {          // article 타입일 때 추가 메타
     publishedTime?: string
@@ -291,7 +293,7 @@ export const HOME_FAQS: { question: string; answer: string }[] = [
   { question: '이음치과 임플란트 비용은 얼마인가요?', answer: '임플란트는 1본 기준 100만~350만원이며, 만 65세 이상은 건강보험 적용 시 본인부담 50~100만원입니다. 정확한 비용은 CBCT 3D 정밀 진단 후 안내드립니다.' },
   { question: '이음치과 대표원장은 누구인가요?', answer: '최효영 대표원장입니다. 강원대학교 치과대학 치의학과를 졸업(2021)했으며, 사상연세비앤이치과병원·다대치과의원 원장을 거쳐 현재 이음치과의원에서 임플란트·심미보철을 중심으로 진료하고 있습니다. 과잉 없이, 필요한 만큼만 — 보존 우선의 진료 철학을 지향합니다.' },
   { question: '이음치과에서 주말 진료도 가능한가요?', answer: '네, 토요일과 일요일 모두 10:00~17:00 진료합니다. 주말에도 임플란트, 심미보철, 충치치료 등 모든 진료가 가능합니다.' },
-  { question: '명지에서 임플란트 잘하는 치과 어디인가요?', answer: '이음치과의원은 CBCT 3D 정밀 진단, 구강스캐너, 원내 3D 프린터를 활용한 디지털 가이드 임플란트를 시행합니다. 절개를 최소화하여 통증과 회복기간을 단축합니다.' },
+  { question: '명지에서 임플란트 치과는 무엇을 보고 고르면 되나요?', answer: '뼈의 양과 신경 위치를 3D로 확인하는지, 수술 계획을 미리 보여 주는지를 확인해 보세요. 이음치과의원은 CBCT 3D 정밀 진단, 구강스캐너, 원내 3D 프린터를 활용한 디지털 가이드 임플란트를 시행합니다. 절개를 최소화하여 통증과 회복기간을 단축합니다.' },
   { question: '이음치과 전화번호가 뭔가요?', answer: '051-206-5888입니다. 전화 예약 및 상담이 가능합니다.' }
 ]
 
@@ -685,6 +687,7 @@ export function renderSeoHead(meta: SeoMeta): string {
   html += `<meta property="og:image" content="${ogImage}" />\n`
   html += `<meta property="og:image:width" content="1200" />\n`
   html += `<meta property="og:image:height" content="630" />\n`
+  if (meta.ogImageAlt) html += `<meta property="og:image:alt" content="${esc(meta.ogImageAlt)}" />\n`
   if (m.ogUrl) html += `<meta property="og:url" content="${m.ogUrl}" />\n`
   html += `<meta property="og:locale" content="ko_KR" />\n`
 

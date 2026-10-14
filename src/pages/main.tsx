@@ -4,6 +4,7 @@
  */
 import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP, PRIORITY_REGION_SLUGS, PRIORITY_TREATMENT_SLUGS } from '../data/seo-matrix'
 import { HOME_FAQS } from '../seo'
+import { myeongjiCardGrid } from './myeongji-cards'
 
 export function mainPage() {
   return (
@@ -643,6 +644,10 @@ export function mainPage() {
           <span class="section-label">08 — AREA GUIDE</span>
           <h2 class="region-hub-title">우리 동네 진료 안내</h2>
           <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요. 위치·진료시간·주차·버스는 <a href="/regions/myeongji">명지 치과 안내</a>에 한눈에 정리했습니다.</p>
+
+          {/* 명지 치과 진료별 사진 카드 6개 — ItemList JSON-LD(#myeongji-cards)와 1:1 (2026-10-14) */}
+          <h3 class="region-hub-treatment mj-home-heading" id="myeongji-cards">명지 치과 진료별 안내</h3>
+          {myeongjiCardGrid('home-mj')}
 
           {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
             const t = SEO_TREATMENTS_MAP[tSlug]

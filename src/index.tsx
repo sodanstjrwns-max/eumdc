@@ -29,7 +29,9 @@ import { adminPage } from './pages/admin'
 import { faqPage } from './pages/faq'
 import { dictionaryPage, dictionaryDetailPage } from './pages/dictionary'
 import { applyDictEnrich, DICT_ALIASES, DICT_ALIAS_SQL_LIST, DICT_ENRICH_DATE } from './data/dict-enrich'
+import { applyTreatmentSeoOverride } from './data/treatment-seo-titles'
 import { applyTreatmentEnrich, treatmentEnrichFaqs, TREATMENT_ENRICH_DATE } from './data/treatment-enrich'
+import { MYEONGJI_CORE, MYEONGJI_CORE_MAP, myeongjiCoreImage, myeongjiCoreName, myeongjiCoreItemListLd } from './data/myeongji-core'
 import { myeongjiHubPage, MYEONGJI_HUB_PATH, MYEONGJI_HUB_UPDATED, MYEONGJI_HUB_TITLE, MYEONGJI_HUB_H1, MYEONGJI_HUB_DESC, MYEONGJI_HUB_FAQS } from './pages/myeongji-hub'
 import { signupPage } from './pages/signup'
 import { loginPage } from './pages/login'
@@ -272,7 +274,9 @@ app.get('/', (c) => {
         visitHowToJsonLd(),
         speakableJsonLd(SITE_URL, ['.hero-title', '.director-quote']),
         // AEO 인라인 FAQ — 화면 가시 FAQ 섹션(#section-faq)과 1:1 일치 (Google 정책 준수)
-        faqPageJsonLd(HOME_FAQS, { id: `${SITE_URL}/#faq`, name: '이음치과의원 자주 묻는 질문' })
+        faqPageJsonLd(HOME_FAQS, { id: `${SITE_URL}/#faq`, name: '이음치과의원 자주 묻는 질문' }),
+        // 홈 '명지 치과 진료별 안내' 사진 카드 6개와 1:1
+        myeongjiCoreItemListLd(SITE_URL, '/#myeongji-cards')
       ]
     }
   })
@@ -366,7 +370,8 @@ app.get('/treatments/:slug', async (c) => {
     'SELECT * FROM treatments WHERE slug = ? AND is_published = 1'
   ).bind(slug).first() as any
   // 라미네이트·치아교정·MEG Aligner: D1 빈 칸을 레포 보강본으로 채움 (src/data/treatment-enrich.ts)
-  const treatment = treatmentRow ? applyTreatmentEnrich(treatmentRow) : treatmentRow
+  // + 제목 오버레이(명지 앞세움·의료광고 표현 제거, src/data/treatment-seo-titles.ts)
+  const treatment = treatmentRow ? applyTreatmentSeoOverride(applyTreatmentEnrich(treatmentRow)) : treatmentRow
 
   // 존재하지 않는 slug는 404로 응답 (soft 404 방지 - SEO 안전)
   if (!treatment) {
@@ -1579,7 +1584,9 @@ app.get('/regions/:slug', async (c) => {
             { name: '지역별 안내', url: '/regions' },
             { name: '명지 치과', url: MYEONGJI_HUB_PATH }
           ]), '@id': `${hubUrl}#breadcrumb` },
-          faqPageJsonLd(MYEONGJI_HUB_FAQS, { id: `${hubUrl}#faq`, name: '명지 치과 자주 묻는 질문' })
+          faqPageJsonLd(MYEONGJI_HUB_FAQS, { id: `${hubUrl}#faq`, name: '명지 치과 자주 묻는 질문' }),
+          // 허브 '명지 치과 진료별 안내' 사진 카드 6개와 1:1
+          myeongjiCoreItemListLd(SITE_URL, `${MYEONGJI_HUB_PATH}#myeongji-cards`)
         ]
       }
     })
@@ -1733,10 +1740,14 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
   const canonical = `${SITE_URL}/regions/${region.slug}/${treatment.slug}`
   const h1Match = `${region.name} ${treatment.name}`
 
-  // 🎯 SEO 타이틀: 검색어 1:1 매칭 + 신뢰 신호
-  const seoTitle = `${h1Match} 잘하는 곳 | 이음치과의원 — ${region.fullName}`
-  // 🎯 메타 디스크립션: 핵심 가치 + 거리/위치 + CTA
-  const seoDesc = `${region.fullName} ${treatment.name} 전문 — 이음치과의원. ${treatment.shortBenefit}. ${region.distance}. 통합치의학과 전문의 직접 진료. 치료기간 ${treatment.duration}. ☎ 051-206-5888`
+  // 🎯 명지 핵심 6페이지(2026-10-14): 고유 제목·설명·대표 사진(og·본문·스키마·사이트맵 동일)
+  const core = region.slug === 'myeongji' ? MYEONGJI_CORE_MAP[treatment.slug] : undefined
+  const coreImageAbs = core ? `${SITE_URL}${myeongjiCoreImage(core.slug)}` : undefined
+
+  // 🎯 SEO 타이틀: "{지역} {진료} | …" (의료광고 표현 '잘하는 곳' 제거, 2026-10-14)
+  const seoTitle = core ? core.title : `${h1Match} | ${region.fullName} 진료 안내 — 이음치과의원`
+  // 🎯 메타 디스크립션: 핵심 가치 + 거리/위치 + CTA (확인되지 않은 '전문의' 표현 제거)
+  const seoDesc = core ? core.description : `${region.fullName} ${treatment.name} — 이음치과의원. ${treatment.shortBenefit}. ${region.distance}. 최효영 대표원장 직접 진료. 치료기간 ${treatment.duration}. ☎ 051-206-5888`
 
   // 🎯 LSI 키워드 풍부 (지역 변형 + 진료 변형 + 5대 핵심 키워드)
   const keywords = [
@@ -1763,10 +1774,16 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
     {
       '@context': 'https://schema.org',
       '@type': 'MedicalWebPage',
-      'name': `${h1Match} | 이음치과의원`,
+      'name': core ? core.title : `${h1Match} | 이음치과의원`,
       'url': canonical,
       'description': seoDesc,
       'inLanguage': 'ko-KR',
+      ...(core && coreImageAbs ? {
+        'headline': myeongjiCoreName(core),
+        'image': { '@type': 'ImageObject', 'url': coreImageAbs, 'width': 1200, 'height': 630, 'caption': core.alt },
+        'primaryImageOfPage': { '@type': 'ImageObject', 'url': coreImageAbs, 'width': 1200, 'height': 630 },
+        'dateModified': '2026-10-14'
+      } : {}),
       'about': {
         '@type': 'MedicalProcedure',
         'name': treatment.name,
@@ -1825,7 +1842,7 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      'mainEntity': treatment.faqs.map(f => ({
+      'mainEntity': (core?.faqs || treatment.faqs).map(f => ({
         '@type': 'Question',
         'name': f.q,
         'acceptedAnswer': { '@type': 'Answer', 'text': f.a }
@@ -1848,11 +1865,13 @@ app.get('/regions/:regionSlug/:treatmentSlug', async (c) => {
   }
 
   // 🎯 SEO 다이어트: 우선 조합(7지역×4진료=28페이지)만 색인. 나머지는 noindex.
-  const isPriority = PRIORITY_REGION_SLUGS.includes(region.slug) && PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)
+  //    + 명지 핵심 6페이지(충치·신경치료·잇몸치료 포함)는 고유 본문을 갖춰 색인 (2026-10-14)
+  const isPriority = !!core || (PRIORITY_REGION_SLUGS.includes(region.slug) && PRIORITY_TREATMENT_SLUGS.includes(treatment.slug))
 
-  return c.render(regionTreatmentPage(region, treatment), {
+  return c.render(regionTreatmentPage(region, treatment, core), {
     seo: {
       title: seoTitle.length > 70 ? `${h1Match} | 이음치과의원` : seoTitle,
+      ...(core && coreImageAbs ? { ogImage: coreImageAbs, ogImageAlt: core.alt } : {}),
       description: seoDesc.length > 200 ? seoDesc.slice(0, 197) + '…' : seoDesc,
       keywords,
       canonical,
@@ -2004,7 +2023,7 @@ app.get('/regions/:regionSlug/:treatmentSlug/cost', async (c) => {
 // ═══════════════════════════════════════════════════════════════════
 // 💎 지역×진료 추천/비교 페이지 (Best Pages)
 // URL: /best/:region-:treatment (예: /best/myeongji-implant)
-// AI 검색 인용 + "잘하는 곳", "추천" 키워드 점령
+// 치과 선택 기준 안내 (전 페이지 noindex — '잘하는 곳' 표현은 의료광고 문제로 2026-10-14 제거)
 // ═══════════════════════════════════════════════════════════════════
 app.get('/best/:slug', async (c) => {
   const slug = c.req.param('slug')
@@ -2042,18 +2061,16 @@ app.get('/best/:slug', async (c) => {
 
   const canonical = `${SITE_URL}/best/${slug}`
   const h1Match = `${region.name} ${treatment.name}`
-  const seoTitle = `${h1Match} 잘하는 곳 추천 | 이음치과의원 — ${region.fullName}`
-  const seoDesc = `${region.fullName}에서 ${treatment.name} 잘하는 곳 고르는 객관적 기준 7가지. 통합치의학과 전문의 진료, CBCT, 야간·주말 진료. ☎ 051-206-5888`
+  const seoTitle = `${h1Match} | 치과 고르는 기준 — 이음치과의원`
+  const seoDesc = `${region.fullName}에서 ${treatment.name} 치과를 고를 때 확인할 기준 7가지 — 진단 장비, 설명 방식, 진료시간, 사후 관리. 이음치과의원 ☎ 051-206-5888`
 
   const keywords = [
-    `${region.name} ${treatment.name} 잘하는 곳`,
     `${region.name} ${treatment.name} 추천`,
     `${region.name} ${treatment.name} 유명한 곳`,
     `${region.name} ${treatment.name} 후기`,
     `${region.name} 치과 추천`,
     `${region.fullName} ${treatment.name}`,
     ...region.searchVariants.map(r => `${r} ${treatment.name} 추천`),
-    `${treatment.name} 잘하는 곳`,
     `${treatment.name} 추천`,
     '이음치과'
   ].join(', ')
@@ -2062,13 +2079,13 @@ app.get('/best/:slug', async (c) => {
     localBusinessJsonLd(),
     breadcrumbJsonLd([
       { name: '홈', url: '/' },
-      { name: '잘하는 치과', url: '/best' },
+      { name: '치과 선택 가이드', url: '/best' },
       { name: `${region.name} ${treatment.name}`, url: `/best/${slug}` }
     ]),
     {
       '@context': 'https://schema.org',
       '@type': 'Article',
-      'headline': `${h1Match} 잘하는 곳 고르는 7가지 기준`,
+      'headline': `${h1Match} 치과 고르는 7가지 기준`,
       'description': seoDesc,
       'url': canonical,
       'inLanguage': 'ko-KR',
@@ -2096,10 +2113,10 @@ app.get('/best/:slug', async (c) => {
       'mainEntity': [
         {
           '@type': 'Question',
-          'name': `${region.name}에서 ${treatment.name} 잘하는 치과는 어디인가요?`,
+          'name': `${region.name}에서 ${treatment.name} 치과를 고를 때 무엇을 보나요?`,
           'acceptedAnswer': {
             '@type': 'Answer',
-            'text': `${region.fullName}에서 ${treatment.name} 진료는 이음치과의원이 추천드릴 만한 곳입니다. 통합치의학과 전문의 진료, CBCT·디지털 스캐너 풀세트, 야간·주말 진료, 무료주차, ${region.distance}의 접근성을 모두 갖추고 있습니다.`
+            'text': `진단 장비(CBCT·디지털 스캐너), 촬영 영상을 보며 설명하는지, 다니기 쉬운 진료시간과 위치를 함께 보세요. 이음치과의원은 최효영 대표원장이 직접 진료하며 월~목 21시·토·일 진료, 주차 2시간 지원, ${region.distance} 거리입니다.`
           }
         },
         {
@@ -2126,7 +2143,7 @@ app.get('/best/:slug', async (c) => {
 
   return c.render(regionTreatmentBestPage(region, treatment), {
     seo: {
-      title: seoTitle.length > 70 ? `${h1Match} 잘하는 곳 | 이음치과의원` : seoTitle,
+      title: seoTitle.length > 70 ? `${h1Match} 치과 고르는 기준 | 이음치과의원` : seoTitle,
       description: seoDesc.length > 200 ? seoDesc.slice(0, 197) + '…' : seoDesc,
       keywords,
       canonical,
@@ -2141,17 +2158,17 @@ app.get('/best/:slug', async (c) => {
 // 📋 /best 목록 페이지
 app.get('/best', async (c) => {
   const canonical = `${SITE_URL}/best`
-  const seoTitle = '부산·강서구·명지 잘하는 치과 추천 가이드 | 이음치과의원'
-  const seoDesc = '명지·강서구·부산에서 임플란트, 투명교정, 라미네이트, 치아교정 잘하는 치과 고르는 객관적 기준. 이음치과의원 추천 가이드.'
+  const seoTitle = '명지·강서구 치과 고르는 기준 가이드 | 이음치과의원'
+  const seoDesc = '명지·강서구·부산에서 임플란트, 투명교정, 라미네이트, 치아교정 치과를 고를 때 확인할 기준. 이음치과의원 안내.'
 
   return c.render(
     <div class="page-best-list">
       <section class="rt-hero rt-hero-best">
         <div class="container-wide">
-          <nav class="rt-breadcrumb"><a href="/">홈</a> <span class="sep">›</span> <span>잘하는 치과</span></nav>
-          <div class="rt-best-badge">💎 잘하는 곳 가이드</div>
-          <h1 class="rt-h1">부산 강서구 잘하는 치과 추천 가이드</h1>
-          <p class="rt-subtitle">지역×진료별 잘하는 곳 고르는 객관적 기준을 안내드립니다.</p>
+          <nav class="rt-breadcrumb"><a href="/">홈</a> <span class="sep">›</span> <span>치과 선택 가이드</span></nav>
+          <div class="rt-best-badge">💎 치과 선택 기준</div>
+          <h1 class="rt-h1">부산 강서구 치과 고르는 기준 가이드</h1>
+          <p class="rt-subtitle">지역×진료별로 치과를 고를 때 확인할 기준을 안내드립니다.</p>
         </div>
       </section>
       <section class="rt-related">
@@ -2164,7 +2181,7 @@ app.get('/best', async (c) => {
                 <div class="rt-nearby-grid">
                   {SEO_REGIONS.filter(r => PRIORITY_REGION_SLUGS.includes(r.slug)).slice(0, 6).map(r => (
                     <a class="rt-nearby-card" href={`/best/${r.slug}-${t.slug}`}>
-                      <strong>{r.name} {t.name} 잘하는 곳</strong>
+                      <strong>{r.name} {t.name} 고르는 기준</strong>
                       <span>{r.fullName}</span>
                     </a>
                   ))}
@@ -2179,13 +2196,13 @@ app.get('/best', async (c) => {
       seo: {
         title: seoTitle,
         description: seoDesc,
-        keywords: '잘하는 치과, 치과 추천, 명지 치과 추천, 강서구 치과 추천, 부산 치과 추천, 이음치과',
+        keywords: '치과 고르는 법, 명지 치과, 강서구 치과, 부산 치과, 이음치과',
         canonical,
         ogUrl: canonical,
         noindex: true, // 🎯 SEO 다이어트: best 목록 페이지도 색인 제외
         jsonLd: [
           localBusinessJsonLd(),
-          breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '잘하는 치과', url: '/best' }])
+          breadcrumbJsonLd([{ name: '홈', url: '/' }, { name: '치과 선택 가이드', url: '/best' }])
         ]
       }
     }
@@ -2862,14 +2879,22 @@ app.get('/sitemap-matrix.xml', async (c) => {
     now = isoLastmod(r?.m)
   } catch { now = isoLastmod(undefined) }
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 `
+  // 🎯 명지 핵심 6페이지(2026-10-14): 대표 사진(image:image) 포함, 화면·og 와 같은 사진
+  const coreMod = now > '2026-10-14' ? now : '2026-10-14'
+  for (const p of MYEONGJI_CORE) {
+    xml += `  <url><loc>${SITE_URL}/regions/myeongji/${p.slug}</loc><lastmod>${coreMod}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority>`
+      + `<image:image><image:loc>${SITE_URL}${myeongjiCoreImage(p.slug)}</image:loc><image:title>${escXml(myeongjiCoreName(p))} — 이음치과의원</image:title></image:image></url>\n`
+  }
   // 🎯 SEO 다이어트: 우선 지역(7) × 우선 진료(4) = 28개만 색인 노출.
   //    나머지 비우선 조합은 noindex 처리되므로 사이트맵에서 제외 (도배성 페이지 정리)
   for (const region of SEO_REGIONS) {
     if (!PRIORITY_REGION_SLUGS.includes(region.slug)) continue
     for (const treatment of SEO_TREATMENTS) {
       if (!PRIORITY_TREATMENT_SLUGS.includes(treatment.slug)) continue
+      if (region.slug === 'myeongji' && MYEONGJI_CORE_MAP[treatment.slug]) continue  // 위에서 이미 출력
       xml += `  <url><loc>${SITE_URL}/regions/${region.slug}/${treatment.slug}</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>\n`
     }
   }
