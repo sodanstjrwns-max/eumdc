@@ -46,7 +46,7 @@ export interface SeoMeta {
 /** 기본 SEO 메타 */
 export const defaultSeo: SeoMeta = {
   title: '이음치과의원 | 부산 명지 임플란트·심미보철 전문',
-  description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철 전문. 충치·신경치료·잇몸치료·턱관절·소아 등 일반진료까지. 월-목 야간 21시, 토·일 진료. ☎ 051-206-5888',
+  description: '부산 강서구 명지 이음치과의원. 임플란트·심미보철 전문. 충치·신경치료·잇몸치료·턱관절·소아 등 일반진료까지. 월~금 야간 21시, 토요일 진료. ☎ 051-206-5888',
   keywords: '이음치과, 부산치과, 명지치과, 임플란트, 심미보철, 라미네이트, 최효영, 강서구치과, 명지국제신도시치과, 야간진료, 주말진료, 턱관절, 일반진료',
   ogType: 'website',
   ogImage: DEFAULT_IMAGE,
@@ -97,10 +97,9 @@ export function localBusinessJsonLd() {
     },
     hasMap: NAVER_MAP_URL,
     openingHoursSpecification: [
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday'], opens: '12:00', closes: '21:00' },
-      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday', 'Sunday'], opens: '10:00', closes: '17:00' },
-      // 금요일 정기휴무: Google 공식 권장은 'isClosed'를 명시하지 않으므로
-      // dayOfWeek에서 Friday를 제외하여 "휴무" 의미를 전달 (opens=closes=00:00은 일부 검증툴에서 경고 발생)
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], opens: '12:00', closes: '21:00' },
+      { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Saturday'], opens: '10:00', closes: '17:00' },
+      // 일요일 정기휴무(2026-10-30 원장 요청): dayOfWeek에서 Sunday를 제외하여 "휴무" 의미를 전달
     ],
     // 대표원장 (Person)
     founder: personJsonLd(),
@@ -140,7 +139,7 @@ export function localBusinessJsonLd() {
     amenityFeature: [
       { '@type': 'LocationFeatureSpecification', name: '무료 주차 (2시간)', value: true },
       { '@type': 'LocationFeatureSpecification', name: '야간 진료', value: true },
-      { '@type': 'LocationFeatureSpecification', name: '주말 진료', value: true },
+      { '@type': 'LocationFeatureSpecification', name: '토요일 진료', value: true },
       { '@type': 'LocationFeatureSpecification', name: '엘리베이터', value: true }
     ],
     // 키워드 (내부 분류용)
@@ -289,10 +288,10 @@ export function faqCategoryJsonLd(categoryName: string, faqs: { question: string
 /** 홈페이지 가시 FAQ — JSON-LD와 화면 콘텐츠가 반드시 일치해야 함 (Google 정책) */
 export const HOME_FAQS: { question: string; answer: string }[] = [
   { question: '이음치과의원 위치가 어디인가요?', answer: '부산광역시 강서구 명지국제8로 265, 201호 (명지동)에 위치해 있습니다. 명지국제신도시 중심부이며 주차 2시간 무료입니다.' },
-  { question: '이음치과 진료시간이 어떻게 되나요?', answer: '월~목 12:00~21:00 (야간진료), 토·일 10:00~17:00, 금요일 정기휴무입니다.' },
+  { question: '이음치과 진료시간이 어떻게 되나요?', answer: '월~금 12:00~21:00 (야간진료), 토요일 10:00~17:00, 일요일 정기휴무입니다.' },
   { question: '이음치과 임플란트 비용은 얼마인가요?', answer: '임플란트는 1본 기준 100만~350만원이며, 만 65세 이상은 건강보험 적용 시 본인부담 50~100만원입니다. 정확한 비용은 CBCT 3D 정밀 진단 후 안내드립니다.' },
   { question: '이음치과 대표원장은 누구인가요?', answer: '최효영 대표원장입니다. 강원대학교 치과대학 치의학과를 졸업(2021)했으며, 사상연세비앤이치과병원·다대치과의원 원장을 거쳐 현재 이음치과의원에서 임플란트·심미보철을 중심으로 진료하고 있습니다. 과잉 없이, 필요한 만큼만 — 보존 우선의 진료 철학을 지향합니다.' },
-  { question: '이음치과에서 주말 진료도 가능한가요?', answer: '네, 토요일과 일요일 모두 10:00~17:00 진료합니다. 주말에도 임플란트, 심미보철, 충치치료 등 모든 진료가 가능합니다.' },
+  { question: '이음치과에서 토요일 진료도 가능한가요?', answer: '네, 토요일 10:00~17:00 진료합니다. 토요일에도 임플란트, 심미보철, 충치치료 등 모든 진료가 가능합니다. 일요일은 정기휴무입니다.' },
   { question: '명지에서 임플란트 치과는 무엇을 보고 고르면 되나요?', answer: '뼈의 양과 신경 위치를 3D로 확인하는지, 수술 계획을 미리 보여 주는지를 확인해 보세요. 이음치과의원은 CBCT 3D 정밀 진단, 구강스캐너, 원내 3D 프린터를 활용한 디지털 가이드 임플란트를 시행합니다. 절개를 최소화하여 통증과 회복기간을 단축합니다.' },
   { question: '이음치과 전화번호가 뭔가요?', answer: '051-206-5888입니다. 전화 예약 및 상담이 가능합니다.' }
 ]

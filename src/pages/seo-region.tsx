@@ -136,7 +136,7 @@ export function seoRegionPage(
             </div>
             <div class="region-info-card">
               <h3>진료시간</h3>
-              <p>월~목 12:00-21:00 (접수 마감 20:30)<br/>금 정기휴무<br/>토·일 10:00-17:00 (접수 마감 16:30)</p>
+              <p>월~금 12:00-21:00 (접수 마감 20:30)<br/>토 10:00-17:00 (접수 마감 16:30)<br/>일 정기휴무</p>
             </div>
             <div class="region-info-card">
               <h3>주차</h3>
@@ -190,7 +190,7 @@ export function seoRegionListPage(regionsByDistrict?: Record<string, any[]>) {
             </p>
             <ul class="regions-intro-features">
               <li><strong>4대 핵심 진료</strong> — 임플란트, 투명교정, 라미네이트, 치아교정</li>
-              <li><strong>주말진료 운영</strong> — 토·일 10시~17시 운영으로 직장인·학부모님 편의 제공</li>
+              <li><strong>토요일 진료 운영</strong> — 토요일 10시~17시 운영으로 직장인·학부모님 편의 제공</li>
               <li><strong>2시간 무료 주차</strong> — 자차 방문 거주민 편의 보장</li>
               <li><strong>김해공항 인접</strong> — 김해·진영·삼계 권역 25~30분</li>
               <li><strong>토탈 케어 6개 진료실</strong> — 가족 단위 동시 진료 가능</li>

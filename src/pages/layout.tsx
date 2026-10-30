@@ -70,7 +70,7 @@ export function subPageLayout(title: string, children: any) {
             </div>
             <div class="menu-footer-col">
               <span class="menu-label">HOURS</span>
-              <p>월-목 12-21 / 토-일 10-17</p>
+              <p>월-금 12-21 / 토 10-17</p>
             </div>
           </div>
         </div>

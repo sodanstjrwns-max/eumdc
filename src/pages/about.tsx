@@ -50,7 +50,7 @@ export function missionPage() {
             <div class="value-card" data-reveal>
               <div class="value-num">04</div>
               <h3>공감</h3>
-              <p>치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 편안해지도록 돕겠습니다. 퇴근 후에도, 주말에도 이음의 문은 열려 있습니다.</p>
+              <p>치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 편안해지도록 돕겠습니다. 퇴근 후에도, 토요일에도 이음의 문은 열려 있습니다.</p>
             </div>
           </div>
         </div>
@@ -211,9 +211,9 @@ export function visitGuidePage() {
                 <tr><td>화요일</td><td>12:00 — 21:00</td><td>16:00 — 17:00</td><td>마지막 접수 20:30</td></tr>
                 <tr><td>수요일</td><td>12:00 — 21:00</td><td>16:00 — 17:00</td><td>마지막 접수 20:30</td></tr>
                 <tr><td>목요일</td><td>12:00 — 21:00</td><td>16:00 — 17:00</td><td>마지막 접수 20:30</td></tr>
-                <tr class="closed"><td>금요일</td><td colspan={3}>정기 휴무</td></tr>
+                <tr><td>금요일</td><td>12:00 — 21:00</td><td>16:00 — 17:00</td><td>마지막 접수 20:30</td></tr>
                 <tr><td>토요일</td><td>10:00 — 17:00</td><td>13:00 — 14:00</td><td>마지막 접수 16:30</td></tr>
-                <tr><td>일요일</td><td>10:00 — 17:00</td><td>13:00 — 14:00</td><td>마지막 접수 16:30</td></tr>
+                <tr class="closed"><td>일요일</td><td colspan={3}>정기 휴무</td></tr>
               </tbody>
             </table>
             <div class="hours-notice">

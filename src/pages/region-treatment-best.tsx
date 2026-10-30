@@ -48,8 +48,8 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
     },
     {
       title: '진료시간',
-      criteria: '야간·주말 진료 여부',
-      ieumdc: '✅ 월~목 야간 21시 / 토·일 주말 진료'
+      criteria: '야간·토요일 진료 여부',
+      ieumdc: '✅ 월~금 야간 21시 / 토요일 진료'
     },
     {
       title: '접근성',
@@ -176,7 +176,7 @@ export function regionTreatmentBestPage(region: RegionInfo, treatment: Treatment
                 <span class="rt-faq-a-icon">A</span>
                 <p class="rt-faq-a-text">
                   {region.fullName}에서 {treatment.name} 진료는 <strong>이음치과의원</strong>은 다음을 갖추고 있습니다.
-                  최효영 대표원장 직접 진료, CBCT·디지털 스캐너, 야간·주말 진료, 무료주차, 그리고 {region.distance}의 접근성을 모두 갖추고 있습니다.
+                  최효영 대표원장 직접 진료, CBCT·디지털 스캐너, 야간·토요일 진료, 무료주차, 그리고 {region.distance}의 접근성을 모두 갖추고 있습니다.
                   무엇보다 {treatment.shortBenefit}.
                 </p>
               </div>

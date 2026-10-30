@@ -9,7 +9,6 @@ import { SEO_REGIONS, SEO_TREATMENTS, PRIORITY_TREATMENT_SLUGS } from '../data/s
  *  - "내 근처 치과", "가까운 치과"
  *  - "지금 여는 치과", "오늘 진료하는 치과"
  *  - "야간 치과", "주말 진료 치과"
- *  - "일요일 진료 치과"
  *  - "{지역} 야간진료"
  */
 
@@ -27,21 +26,21 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
     'open-now': {
       h1: '지금 여는 치과 — 야간·당일 진료 이음치과의원',
       headline: '지금 진료 가능한 치과 찾으시나요?',
-      subtitle: '평일 야간 21시까지, 주말도 진료합니다. 당일 예약·당일 진료 가능.',
+      subtitle: '평일 야간 21시까지, 토요일도 진료합니다. 당일 예약·당일 진료 가능.',
       badge: '🟢 지금 진료 중',
       keywordHints: ['지금 여는 치과', '지금 진료하는 치과', '오늘 여는 치과', '당일 진료 치과', '야간 치과 명지', '늦게까지 하는 치과']
     },
     'weekend': {
-      h1: '주말 진료 치과 — 토·일요일 진료 이음치과의원',
-      headline: '주말에도 진료받을 수 있는 치과',
-      subtitle: '토요일·일요일 모두 진료합니다. 평일에 시간 내기 힘드신 분들께 추천.',
-      badge: '📅 토·일 진료',
-      keywordHints: ['주말 진료 치과', '토요일 진료 치과', '일요일 진료 치과', '주말 치과 명지', '주말 임플란트', '주말 응급 치과']
+      h1: '토요일 진료 치과 — 명지 이음치과의원',
+      headline: '토요일에도 진료받을 수 있는 치과',
+      subtitle: '토요일 10시~17시 진료합니다(일요일 정기휴무). 평일에 시간 내기 힘드신 분들께 추천.',
+      badge: '📅 토요일 진료',
+      keywordHints: ['토요일 진료 치과', '주말 진료 치과', '토요일 치과 명지', '토요일 임플란트']
     },
     'night': {
       h1: '야간 진료 치과 — 평일 21시까지 이음치과의원',
       headline: '퇴근 후에도 진료받을 수 있는 야간 치과',
-      subtitle: '월~목 21시까지 진료. 직장인·자영업자분들이 부담 없이 오실 수 있습니다.',
+      subtitle: '월~금 21시까지 진료. 직장인·자영업자분들이 부담 없이 오실 수 있습니다.',
       badge: '🌙 야간 21시까지',
       keywordHints: ['야간 진료 치과', '늦게까지 하는 치과', '저녁 진료 치과', '명지 야간 치과', '강서구 야간 치과', '퇴근 후 치과']
     }
@@ -49,10 +48,9 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
 
   // 진료시간 정보
   const hours = [
-    { day: '월·화·수·목', time: '10:00 ~ 21:00', highlight: variant === 'night' },
-    { day: '금', time: '휴진' },
-    { day: '토', time: '10:00 ~ 14:00', highlight: variant === 'weekend' },
-    { day: '일', time: '10:00 ~ 14:00', highlight: variant === 'weekend' }
+    { day: '월·화·수·목·금', time: '12:00 ~ 21:00', highlight: variant === 'night' },
+    { day: '토', time: '10:00 ~ 17:00', highlight: variant === 'weekend' },
+    { day: '일', time: '정기휴무' }
   ]
 
   // 핵심 진료 (5대)
@@ -191,7 +189,7 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
               <div class="rt-faq-a">
                 <span class="rt-faq-a-icon">A</span>
                 <p class="rt-faq-a-text">
-                  월~목 10시~21시, 토·일 10시~14시 진료 중입니다. 금요일과 공휴일은 휴진입니다.
+                  월~금 12시~21시, 토요일 10시~17시 진료합니다. 일요일과 공휴일은 휴진입니다.
                   지금 진료 가능 여부는 051-206-5888로 전화 주시면 즉시 안내드립니다.
                 </p>
               </div>
@@ -214,12 +212,12 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
             <details class="rt-faq-item">
               <summary class="rt-faq-q">
                 <span class="rt-faq-q-icon">Q</span>
-                <span class="rt-faq-q-text">주말·야간 진료도 동일한 진료를 받을 수 있나요?</span>
+                <span class="rt-faq-q-text">토요일·야간 진료도 동일한 진료를 받을 수 있나요?</span>
               </summary>
               <div class="rt-faq-a">
                 <span class="rt-faq-a-icon">A</span>
                 <p class="rt-faq-a-text">
-                  네, 주말·야간 진료도 평일과 동일하게 최효영 대표원장이 진료합니다.
+                  네, 토요일·야간 진료도 평일과 동일하게 최효영 대표원장이 진료합니다.
                   CBCT·디지털 스캐너 등 진단 장비도 모두 동일하게 사용 가능합니다.
                 </p>
               </div>
@@ -247,7 +245,7 @@ export function nearMePage(variant: NearMeVariant = 'near-me') {
         <div class="container-wide">
           <div class="near-cta-box">
             <h2>지금 바로 연결하세요</h2>
-            <p>전화 한 통이면 진료 예약 끝. 평일 야간·주말도 진료합니다.</p>
+            <p>전화 한 통이면 진료 예약 끝. 평일 야간·토요일도 진료합니다.</p>
             <a href="tel:051-206-5888" class="treat-cta-btn primary">
               <i class="fa-solid fa-phone"></i> 051-206-5888 전화 예약
             </a>

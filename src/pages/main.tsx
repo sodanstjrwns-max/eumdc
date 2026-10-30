@@ -71,7 +71,7 @@ export function mainPage() {
             </div>
             <div class="menu-footer-col">
               <span class="menu-label">HOURS</span>
-              <p>월-목 12-21 / 토-일 10-17</p>
+              <p>월-금 12-21 / 토 10-17</p>
             </div>
           </div>
         </div>
@@ -526,7 +526,7 @@ export function mainPage() {
               <div class="promise-content">
                 <h3>열린 진료</h3>
                 <p class="promise-quote">"당신의 일상이 끊기지 않도록."</p>
-                <p class="promise-desc">아플 때 참지 마세요. 퇴근 후에도, 주말에도 이음치과의 불은 환자분 곁에 켜져 있습니다.</p>
+                <p class="promise-desc">아플 때 참지 마세요. 퇴근 후에도, 토요일에도 이음치과의 불은 환자분 곁에 켜져 있습니다.</p>
               </div>
             </div>
           </div>
@@ -624,9 +624,9 @@ export function mainPage() {
             </div>
             <div class="contact-right">
               <div class="hours-minimal">
-                <div class="hours-row"><span class="hours-day">MON—THU</span><span class="hours-time">12:00 — 21:00</span><span class="hours-note">break 16-17 / last 20:30</span></div>
-                <div class="hours-row closed"><span class="hours-day">FRI</span><span class="hours-time">CLOSED</span><span class="hours-note">정기휴무</span></div>
-                <div class="hours-row"><span class="hours-day">SAT—SUN</span><span class="hours-time">10:00 — 17:00</span><span class="hours-note">break 13-14 / last 16:30</span></div>
+                <div class="hours-row"><span class="hours-day">MON—FRI</span><span class="hours-time">12:00 — 21:00</span><span class="hours-note">break 16-17 / last 20:30</span></div>
+                <div class="hours-row"><span class="hours-day">SAT</span><span class="hours-time">10:00 — 17:00</span><span class="hours-note">break 13-14 / last 16:30</span></div>
+                <div class="hours-row closed"><span class="hours-day">SUN</span><span class="hours-time">CLOSED</span><span class="hours-note">정기휴무</span></div>
                 <div class="hours-extra">공휴일 휴진 · 대체공휴일 진료</div>
               </div>
               <div class="transport-minimal">
