@@ -1,0 +1,21 @@
+/* 이음치과 메인 스크롤 몰입 연출 — /static/immersive.js 가 html.mx 를 붙였을 때만 작동 */
+html.mx.lenis, html.mx.lenis body { height: auto; }
+html.mx .lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.mx { scroll-behavior: auto !important; }
+
+/* 낱말·글자 마스크 */
+.mx-w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+.mx-wi { display: inline-block; will-change: transform; }
+/* 전화번호 기울임체가 마스크에 잘리지 않게 오른쪽 여유 */
+html.mx .phone-number .mx-w { padding-right: .06em; margin-right: -.06em; }
+
+/* 사진 시차: translate 만 쓰고, 여유분은 scale 로 (기존 hover transform 과 공존) */
+.mx-par { overflow: hidden; }
+.mx-par img { scale: 1.12; will-change: translate; }
+
+/* 저서 표지: 돌아서는 동안 뒤쪽이 비치지 않게 */
+html.mx .director-book-cover-wrap { will-change: transform; backface-visibility: hidden; }
+
+/* 연락처 배경 시차가 넘치지 않게 */
+html.mx #section-contact { overflow: hidden; }
+html.mx #section-region-hub, html.mx #section-faq { overflow-x: clip; }
