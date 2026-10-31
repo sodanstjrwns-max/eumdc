@@ -33,6 +33,7 @@
 
     var isMobile = window.innerWidth <= 768;
     var isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     initScrollTracker();
     if (!isTouch) initCursor(); // No custom cursor on touch devices
@@ -54,7 +55,8 @@
     /* ★ NEW v4 SYSTEMS ★ */
     initButtonRipple();
     if (!isTouch) initGlassLightTracker(); // Mouse tracking
-    if (!isMobile) initScrollVelocitySkew(); // Desktop visual effect
+    // 동작 줄이기: 스크롤 속도 기울기 생략 (2026-10-31)
+    if (!isMobile && !reduceMotion) initScrollVelocitySkew(); // Desktop visual effect
     initSectionTransitions();
     if (!isTouch) initHoverSpring(); // Hover = mouse only
     initClickFeedback();
@@ -1019,6 +1021,9 @@
      ★ NEW: CARD ENTRANCE — Staggered theatrical
      ═══════════════════════════════════════════════ */
   function initCardEntrance() {
+    // 동작 줄이기에서는 카드를 숨기지 않는다 — 원래는 opacity 0 으로 숨긴 뒤 교차 관찰로만 드러내
+    // 바로 건너뛰면(앵커·끝으로 이동) 55개 카드 글이 투명하게 남았음 (2026-10-31)
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     var cardGroups = [
       { parent: '.pillars-grid', cards: '.pillar-card' },
       { parent: '.equip-grid', cards: '.equip-item' },
@@ -1038,19 +1043,36 @@
         card.style.transition = 'none';
       });
 
+      var shown = false;
+      function show() {
+        if (shown) return;
+        shown = true;
+        observer.disconnect();
+        window.removeEventListener('scroll', onScrollCheck);
+        cards.forEach(function(card, i) {
+          setTimeout(function() {
+            card.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0) scale(1)';
+          }, i * 120);
+        });
+      }
       var observer = new IntersectionObserver(function(entries) {
-        if (entries[0].isIntersecting) {
-          cards.forEach(function(card, i) {
-            setTimeout(function() {
-              card.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
-              card.style.opacity = '1';
-              card.style.transform = 'translateY(0) scale(1)';
-            }, i * 120);
-          });
-          observer.disconnect();
-        }
+        if (entries[0].isIntersecting) show();
       }, { threshold: 0.15 });
       observer.observe(parent);
+      // 빠르게 건너뛰어 교차가 한 번도 안 생긴 경우(앵커·끝으로 이동)에도 지나친 카드는 드러낸다
+      var checkQueued = false;
+      function onScrollCheck() {
+        if (checkQueued) return;
+        checkQueued = true;
+        requestAnimationFrame(function() {
+          checkQueued = false;
+          if (parent.getBoundingClientRect().top < window.innerHeight) show();
+        });
+      }
+      window.addEventListener('scroll', onScrollCheck, { passive: true });
+      onScrollCheck();
     });
   }
 

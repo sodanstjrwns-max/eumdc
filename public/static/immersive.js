@@ -71,8 +71,26 @@
   // 한 번에 건너뛴 구간(앵커 이동·빠른 점프)은 콜백이 생략될 수 있으므로 화면 위·안에 있는 대기 연출을 모두 재생
   function sweep() {
     pending.slice().forEach(function (it) { if (it.el.getBoundingClientRect().top < innerHeight * 0.92) play(it); });
+    rescue();
+  }
+  // 기존 엔진(gsap-init.js)의 한 번 등장([data-reveal]·자격 블록·갤러리 사진·푸터)은 limitCallbacks 설정 탓에
+  // 한 번에 건너뛰면 onEnter 가 불리지 않아 투명하게 남는다(운영에도 있던 문제, 2026-10-31)
+  // → 화면 위·안으로 지나친 것만 끝 상태로 마무리 (멈춘 기존 트윈은 재생, 트윈이 없으면 보이게)
+  function rescue() {
+    var vh = innerHeight;
+    document.querySelectorAll('[data-reveal], .cred-block, .gallery-item img, .footer-full .footer-nav-col, .footer-full .footer-brand-col').forEach(function (el) {
+      if (el.getBoundingClientRect().top >= vh * 0.92) return;
+      var tws = gsap.getTweensOf(el);
+      if (tws.some(function (t) { return t.isActive() || (t.scrollTrigger && t.scrollTrigger.vars.scrub); })) return;
+      var stalled = tws.filter(function (t) { return t.progress() < 1; });
+      if (stalled.length) { stalled.forEach(function (t) { t.play(); }); return; }
+      if (parseFloat(getComputedStyle(el).opacity) > 0.05) return;
+      gsap.to(el, { opacity: 1, x: 0, y: 0, filter: 'blur(0px)', duration: 0.6, ease: 'power2.out', overwrite: 'auto' });
+    });
   }
   ScrollTrigger.addEventListener('scrollEnd', sweep);
+  // 주소의 #앵커로 바로 열린 경우 이 층이 시작되기 전에 스크롤이 끝났을 수 있으므로 시작 직후 한 번 더
+  setTimeout(sweep, 500);
   function splitWords(el) {
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     var nodes = [];

@@ -804,6 +804,30 @@
 
     // IntersectionObserver로 카드 fade-in (모바일/데스크탑 공통)
     if ('IntersectionObserver' in window) {
+      // 모바일 가로 스크롤 줄: 화면 밖(좌우)에 있는 카드는 교차 비율이 0~14%라 영영 투명하게 남던 문제,
+      // 앵커·빠른 이동으로 건너뛴 카드가 투명하게 남던 문제 (2026-10-31)
+      // → 세로 위치가 화면 안에 들어왔거나 이미 지나친 카드는 (좌우 화면 밖이어도) 드러낸다
+      var passQueued = false;
+      function revealPassed() {
+        passQueued = false;
+        var vh = window.innerHeight, k = 0, left = 0;
+        cards.forEach(function(card) {
+          if (card.classList.contains('is-visible')) return;
+          if (card.getBoundingClientRect().top < vh * 0.92) {
+            var d = Math.min(k++, 4) * 80;
+            setTimeout(function() { card.classList.add('is-visible'); }, d);
+          } else left++;
+        });
+        if (!left) window.removeEventListener('scroll', onPassScroll);
+      }
+      function onPassScroll() {
+        if (passQueued) return;
+        passQueued = true;
+        requestAnimationFrame(revealPassed);
+      }
+      window.addEventListener('scroll', onPassScroll, { passive: true });
+      revealPassed();
+
       var io = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry, i) {
           if (entry.isIntersecting) {
@@ -1183,9 +1207,11 @@
       shimmer.style.cssText = 'position:absolute;inset:0;pointer-events:none;border-radius:inherit;overflow:hidden;z-index:2;';
 
       var shimmerLine = document.createElement('div');
-      shimmerLine.style.cssText = 'position:absolute;top:0;left:-100%;width:60%;height:100%;' +
+      // left 대신 transform(xPercent)으로 이동 — left 애니메이션은 레이아웃 이동(CLS)으로 집계됨 (2026-10-31)
+      // left -100% → 200%(카드 폭 기준) = 자기 폭(60%) 기준 xPercent -167 → 333
+      shimmerLine.style.cssText = 'position:absolute;top:0;left:0;width:60%;height:100%;' +
         'background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),rgba(255,255,255,0.25),rgba(255,255,255,0.15),transparent);' +
-        'transform:skewX(-20deg);transition:none;pointer-events:none;';
+        'transform:translateX(-167%) skewX(-20deg);transition:none;pointer-events:none;';
       shimmer.appendChild(shimmerLine);
       el.style.position = el.style.position || 'relative';
       el.appendChild(shimmer);
@@ -1198,8 +1224,8 @@
         onEnter: function() {
           // Animate shimmer across on enter
           gsap.fromTo(shimmerLine,
-            { left: '-100%' },
-            { left: '200%', duration: 1.2, ease: 'power2.inOut', delay: 0.2 }
+            { xPercent: -167, skewX: -20 },
+            { xPercent: 333, skewX: -20, duration: 1.2, ease: 'power2.inOut', delay: 0.2 }
           );
         }
       });

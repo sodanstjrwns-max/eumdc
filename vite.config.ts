@@ -37,6 +37,9 @@ export default defineConfig({
   define: {
     __IMMERSIVE_CSS_V__: JSON.stringify(fileHash('public/static/immersive.css')),
     __IMMERSIVE_JS_V__: JSON.stringify(fileHash('public/static/immersive.js')),
+    // 기존 모션 스크립트도 내용 해시로 (2026-10-31 이음 기존 버그 수정 — 고정 ?v=20260611b 는 수정이 캐시에 묻힘)
+    __APP_JS_V__: JSON.stringify(fileHash('public/static/app.js')),
+    __GSAP_INIT_V__: JSON.stringify(fileHash('public/static/gsap-init.js')),
     __PRICES_DATE__: JSON.stringify(lastCommitDate(['migrations/0020_price_guide_from_excel.sql'])),
     // 지역×진료 추천(/best/:slug) 페이지: 게시일 = 템플릿 최초 커밋, 수정일 = 템플릿·지역/진료 데이터 마지막 커밋
     __BEST_PUBLISHED_DATE__: JSON.stringify(firstCommitDate('src/pages/region-treatment-best.tsx')),

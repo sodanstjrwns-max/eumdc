@@ -1,3 +1,6 @@
+// app.js 내용 해시 (vite.config.ts define)
+declare const __APP_JS_V__: string
+
 /** Sub-page layout wrapper: nav + content + footer + floating CTA */
 export function subPageLayout(title: string, children: any) {
   return (
@@ -162,7 +165,7 @@ export function subPageLayout(title: string, children: any) {
       </div>
 
       {/* 서브페이지: GSAP/gsap-init 미로드 — app.js IntersectionObserver 리빌로 충분 (-180KB) */}
-      <script src="/static/app.js?v=20260611b" defer></script>
+      <script src={`/static/app.js?v=${__APP_JS_V__}`} defer></script>
       <script src="/static/sub.js?v=20260611b" defer></script>
       <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>
     </div>
