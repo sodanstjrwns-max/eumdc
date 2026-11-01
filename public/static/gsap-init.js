@@ -1070,6 +1070,11 @@
 
       // Skip if has child elements
       if (title.children.length > 0) return;
+      // Skip gradient text (background-clip:text) — split words turn transparent
+      for (var clipEl = title; clipEl; clipEl = clipEl.parentElement) {
+        var clipCs = getComputedStyle(clipEl);
+        if (clipCs.webkitBackgroundClip === 'text' || clipCs.backgroundClip === 'text') return;
+      }
 
       var text = title.textContent;
       title.textContent = '';

@@ -91,10 +91,30 @@
   ScrollTrigger.addEventListener('scrollEnd', sweep);
   // 주소의 #앵커로 바로 열린 경우 이 층이 시작되기 전에 스크롤이 끝났을 수 있으므로 시작 직후 한 번 더
   setTimeout(sweep, 500);
+  // 그라데이션 글씨(background-clip:text) 안을 낱말·글자로 쪼개면 글자가 투명해진다
+  // → 그 요소 자체를 낱말 하나처럼 통째로 감싸 움직인다(요소 자신의 clip:text 는 transform 이 있어도 정상).
+  function isClipText(e) {
+    var cs = getComputedStyle(e);
+    return cs.webkitBackgroundClip === 'text' || cs.backgroundClip === 'text';
+  }
+  function clipTextHost(node) {
+    for (var e = node.parentElement; e; e = e.parentElement) if (isClipText(e)) return e;
+    return null;
+  }
   function splitWords(el) {
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
     var nodes = [];
-    while (walker.nextNode()) nodes.push(walker.currentNode);
+    var hosts = [];
+    while (walker.nextNode()) {
+      var host = clipTextHost(walker.currentNode);
+      if (host) { if (hosts.indexOf(host) < 0) hosts.push(host); continue; }
+      nodes.push(walker.currentNode);
+    }
+    hosts.forEach(function (h) {
+      if (h === el || h.contains(el)) return; // 제목 전체가 그라데이션(또는 그 안)이면 쪼개지 않음
+      var w = document.createElement('span'); w.className = 'mx-w';
+      h.parentNode.insertBefore(w, h); w.appendChild(h); h.classList.add('mx-wi');
+    });
     nodes.forEach(function (node) {
       var parts = node.textContent.split(/(\s+)/);
       if (parts.join('').trim() === '') return;
@@ -126,6 +146,8 @@
 
   // 한 글자씩 감싸기 (전화번호 등 짧은 글)
   function splitChars(el) {
+    // 그라데이션 글씨이거나(그 안이거나) 안에 그라데이션 글씨가 있으면 쪼개지 않음(글자가 투명해지거나 그라데이션이 사라짐)
+    if (isClipText(el) || clipTextHost(el) || Array.prototype.some.call(el.querySelectorAll('*'), isClipText)) return [];
     var t = el.textContent;
     el.textContent = '';
     var out = [];

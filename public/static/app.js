@@ -930,6 +930,11 @@
 
       // Don't split if has child elements like <em>
       if (heading.children.length > 0) return;
+      // Don't split gradient text (background-clip:text) — split glyphs turn transparent
+      for (var clipEl = heading; clipEl; clipEl = clipEl.parentElement) {
+        var clipCs = getComputedStyle(clipEl);
+        if (clipCs.webkitBackgroundClip === 'text' || clipCs.backgroundClip === 'text') return;
+      }
 
       var text = heading.textContent;
       heading.textContent = '';
