@@ -16,6 +16,9 @@ export const PHONE_DISPLAY = '051-206-5888'
 const EMAIL = 'hyogunim@gmail.com'
 export const ADDRESS_FULL = '부산광역시 강서구 명지국제8로 265, 201호 (명지동)'
 const NAVER_MAP_URL = 'https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90'
+// 병원 좌표 — 네이버 플레이스 기준 (2026-11-10 확인).
+// JSON-LD geo, geo.position·ICBM 메타, 지역 페이지 GeoCircle 중심이 모두 이 값 하나를 쓴다 (예전엔 곳마다 값이 달랐다).
+export const CLINIC_GEO = { lat: 35.0981933, lng: 128.9218272 }
 
 // ─── SeoMeta 인터페이스 ───
 export interface SeoMeta {
@@ -92,8 +95,8 @@ export function localBusinessJsonLd() {
     },
     geo: {
       '@type': 'GeoCoordinates',
-      latitude: 35.0951,
-      longitude: 128.9148
+      latitude: CLINIC_GEO.lat,
+      longitude: CLINIC_GEO.lng
     },
     hasMap: NAVER_MAP_URL,
     openingHoursSpecification: [
@@ -718,8 +721,8 @@ export function renderSeoHead(meta: SeoMeta): string {
   html += `<meta http-equiv="Content-Language" content="ko" />\n`
   html += `<meta name="geo.region" content="KR-26" />\n`
   html += `<meta name="geo.placename" content="부산광역시 강서구" />\n`
-  html += `<meta name="geo.position" content="35.0944;128.9347" />\n`
-  html += `<meta name="ICBM" content="35.0944, 128.9347" />\n`
+  html += `<meta name="geo.position" content="${CLINIC_GEO.lat};${CLINIC_GEO.lng}" />\n`
+  html += `<meta name="ICBM" content="${CLINIC_GEO.lat}, ${CLINIC_GEO.lng}" />\n`
 
   // --- 모바일 앱 배너 (선택) ---
   html += `<meta name="mobile-web-app-capable" content="yes" />\n`
