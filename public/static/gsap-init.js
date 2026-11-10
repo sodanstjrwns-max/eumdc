@@ -645,6 +645,16 @@
       onEnter: function() { gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true }); }
     });
 
+    // limitCallbacks 설정에서는 한 번에 건너뛴 구간(빠른 넘김·앵커 이동·스크롤 위치 복원)의 onEnter/onLeave 가 불리지 않는다.
+    // 그러면 3장에서 올라간 암전(opacity 1)을 걷어 줄 4장 콜백이 통째로 빠져 아래쪽 화면 전체가 검게 덮인 채 남는다.
+    // 스크롤이 멈출 때 위치로 한 번 더 확인해 4장 가운데를 지났으면 걷어낸다 (정상 흐름에서는 이미 0이라 아무 일도 없음).
+    ScrollTrigger.addEventListener('scrollEnd', function () {
+      var r = ch4.getBoundingClientRect();
+      if (r.top + r.height / 2 < window.innerHeight / 2 && parseFloat(getComputedStyle(overlay).opacity) > 0.01) {
+        gsap.to(overlay, { opacity: 0, duration: 0.5, overwrite: true });
+      }
+    });
+
     console.log('[EUM] Cinematic Blackout v2 initialized');
   }
 
