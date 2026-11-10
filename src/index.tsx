@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import { getCookie } from 'hono/cookie'
 import { renderer } from './renderer'
 import { isThinDictTerm, isThinCase, isThinNotice, NOINDEX_FOLLOW } from './utils/thin-content'
+import { isGoogleCrawler, isGoogleHiddenPath, GOOGLE_HIDE_ROBOTS_TAG } from './utils/google-hide'
 import { topicsForText, faqsFromArticleHtml, paginate, abs, physicianId, node, ymd, isoDateTime, TOPIC_NAME } from './utils/column-seo'
 import { markdownToHtml } from './utils/content'
 import type { HonoEnv } from './types'
@@ -79,6 +80,22 @@ function resolvePathAlias(p: string): string {
   if ((m = p.match(/^\/best\/(.+)-glownate$/))) return `/best/${m[1]}-laminate`
   return p
 }
+
+// === 구글 전용 검색 제외 (2026-11-10) — 맨 바깥 미들웨어 ===
+// 구글 크롤러(Googlebot·Google-InspectionTool)가 대량 생성 구역(백과·지역 조합 등)을 요청했을 때만
+// 200 HTML 응답의 X-Robots-Tag 를 `googlebot: noindex` 로 교체한다. 네이버·브라우저 등 그 밖의 요청은 손대지 않는다.
+// 대상 경로·배경·되돌리는 방법: src/utils/google-hide.ts (isGoogleHiddenPath 가 false 만 돌려주면 꺼짐)
+// 맨 먼저 등록해 아래 헤더 미들웨어(`index, follow` 기본값)보다 나중에 실행되므로 두 값이 같이 나가지 않는다.
+app.use('*', async (c, next) => {
+  await next()
+  if (c.res.status !== 200) return                                   // 301·404 에는 붙이지 않음
+  if (!isGoogleCrawler(c.req.header('User-Agent'))) return
+  if (!isGoogleHiddenPath(c.req.path)) return
+  if (!(c.res.headers.get('Content-Type') || '').toLowerCase().includes('text/html')) return
+  // 프리뷰(pages.dev) 는 누구에게나 `noindex, nofollow` — 그대로 둔다
+  if (new URL(c.req.url).hostname.toLowerCase().endsWith('.pages.dev')) return
+  c.header('X-Robots-Tag', GOOGLE_HIDE_ROBOTS_TAG)
+})
 
 // === SEO: 도메인 정규화 301 리다이렉트 ===
 // - 기존 도메인(eumdc.kr, www.eumdc.kr) → 신규 도메인(ieumdc.kr)
