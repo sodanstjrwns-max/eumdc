@@ -11,6 +11,7 @@ declare const __IMMERSIVE_CSS_V__: string
 declare const __IMMERSIVE_JS_V__: string
 declare const __APP_JS_V__: string
 declare const __GSAP_INIT_V__: string
+declare const __SCROLL_PERF_JS_V__: string
 
 export function mainPage() {
   return (
@@ -794,7 +795,7 @@ export function mainPage() {
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
       <script src={`/static/app.js?v=${__APP_JS_V__}`} defer></script>
       <script src={`/static/gsap-init.js?v=${__GSAP_INIT_V__}`} defer></script>
-      <script src="/static/scroll-perf-patch.js?v=20260611b" defer></script>
+      <script src={`/static/scroll-perf-patch.js?v=${__SCROLL_PERF_JS_V__}`} defer></script>
       {/* 스크롤 몰입 보완 층 — 위 GSAP 재사용, Lenis 만 추가 (2026-10-30 미리보기) */}
       <link rel="stylesheet" href={`/static/immersive.css?v=${__IMMERSIVE_CSS_V__}`} />
       <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>

@@ -4,6 +4,9 @@ import { SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 import { treatmentAnswer, isoDateOnly } from '../seo'
 import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 
+// 빌드 시 vite.config.ts 가 넣는 스크립트 내용 해시 (?v= 캐시 버스팅)
+declare const __TREATMENTS_JS_V__: string
+
 /** 진료과목 목록 페이지
  *  카드 목록은 SSR로 먼저 그림(검색엔진은 robots.txt의 /api/ 차단 때문에 /api/treatments를 못 읽음 →
  *  예전엔 "불러오는 중..."만 색인됨). treatments.js가 로드되면 같은 마크업(+아이콘)으로 다시 그림. */
@@ -68,7 +71,7 @@ export function treatmentsPage(treatments: any[] = []) {
         </div>
       </section>
 
-      <script src="/static/treatments.js"></script>
+      <script src={`/static/treatments.js?v=${__TREATMENTS_JS_V__}`}></script>
     </div>
   ))
 }
@@ -345,7 +348,7 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
         </section>
       )}
 
-      <script src="/static/treatments.js"></script>
+      <script src={`/static/treatments.js?v=${__TREATMENTS_JS_V__}`}></script>
     </div>
   ))
 }

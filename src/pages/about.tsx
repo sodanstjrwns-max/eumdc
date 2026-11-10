@@ -1,5 +1,8 @@
 import { subPageLayout } from './layout'
 
+// 빌드 시 vite.config.ts 가 넣는 스크립트 내용 해시 (?v= 캐시 버스팅)
+declare const __VISIT_JS_V__: string
+
 /** 병원 미션 페이지 */
 export function missionPage() {
   return subPageLayout('MISSION', (
@@ -239,7 +242,7 @@ export function visitGuidePage() {
         </div>
       </section>
 
-      <script src="/static/visit.js"></script>
+      <script src={`/static/visit.js?v=${__VISIT_JS_V__}`}></script>
     </div>
   ))
 }

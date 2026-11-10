@@ -5,6 +5,9 @@
 import { subPageLayout } from './layout'
 import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 
+// 빌드 시 vite.config.ts 가 넣는 스크립트 내용 해시 (?v= 캐시 버스팅)
+declare const __DICTIONARY_JS_V__: string
+
 /** 백과사전 메인 페이지 */
 export function dictionaryPage() {
   return subPageLayout('DICTIONARY', (
@@ -165,7 +168,7 @@ export function dictionaryPage() {
       {/* 토스트 알림 */}
       <div class="dict-toast" id="dictToast"></div>
 
-      <script src="/static/dictionary.js"></script>
+      <script src={`/static/dictionary.js?v=${__DICTIONARY_JS_V__}`}></script>
     </div>
   ))
 }
@@ -345,7 +348,7 @@ export function dictionaryDetailPage(slug: string, term?: any, seeTerms: { slug:
       {/* 토스트 알림 */}
       <div class="dict-toast" id="dictToast"></div>
 
-      <script src="/static/dictionary.js"></script>
+      <script src={`/static/dictionary.js?v=${__DICTIONARY_JS_V__}`}></script>
     </div>
   ))
 }

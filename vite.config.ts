@@ -43,6 +43,13 @@ export default defineConfig({
     // 기존 모션 스크립트도 내용 해시로 (2026-10-31 이음 기존 버그 수정 — 고정 ?v=20260611b 는 수정이 캐시에 묻힘)
     __APP_JS_V__: JSON.stringify(fileHash('public/static/app.js')),
     __GSAP_INIT_V__: JSON.stringify(fileHash('public/static/gsap-init.js')),
+    // 나머지 공개 스크립트도 내용 해시로 (2026-11-10 — ?v= 없음·고정 ?v=20260611b 는 immutable 1년 캐시에 수정이 묻힘)
+    __SUB_JS_V__: JSON.stringify(fileHash('public/static/sub.js')),
+    __SCROLL_PERF_JS_V__: JSON.stringify(fileHash('public/static/scroll-perf-patch.js')),
+    __DICTIONARY_JS_V__: JSON.stringify(fileHash('public/static/dictionary.js')),
+    __TREATMENTS_JS_V__: JSON.stringify(fileHash('public/static/treatments.js')),
+    __REGION_JS_V__: JSON.stringify(fileHash('public/static/region.js')),
+    __VISIT_JS_V__: JSON.stringify(fileHash('public/static/visit.js')),
     __PRICES_DATE__: JSON.stringify(lastCommitDate(['migrations/0020_price_guide_from_excel.sql'])),
     // 지역×진료 추천(/best/:slug) 페이지: 게시일 = 템플릿 최초 커밋, 수정일 = 템플릿·지역/진료 데이터 마지막 커밋
     __BEST_PUBLISHED_DATE__: JSON.stringify(firstCommitDate('src/pages/region-treatment-best.tsx')),

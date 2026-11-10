@@ -12,9 +12,9 @@ export const SITE_NAME_EN = 'Eum Dental Clinic'
 const DEFAULT_IMAGE = `${SITE_URL}/static/og-image.jpg`
 const LOGO_URL = `${SITE_URL}/static/favicon.svg`
 const PHONE = '+82-51-206-5888'
-const PHONE_DISPLAY = '051-206-5888'
+export const PHONE_DISPLAY = '051-206-5888'
 const EMAIL = 'hyogunim@gmail.com'
-const ADDRESS_FULL = '부산광역시 강서구 명지국제8로 265, 201호 (명지동)'
+export const ADDRESS_FULL = '부산광역시 강서구 명지국제8로 265, 201호 (명지동)'
 const NAVER_MAP_URL = 'https://map.naver.com/p/search/%EC%9D%B4%EC%9D%8C%EC%B9%98%EA%B3%BC%EC%9D%98%EC%9B%90'
 
 // ─── SeoMeta 인터페이스 ───
@@ -102,8 +102,9 @@ export function localBusinessJsonLd() {
       // 일요일 정기휴무(2026-10-30 원장 요청): dayOfWeek에서 Sunday를 제외하여 "휴무" 의미를 전달
     ],
     // 대표원장 (Person)
+    // 같은 블록 안에서 #director 를 두 번 정의하지 않도록 employee 는 @id 참조만 (2026-11-10)
     founder: personJsonLd(),
-    employee: [personJsonLd()],
+    employee: [{ '@id': `${SITE_URL}/#director` }],
     // 진료 과목
     medicalSpecialty: [
       'Implantology', 'Prosthodontics', 'TemporomandibularJointDisorder',
@@ -827,11 +828,26 @@ export function doctorJsonLd(doctor: any) {
     ? (() => { try { return JSON.parse(doctor.memberships) } catch { return [] } })()
     : doctor.memberships || []
 
+  // 자격·면허 — 의료진 상세 화면 '자격·면허' 블록과 같은 데이터 (2026-11-10)
+  const certsArr = (typeof doctor.certifications === 'string'
+    ? (() => { try { return JSON.parse(doctor.certifications) } catch { return [] } })()
+    : doctor.certifications || [])
+  const credentials = (Array.isArray(certsArr) ? certsArr : [])
+    .map((c: any) => ({ name: typeof c === 'string' ? c : (c?.name || ''), org: typeof c === 'string' ? '' : (c?.org || '') }))
+    .filter((c: any) => c.name)
+  const alumni = (Array.isArray(edu) ? edu : [])
+    .map((e: any) => (typeof e === 'string' ? e : (e?.school || e?.name || '')))
+    .filter(Boolean)
+  const members = (Array.isArray(membershipsArr) ? membershipsArr : [])
+    .map((m: any) => (typeof m === 'string' ? m : (m?.org || m?.name || '')))
+    .filter(Boolean)
+
   return {
     '@context': 'https://schema.org',
     '@type': ['Person', 'Physician'],
     '@id': `${SITE_URL}/doctors/${doctor.slug}/#person`,
     name: doctor.name,
+    ...(doctor.name_en ? { alternateName: doctor.name_en } : {}),
     jobTitle: doctor.title || '원장',
     description: doctor.greeting || `이음치과의원 ${doctor.name} ${doctor.title || '원장'}`,
     image: doctor.photo ? (doctor.photo.startsWith('http') ? doctor.photo : `${SITE_URL}${doctor.photo}`) : undefined,
@@ -846,12 +862,17 @@ export function doctorJsonLd(doctor: any) {
         bodyLocation: '구강'
       })).filter((x: any) => x.name)
     } : {}),
-    ...(edu.length > 0 ? {
-      alumniOf: edu.map((e: any) => ({ '@type': 'CollegeOrUniversity', name: e.school || e.name || '' }))
+    ...(alumni.length > 0 ? {
+      alumniOf: alumni.map((name: string) => ({ '@type': 'CollegeOrUniversity', name }))
     } : {}),
-    ...(membershipsArr.length > 0 ? {
-      memberOf: membershipsArr.map((m: any) => ({
-        '@type': 'Organization', name: typeof m === 'string' ? m : (m.org || m.name || '')
+    ...(members.length > 0 ? {
+      memberOf: members.map((name: string) => ({ '@type': 'Organization', name }))
+    } : {}),
+    ...(credentials.length > 0 ? {
+      hasCredential: credentials.map((c: any) => ({
+        '@type': 'EducationalOccupationalCredential',
+        name: c.name,
+        ...(c.org ? { recognizedBy: { '@type': 'Organization', name: c.org } } : {})
       }))
     } : {}),
     // 저서 (최효영 원장 전용) — E-E-A-T 권위성 강화
@@ -868,6 +889,43 @@ export function doctorJsonLd(doctor: any) {
         bookFormat: 'Paperback'
       }
     } : {})
+  }
+}
+
+/** /doctors 목록 — 화면 카드(이름·직함·사진·진료 분야)와 1:1 ItemList. 각 의료진은 상세 페이지의 @id 를 그대로 참조 (2026-11-10) */
+export function doctorListJsonLd(doctors: any[]) {
+  const list = (doctors || []).filter((d: any) => d && d.slug && d.name)
+  if (list.length === 0) return null
+  const parse = (v: any): string[] => {
+    if (Array.isArray(v)) return v.filter((x) => typeof x === 'string' && x)
+    if (typeof v === 'string' && v.trim().startsWith('[')) {
+      try { const a = JSON.parse(v); return Array.isArray(a) ? a.filter((x) => typeof x === 'string' && x) : [] } catch { return [] }
+    }
+    return []
+  }
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': `${SITE_URL}/doctors#list`,
+    name: `${SITE_NAME} 의료진`,
+    numberOfItems: list.length,
+    itemListElement: list.map((d: any, i: number) => {
+      const specs = parse(d.specialties)
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': ['Person', 'Physician'],
+          '@id': `${SITE_URL}/doctors/${d.slug}/#person`,
+          name: d.name,
+          jobTitle: d.title || '원장',
+          url: `${SITE_URL}/doctors/${d.slug}`,
+          ...(d.photo ? { image: d.photo.startsWith('http') ? d.photo : `${SITE_URL}${d.photo}` } : {}),
+          ...(specs.length > 0 ? { medicalSpecialty: specs } : {}),
+          worksFor: { '@id': `${SITE_URL}/#organization` }
+        }
+      }
+    })
   }
 }
 
@@ -1163,7 +1221,7 @@ export function treatmentPriceJsonLd(treatment: { name: string; slug: string }, 
 }
 
 /** /prices 전체 비용 안내 페이지용 — 치료별 그룹 OfferCatalog */
-export function allPricesJsonLd(groups: { treatment: { name: string; slug: string }; prices: any[] }[]) {
+export function allPricesJsonLd(groups: { treatment: { name: string; slug: string }; prices: any[] }[], opts?: { speakable?: string[] }) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
@@ -1172,9 +1230,13 @@ export function allPricesJsonLd(groups: { treatment: { name: string; slug: strin
     description: '부산 명지 이음치과의원 진료 비용 안내. 임플란트, 라미네이트, 올세라믹 등 주요 진료 수가를 투명하게 공개합니다.',
     url: `${SITE_URL}/prices`,
     isPartOf: { '@id': `${SITE_URL}/#website` },
+    // 화면 '기준일'과 같은 값 (수가 데이터 마지막 커밋일 — content-dates.ts)
+    dateModified: PRICES_DATE,
     lastReviewed: PRICES_DATE,
     reviewedBy: { '@id': `${SITE_URL}/#director` },
     inLanguage: 'ko-KR',
+    // speakable 을 같은 @id 의 별도 WebPage 블록으로 또 정의하지 않도록 여기에 합침 (2026-11-10)
+    ...(opts?.speakable?.length ? { speakable: { '@type': 'SpeakableSpecification', cssSelector: opts.speakable } } : {}),
     mainEntity: {
       '@type': 'OfferCatalog',
       name: `${SITE_NAME} 진료 수가표`,

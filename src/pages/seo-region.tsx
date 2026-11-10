@@ -2,6 +2,9 @@ import { subPageLayout } from './layout'
 import { HUB_PATH, HUB_ANCHOR } from '../data/hub-link'
 import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP } from '../data/seo-matrix'
 
+// 빌드 시 vite.config.ts 가 넣는 스크립트 내용 해시 (?v= 캐시 버스팅)
+declare const __REGION_JS_V__: string
+
 /** 지역 SEO 랜딩 페이지 — SSR-first */
 export function seoRegionPage(
   slug: string,
@@ -150,7 +153,7 @@ export function seoRegionPage(
         </div>
       </section>
 
-      <script src="/static/region.js"></script>
+      <script src={`/static/region.js?v=${__REGION_JS_V__}`}></script>
     </div>
   ))
 }
@@ -256,7 +259,7 @@ export function seoRegionListPage(regionsByDistrict?: Record<string, any[]>) {
         </div>
       </section>
 
-      <script src="/static/region.js"></script>
+      <script src={`/static/region.js?v=${__REGION_JS_V__}`}></script>
     </div>
   ))
 }
