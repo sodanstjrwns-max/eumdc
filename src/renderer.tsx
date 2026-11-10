@@ -3,6 +3,10 @@ import { raw } from 'hono/html'
 import { renderSeoHead, defaultSeo } from './seo'
 import type { SeoMeta } from './seo'
 
+// 빌드 시 vite.config.ts 가 넣는 스타일시트 내용 해시 (?v= 캐시 버스팅)
+declare const __STYLE_CSS_V__: string
+declare const __STYLE_PATCH_CSS_V__: string
+
 declare module 'hono' {
   interface ContextRenderer {
     (content: string | Promise<string>, props?: { seo?: SeoMeta }): Response | Promise<Response>
@@ -50,8 +54,8 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         </noscript>
 
         {/* CSS — versioned to bust edge cache */}
-        <link href="/static/style.css?v=20260611b" rel="stylesheet" />
-        <link href="/static/style-patch.css?v=20261003a" rel="stylesheet" />
+        <link href={`/static/style.css?v=${__STYLE_CSS_V__}`} rel="stylesheet" />
+        <link href={`/static/style-patch.css?v=${__STYLE_PATCH_CSS_V__}`} rel="stylesheet" />
 
         {/* GSAP은 홈(main.tsx)에서만 로드 — 서브페이지는 app.js IntersectionObserver로 충분 */}
 

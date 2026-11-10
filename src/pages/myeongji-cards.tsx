@@ -38,9 +38,9 @@ const MJ_CARD_CSS = `
 .mj-card-img img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease,ease)}
 .mj-card:hover .mj-card-img img{transform:scale(1.04)}
 .mj-card-body{display:flex;flex-direction:column;gap:6px;padding:16px 18px 20px}
-.mj-card-tag{font-family:var(--font-ui,inherit);font-size:.7rem;letter-spacing:.12em;color:var(--brand-mint-deep,#2E9799);font-weight:600}
-.mj-card-title{font-size:1.08rem;font-weight:700;color:var(--brand-navy,#00306A);line-height:1.35}
-.mj-card-line{font-size:.88rem;line-height:1.55;color:rgba(10,31,61,.68)}
+.mj-card-tag{font-family:var(--font-ui,inherit);font-size:12px;letter-spacing:.12em;color:var(--brand-mint-deep,#2E9799);font-weight:600}
+.mj-card-title{font-size:max(1.08rem, 16.6px);font-weight:700;color:var(--brand-navy,#00306A);line-height:1.35}
+.mj-card-line{font-size:14.1px;line-height:1.55;color:rgba(10,31,61,.68)}
 @media (max-width:900px){.mj-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}}
-@media (max-width:420px){.mj-card-body{padding:12px 12px 14px}.mj-card-title{font-size:.98rem}.mj-card-line{font-size:.8rem}}
+@media (max-width:420px){.mj-card-body{padding:12px 12px 14px}.mj-card-title{font-size:15.7px}.mj-card-line{font-size:13px}}
 `

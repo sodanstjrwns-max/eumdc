@@ -120,15 +120,15 @@ export function treatmentDetailPage(slug: string, treatmentName?: string, heroTi
           <div class="container-wide">
             {answer && (
               <div class="tx-answer-box" style="border-left:4px solid var(--brand-mint, #4ABCBD);background:rgba(0,0,0,.03);padding:18px 22px;border-radius:10px">
-                <p style="font-size:.85rem;font-weight:700;opacity:.7;margin:0 0 6px">핵심 답변</p>
-                <p id="tx-answer" style="font-size:1.05rem;line-height:1.75;margin:0">{answer}</p>
+                <p style="font-size:13.6px;font-weight:700;opacity:.7;margin:0 0 6px">핵심 답변</p>
+                <p id="tx-answer" style="font-size:max(1.05rem, 16.4px);line-height:1.75;margin:0">{answer}</p>
               </div>
             )}
-            <p class="tx-reviewed" style="font-size:.9rem;opacity:.75;margin:12px 0 0">
+            <p class="tx-reviewed" style="font-size:14.4px;opacity:.75;margin:12px 0 0">
               감수: <a href="/doctors/choi-hyoyoung">최효영 대표원장</a>{lastReviewed ? <> · 최종 검토 <time datetime={lastReviewed}>{lastReviewed}</time></> : null}
             </p>
             {enrichDate && (
-              <p class="tx-enrich-note" style="font-size:.85rem;opacity:.7;margin:4px 0 0">
+              <p class="tx-enrich-note" style="font-size:13.6px;opacity:.7;margin:4px 0 0">
                 일부 설명은 <time datetime={enrichDate}>{enrichDate}</time> 보강되었으며 원장 검토 전입니다.
               </p>
             )}

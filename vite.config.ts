@@ -35,6 +35,9 @@ const fileHash = (f: string) => createHash('sha256').update(readFileSync(f)).dig
 
 export default defineConfig({
   define: {
+    // 공통 스타일시트도 내용 해시로 (2026-11-10 — /static/* 이 immutable 1년 캐시라 고정 ?v= 로는 수정이 안 보임)
+    __STYLE_CSS_V__: JSON.stringify(fileHash('public/static/style.css')),
+    __STYLE_PATCH_CSS_V__: JSON.stringify(fileHash('public/static/style-patch.css')),
     __IMMERSIVE_CSS_V__: JSON.stringify(fileHash('public/static/immersive.css')),
     __IMMERSIVE_JS_V__: JSON.stringify(fileHash('public/static/immersive.js')),
     // 기존 모션 스크립트도 내용 해시로 (2026-10-31 이음 기존 버그 수정 — 고정 ?v=20260611b 는 수정이 캐시에 묻힘)

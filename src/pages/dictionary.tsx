@@ -316,7 +316,7 @@ export function dictionaryDetailPage(slug: string, term?: any, seeTerms: { slug:
                 <p>치과 용어가 어렵게 느껴지시나요? 이음치과는 환자가 이해할 때까지 친절히 설명해드립니다.</p>
                 <p class="hub-line">이음치과의원 위치·진료 시간은 <a href={HUB_PATH}>{HUB_ANCHOR}</a> 안내에 정리되어 있습니다.</p>
                 <div class="dict-cta-actions">
-                  <a href="tel:051-206-5888" class="dict-cta-btn primary">051-206-5888 전화 상담</a>
+                  <a href="tel:051-206-5888" class="dict-cta-btn primary" data-cta="article-end">051-206-5888 전화 상담</a>
                   <a href="/dictionary" class="dict-cta-btn secondary">다른 용어 둘러보기</a>
                 </div>
               </div>

@@ -201,20 +201,20 @@ export function myeongjiHubPage() {
       </section>
 
       <style dangerouslySetInnerHTML={{ __html: `
-.page-region-hub .breadcrumb{font-size:.85rem;opacity:.75;margin-bottom:12px}
+.page-region-hub .breadcrumb{font-size:13.6px;opacity:.75;margin-bottom:12px}
 .page-region-hub .breadcrumb a{color:inherit}
 .page-region-hub .breadcrumb .bc-sep{margin:0 6px}
-.region-hub-reviewed{font-size:.8rem;opacity:.7;margin-top:12px}
+.region-hub-reviewed{font-size:13px;opacity:.7;margin-top:12px}
 .region-hub-spec{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;margin:16px 0}
 .region-hub-spec dt{font-weight:700}
 .region-hub-spec dd{margin:0}
-.region-hub-hours{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:.95rem}
+.region-hub-hours{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:15.2px}
 .region-hub-hours th,.region-hub-hours td{border-bottom:1px solid rgba(15,27,45,.12);padding:10px 8px;text-align:left}
 .region-hub-treat-list{list-style:none;padding:0;margin:0 0 16px;display:grid;gap:10px}
 .region-hub-treat-list li{line-height:1.6}
 .region-hub-steps{padding-left:1.4em;display:grid;gap:8px;line-height:1.7}
-.region-hub-cards-title{font-size:1.15rem;font-weight:700;margin:28px 0 0}
-@media (max-width:640px){.region-hub-spec{grid-template-columns:1fr}.region-hub-hours{font-size:.85rem}}
+.region-hub-cards-title{font-size:max(1.15rem, 17.2px);font-weight:700;margin:28px 0 0}
+@media (max-width:640px){.region-hub-spec{grid-template-columns:1fr}.region-hub-hours{font-size:14px}}
 ` }} />
     </div>
   ))

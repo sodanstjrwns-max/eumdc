@@ -240,6 +240,26 @@ export function blogDetailPage(
               </nav>
             )}
 
+            {/* 글 끝 상담 블록 — 정보 글에서 예약·문의로 가는 길 (data-cta="article-end" 는 클릭 측정용) */}
+            <aside class="blog-cta-box article-end-cta" aria-label="진료 문의">
+              <h2 class="col-sub-title">직접 확인이 필요하다면</h2>
+              <p>이 글은 일반 정보입니다. 내 상태는 진료실에서 확인해야 정확합니다. 진료 시간 안에 이음치과로 문의하세요.</p>
+              <div class="dict-cta-actions">
+                <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="dict-cta-btn naver" data-cta="article-end">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
+                  네이버 예약
+                </a>
+                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="dict-cta-btn kakao" data-cta="article-end">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
+                  카카오톡 상담
+                </a>
+                <a href="tel:051-206-5888" class="dict-cta-btn phone" data-cta="article-end">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                  전화 051-206-5888
+                </a>
+              </div>
+            </aside>
+
             <footer class="blog-article-footer">
               <div class="share-box">
                 <span class="share-label">SHARE</span>
