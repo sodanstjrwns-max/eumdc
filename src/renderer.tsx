@@ -6,14 +6,16 @@ import type { SeoMeta } from './seo'
 // 빌드 시 vite.config.ts 가 넣는 스타일시트 내용 해시 (?v= 캐시 버스팅)
 declare const __STYLE_CSS_V__: string
 declare const __STYLE_PATCH_CSS_V__: string
+declare const __RENEW_CSS_V__: string
+declare const __RENEW_HOME_CSS_V__: string
 
 declare module 'hono' {
   interface ContextRenderer {
-    (content: string | Promise<string>, props?: { seo?: SeoMeta }): Response | Promise<Response>
+    (content: string | Promise<string>, props?: { seo?: SeoMeta; bare?: boolean }): Response | Promise<Response>
   }
 }
 
-export const renderer = jsxRenderer(({ children, seo }) => {
+export const renderer = jsxRenderer(({ children, seo, bare }) => {
   const meta: SeoMeta = seo || defaultSeo
   const seoHead = renderSeoHead(meta)
 
@@ -22,7 +24,7 @@ export const renderer = jsxRenderer(({ children, seo }) => {
       <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-        <meta name="theme-color" content="#00306A" />
+        <meta name="theme-color" content="#04142B" />
         <meta name="color-scheme" content="light" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="author" content="이음치과의원" />
@@ -38,24 +40,29 @@ export const renderer = jsxRenderer(({ children, seo }) => {
         <link rel="alternate" type="application/rss+xml" title="이음치과 블로그 RSS" href="/rss.xml" />
         <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
-        {/* 폰트 preconnect + preload (CLS 방지) */}
-        {/* 폰트: weight 다이어트 (Noto 200/900 제거) + 비차단 로딩 (LCP 개선) */}
+        {/* 서체 (2026-11 리뉴얼): 제목 LINE Seed KR · 본문 Pretendard · 숫자/영문 Unbounded */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin="anonymous" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-          media="print"
-          onload="this.media='all'"
-        />
-        <noscript>
-          <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-        </noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/LINESeedKR/LINESeedKR.css" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&display=swap" />
+        {/* 연출 on/off — 동작 줄이기 설정이면 rm (모든 내용이 펼쳐진 정적 화면) */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add(matchMedia('(prefers-reduced-motion: reduce)').matches?'rm':'fx')" }} />
 
-        {/* CSS — versioned to bust edge cache */}
-        <link href={`/static/style.css?v=${__STYLE_CSS_V__}`} rel="stylesheet" />
-        <link href={`/static/style-patch.css?v=${__STYLE_PATCH_CSS_V__}`} rel="stylesheet" />
+        {/* CSS — 내용 해시로 캐시 무효화. 홈(bare)은 새 스타일만, 하위 페이지는 기존 스타일 + 리뉴얼 테마 층 */}
+        {bare ? (
+          <>
+            <link rel="preload" as="image" href="/static/img/photo_1.webp" />
+            <link href={`/static/renew-home.css?v=${__RENEW_HOME_CSS_V__}`} rel="stylesheet" />
+          </>
+        ) : (
+          <>
+            <link href={`/static/style.css?v=${__STYLE_CSS_V__}`} rel="stylesheet" />
+            <link href={`/static/style-patch.css?v=${__STYLE_PATCH_CSS_V__}`} rel="stylesheet" />
+          </>
+        )}
+        <link href={`/static/renew.css?v=${__RENEW_CSS_V__}`} rel="stylesheet" />
 
         {/* GSAP은 홈(main.tsx)에서만 로드 — 서브페이지는 app.js IntersectionObserver로 충분 */}
 

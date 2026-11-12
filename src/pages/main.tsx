@@ -1,806 +1,114 @@
-/** Main page JSX — STORY-DRIVEN REDESIGN v4
- *  Flow: Question → Insight → Aha → Therefore → Proof
- *  "Why is the dentist so scary?" → "Because you can't see" → "We show everything" → Trust
+/** 홈 — 2026-11 리뉴얼 "빛"
+ *  어두운 첫 화면에서 빛이 병원을 비추고, 스크롤하면 화면 전체가 밝아지며 "신뢰를, 잇습니다"로 이어진다.
+ *  이야기 순서(질문 → 통찰 → 전환 → 약속 → 증거)와 문구는 이전 홈과 같다.
+ *  h1(.hero-title)·원장 인용(.director-quote)·#myeongji-cards·#section-faq 는 구조화 데이터와 연결돼 있으니 이름을 바꾸지 말 것.
  */
+import { raw } from 'hono/html'
 import { SEO_REGIONS_MAP, SEO_TREATMENTS_MAP, PRIORITY_REGION_SLUGS, PRIORITY_TREATMENT_SLUGS } from '../data/seo-matrix'
+import { MYEONGJI_CORE, myeongjiCorePath, myeongjiCoreCardImage, myeongjiCoreName } from '../data/myeongji-core'
 import { HOME_FAQS } from '../seo'
-import { myeongjiCardGrid } from './myeongji-cards'
+import { HOME_BODY } from './home-body'
+import { rnNav, rnFooter } from './chrome'
 
-// 홈 스크롤 몰입 연출(관성 스크롤·하단 섹션 보완) — 빌드 시 내용 해시 (vite.config.ts define)
-declare const __IMMERSIVE_CSS_V__: string
-declare const __IMMERSIVE_JS_V__: string
-declare const __APP_JS_V__: string
-declare const __GSAP_INIT_V__: string
-declare const __SCROLL_PERF_JS_V__: string
+declare const __RENEW_JS_V__: string
+declare const __RENEW_HOME_JS_V__: string
+
+const LOOP = 'M200,100 C260,20 380,20 380,100 C380,180 260,180 200,100 C140,20 20,20 20,100 C20,180 140,180 200,100Z'
 
 export function mainPage() {
   return (
-    <div id="app">
-      {/* Skip to main content — Accessibility */}
-      <a href="#section-hero" class="skip-link">본문 바로가기</a>
+    <div id="app" class="rn rn-home">
+      <a href="#top" class="rn-skip">본문 바로가기</a>
 
-      {/* Custom Cursor */}
-      <div class="cursor" id="cursor"></div>
-      <div class="cursor-follower" id="cursorFollower"></div>
-
-      {/* === NAVIGATION === */}
-      <nav id="nav">
-        <a href="/" class="nav-brand nav-brand--premium" data-hover aria-label="이음치과의원 홈">
-          <img src="/static/images/symbol-112.webp" alt="이음치과의원 로고" class="nav-brand-symbol" width="40" height="44" loading="eager" />
-          <span class="nav-brand-mark">이음치과</span>
-          <span class="nav-brand-sub">IEUM · EST.2025</span>
-        </a>
-        <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="nav-booking" data-hover>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-          <span>네이버 예약</span>
-        </a>
-        <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="nav-kakao" data-hover>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-          <span>카카오 상담</span>
-        </a>
-        <button class="nav-menu-btn" id="menuBtn" data-hover aria-label="전체 메뉴 열기">
-          <span class="nav-menu-icon" aria-hidden="true">
-            <span class="nav-menu-line"></span>
-            <span class="nav-menu-line"></span>
-            <span class="nav-menu-line"></span>
-          </span>
-          <span class="nav-menu-label">MENU</span>
-        </button>
-        <div class="nav-progress" id="navProgress"></div>
-      </nav>
-
-      {/* Full Screen Menu */}
-      <div id="fullMenu" class="full-menu">
-        <div class="menu-overlay"></div>
-        <div class="menu-content">
-          <div class="menu-links">
-            <a href="/about" class="menu-link" data-hover data-index="01"><span>병원 소개</span></a>
-            <a href="/doctors" class="menu-link" data-hover data-index="02"><span>의료진</span></a>
-            <a href="/treatments" class="menu-link" data-hover data-index="03"><span>진료 안내</span></a>
-            <a href="/cases" class="menu-link" data-hover data-index="04"><span>비포애프터</span></a>
-            <a href="/prices" class="menu-link" data-hover data-index="05"><span>비용 안내</span></a>
-            <a href="/blogs" class="menu-link" data-hover data-index="06"><span>블로그</span></a>
-            <a href="/faq" class="menu-link" data-hover data-index="07"><span>자주 묻는 질문</span></a>
-            <a href="/dictionary" class="menu-link" data-hover data-index="08"><span>백과사전</span></a>
-            <a href="/visit" class="menu-link" data-hover data-index="09"><span>내원 안내</span></a>
-            <a href="/notices" class="menu-link" data-hover data-index="10"><span>공지사항</span></a>
-          </div>
-          <div class="menu-footer">
-            <div class="menu-footer-col">
-              <span class="menu-label">LOCATION</span>
-              <p>부산 강서구 명지국제8로 265</p>
-            </div>
-            <div class="menu-footer-col">
-              <span class="menu-label">CONTACT</span>
-              <p><a href="tel:051-206-5888">051-206-5888</a></p>
-              <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="menu-kakao-link">카카오톡 상담 →</a>
-              <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="menu-naver-link">네이버 예약 →</a>
-            </div>
-            <div class="menu-footer-col">
-              <span class="menu-label">HOURS</span>
-              <p>월-금 12-21 / 토 10-17</p>
-            </div>
-          </div>
-        </div>
+      <div class="intro" aria-hidden="true">
+        <svg class="intro-loop" viewBox="0 0 400 200" fill="none"><path d={LOOP} pathLength="1" /></svg>
+        <span class="intro-word">IEUM</span>
       </div>
 
-      {/* ═══════════════════════════════════════════════════
-          ACT 1 — THE QUESTION (치과가 두려운 이유)
-          Opening hook: 누구나 공감하는 질문으로 시작
-          CINEMATIC: 파티클 필드 + 앰비언트 라이트 + 보케
-      ═══════════════════════════════════════════════════ */}
-      <section class="section story-hero" id="section-hero" aria-label="이음치과의원 소개">
-        <div class="hero-bg">
-          {/* Layer 0: Mesh blobs (deepest) */}
-          <div class="hero-mesh" id="heroMesh" aria-hidden="true">
-            <div class="mesh-blob mesh-blob-1"></div>
-            <div class="mesh-blob mesh-blob-2"></div>
-            <div class="mesh-blob mesh-blob-3"></div>
-            <div class="mesh-blob mesh-blob-4"></div>
-            <div class="mesh-blob mesh-blob-5"></div>
-          </div>
-          {/* Layer 1: Depth-of-field blur */}
-          <div class="hero-depth-blur" aria-hidden="true"></div>
-          {/* Layer 2: Canvas particle field (created by JS) */}
-          <canvas id="heroCanvas" aria-hidden="true"></canvas>
-          {/* Layer 2b: CSS particle fallback */}
-          <div class="hero-particles" id="heroParticles" aria-hidden="true"></div>
-          {/* Layer 3: Volumetric light leaks */}
-          <div class="hero-light-leak hero-light-leak-1" aria-hidden="true"></div>
-          <div class="hero-light-leak hero-light-leak-2" aria-hidden="true"></div>
-          {/* Layer 4: Film grain */}
-          <div class="grain" aria-hidden="true"></div>
-          {/* Layer 5: Cinematic vignette */}
-          <div class="hero-vignette" aria-hidden="true"></div>
-          {/* Layer 6: Anamorphic flare */}
-          <div class="hero-anamorphic" aria-hidden="true"></div>
-        </div>
-        <div class="hero-scan-line" id="heroScanLine" aria-hidden="true"></div>
+      {rnNav(true)}
 
-        {/* Premium frame: constellation horizon line + side vertical rule */}
-        <div class="hero-frame" aria-hidden="true">
-          <div class="hero-frame-horizon"></div>
-          <div class="hero-frame-grid"></div>
-        </div>
+      <main id="top">
+        {raw(HOME_BODY)}
 
-        <div class="hero-content">
-          <div class="hero-tag">
-            <span class="tag-line" aria-hidden="true"></span>
-            <span class="tag-text">IEUM DENTAL CLINIC — 명지 치과 · 부산 강서구</span>
-          </div>
-          <h1 class="hero-title">
-            <span class="title-line"><span class="title-word" data-split>치과가</span></span>
-            <span class="title-line"><span class="title-word" data-split>그렇게도</span></span>
-            <span class="title-line accent"><span class="title-word" data-split>두려운 이유</span></span>
-          </h1>
-
-          {/* NEW — 서브카피: hook 다음의 한 줄 answer */}
-          <p class="hero-subcopy">
-            <span class="hero-subcopy-inner">
-              보이지 않기 때문입니다. <span class="hero-subcopy-accent">이음은, 모두 보여드립니다.</span>
-            </span>
-          </p>
-
-          {/* Hero CTA — 3 channels: Kakao(primary) · Naver booking · Call */}
-          <div class="hero-cta-wrap">
-            <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="hero-cta-btn hero-cta-kakao hero-cta-primary" data-hover>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-              <span>카카오톡 1분 상담</span>
-            </a>
-            <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="hero-cta-btn hero-cta-naver" data-hover>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
-              <span>네이버 예약</span>
-            </a>
-            <a href="tel:051-206-5888" class="hero-cta-btn hero-cta-ghost" data-hover>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-              <span>051-206-5888</span>
-            </a>
-          </div>
-
-          {/* Brand signature — 실제 정체성 */}
-          <div class="hero-signature" aria-label="이음치과 시그니처">
-            <span class="hero-signature-ko">이음치과</span>
-            <span class="hero-signature-divider" aria-hidden="true"></span>
-            <span class="hero-signature-en">IEUM DENTAL · MYEONGJI</span>
-          </div>
-
-          <div class="hero-bottom">
-            <div class="hero-scroll-hint">
-              <div class="scroll-line-wrap">
-                <div class="scroll-line" id="scrollLine"></div>
-              </div>
-              <span>SCROLL TO DISCOVER</span>
+        {/* 지역 안내 — 사진 카드 6개는 ItemList JSON-LD(#myeongji-cards)와 1:1 */}
+        <section class="area" aria-label="우리 동네 진료 안내">
+          <div class="wrap">
+            <header class="sec-head">
+              <p class="eyebrow">08 — AREA GUIDE</p>
+              <h2 class="sec-h"><span class="l">우리 동네 진료 안내</span></h2>
+              <p class="sec-p">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요. 위치·진료시간·주차·버스는 <a href="/regions/myeongji">명지 치과 안내</a>에 한눈에 정리했습니다.</p>
+            </header>
+            <h3 class="area-sub" id="myeongji-cards">명지 치과 진료별 안내</h3>
+            <div class="area-cards">
+              {MYEONGJI_CORE.map((p, i) => (
+                <a href={myeongjiCorePath(p.slug)} data-hover data-rise>
+                  <img src={myeongjiCoreCardImage(p.slug)} alt={myeongjiCoreName(p)} loading="lazy" decoding="async" width="600" height="600" />
+                  <small>{String(i + 1).padStart(2, '0')} · {p.tag}</small>
+                  <b>{myeongjiCoreName(p)}</b>
+                  <span>{p.line}</span>
+                </a>
+              ))}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          ACT 2 — THE NARRATIVE (스크롤 스토리텔링)
-          CINEMATIC: 각 챕터마다 무드 라이팅 변화
-          앰비언트 글로우, 포커스 빔, 타이포 블러 효과
-      ═══════════════════════════════════════════════════ */}
-      {/* ═══ CINEMATIC BLACKOUT OVERLAY — Dark-to-Light Transition ═══ */}
-      <div class="blackout-overlay" id="blackoutOverlay" aria-hidden="true">
-        <div class="blackout-particles" aria-hidden="true"></div>
-        <div class="blackout-light-ring" aria-hidden="true"></div>
-      </div>
-
-      <section class="story-narrative" id="storyNarrative" aria-label="이음치과 이야기">
-        {/* Cinematic ambient glow — dual layer follows scroll */}
-        <div class="story-ambient-glow" id="storyGlow" aria-hidden="true"></div>
-        <div class="story-ambient-pulse" id="storyPulse" aria-hidden="true"></div>
-
-        {/* Chapter 1: 질문 — 공포의 원인 */}
-        <div class="story-chapter" id="storyChapter1">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-orb chapter-orb-1"></div>
-          </div>
-          <div class="story-line" data-story="1">
-            <span class="story-chapter-num" aria-hidden="true">01</span>
-            <p class="story-text story-question">우리는 왜<br/>치과 치료가 그토록 두려울까요?</p>
-          </div>
-        </div>
-
-        {/* Chapter 2: 인사이트 — 보이지 않기 때문 */}
-        <div class="story-chapter" id="storyChapter2">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-orb chapter-orb-2"></div>
-          </div>
-          <div class="story-line" data-story="2">
-            <p class="story-text story-solo">바로</p>
-          </div>
-          <div class="story-line" data-story="3">
-            <p class="story-text story-emphasis">내 입 안에서 벌어지는 일이니까요.</p>
-          </div>
-        </div>
-
-        {/* Chapter 3: 공감 — 보이지 않는 것의 공포 (VOLUMETRIC FOG) */}
-        <div class="story-chapter story-chapter-dark" id="storyChapter3">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-fog" id="chapterFog"></div>
-            <div class="chapter-fog-2" aria-hidden="true"></div>
-          </div>
-          <div class="story-line" data-story="4">
-            <p class="story-text story-small">입 안은 보이지 않으니까요.</p>
-          </div>
-          <div class="story-line" data-story="5">
-            <p class="story-text story-pause">맞습니다.</p>
-          </div>
-          <div class="story-line" data-story="6">
-            <p class="story-text">우리는<br/><em>보이지 않는 것</em>을 두려워합니다.</p>
-          </div>
-          <div class="story-line" data-story="7">
-            <p class="story-text story-whisper">귀신처럼요.</p>
-          </div>
-        </div>
-
-        {/* Chapter 4: 전환 — 반대로 (어둠 → 빛) VOLUMETRIC LIGHT */}
-        <div class="story-chapter story-chapter-turn" id="storyChapter4">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-light-cone" id="chapterLightCone" aria-hidden="true"></div>
-            <div class="chapter-light-burst" id="chapterLightBurst"></div>
-          </div>
-          <div class="story-line" data-story="8">
-            <p class="story-text story-turn">반대로,</p>
-          </div>
-          <div class="story-line" data-story="9">
-            <p class="story-text">우리 입 안에서<br/><em>무슨 일이 벌어지는지</em> 알 수 있다면</p>
-          </div>
-          <div class="story-line" data-story="10">
-            <p class="story-text story-emphasis">두려움은 사라집니다.</p>
-          </div>
-        </div>
-
-        {/* Chapter 5: 결론 — 그래서 이음치과는 (GOD RAYS) */}
-        <div class="story-chapter story-chapter-resolve" id="storyChapter5">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-rays" id="chapterRays"></div>
-            <div class="chapter-rays-2" aria-hidden="true"></div>
-          </div>
-          <div class="story-line" data-story="11">
-            <p class="story-text story-bridge">그래서 이음치과는</p>
-          </div>
-          <div class="story-line" data-story="12">
-            <p class="story-text story-action"><em>충분히</em> 설명하고,</p>
-          </div>
-          <div class="story-line" data-story="13">
-            <p class="story-text story-action">매 과정을 <em>보여드립니다.</em></p>
-          </div>
-        </div>
-
-        {/* Chapter 6: 약속 — 신뢰를 잇습니다 (CLIMAX — AVATAR BIOLUMINESCENCE) */}
-        <div class="story-chapter story-chapter-climax" id="storyChapter6">
-          <div class="chapter-bg-fx" aria-hidden="true">
-            <div class="chapter-nebula" id="chapterNebula" aria-hidden="true"></div>
-            <div class="chapter-aurora" id="chapterAurora"></div>
-            <div class="chapter-aurora-2" aria-hidden="true"></div>
-            <div class="chapter-stars" id="chapterStars"></div>
-            <div class="chapter-stars-deep" aria-hidden="true"></div>
-          </div>
-          <div class="story-line" data-story="14">
-            <p class="story-text story-bridge">그렇게 이음치과는</p>
-          </div>
-          <div class="story-line story-line-finale" data-story="15">
-            <p class="story-text story-finale">신뢰를,<br/>잇습니다.</p>
-            <div class="finale-glow" aria-hidden="true"></div>
-            <div class="finale-ring" aria-hidden="true"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════
-          ACT 3 — THE PROOF (증거)
-          스토리 이후 증거를 순서대로 제시
-      ═══════════════════════════════════════════════════ */}
-
-      {/* Brand Monogram — 숫자 대신 정체성 */}
-      <section class="story-brand" id="storyBrand" aria-label="이음치과 브랜드">
-        <div class="container-wide">
-          <div class="story-brand-inner" data-reveal>
-            <span class="story-brand-kicker">IEUM DENTAL CLINIC</span>
-            <h2 class="story-brand-name">이음치과</h2>
-            <span class="story-brand-divider" aria-hidden="true"></span>
-            <p class="story-brand-tagline">
-              실력으로 신뢰를,<br/>
-              신뢰로 마음까지 잇습니다.
-            </p>
-            <span class="story-brand-meta">Busan · Myeongji International City</span>
-          </div>
-        </div>
-      </section>
-
-      {/* MARQUEE */}
-      <div class="marquee-band" aria-hidden="true">
-        <div class="marquee-track">
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
-          <span>TRANSPARENCY — SKILL — TRUST — 투명성 — 실력 — 신뢰 — IEUM DENTAL — </span>
-        </div>
-      </div>
-
-      {/* GALLERY STRIP */}
-      <div class="gallery-strip">
-        <div class="gallery-track">
-          <div class="gallery-item" data-hover><img src="/static/img/photo_7.webp" width="1200" height="800" alt="이음치과 접수" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_8.webp" width="1200" height="800" alt="이음치과 대기실" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_6.webp" width="1200" height="801" alt="이음치과 진료실" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_4.webp" width="1200" height="801" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_9.webp" width="1200" height="801" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
-          <div class="gallery-item" data-hover><img src="/static/img/photo_1.webp" width="1200" height="800" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_7.webp" width="1200" height="800" alt="이음치과 접수" loading="lazy"/><div class="gallery-caption">RECEPTION</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_8.webp" width="1200" height="800" alt="이음치과 대기실" loading="lazy"/><div class="gallery-caption">WAITING</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_6.webp" width="1200" height="801" alt="이음치과 진료실" loading="lazy"/><div class="gallery-caption">TREATMENT</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_4.webp" width="1200" height="801" alt="이음치과 내부" loading="lazy"/><div class="gallery-caption">INTERIOR</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_9.webp" width="1200" height="801" alt="이음치과 편의공간" loading="lazy"/><div class="gallery-caption">AMENITY</div></div>
-          <div class="gallery-item" aria-hidden="true"><img src="/static/img/photo_1.webp" width="1200" height="800" alt="이음치과 로비" loading="lazy"/><div class="gallery-caption">LOBBY</div></div>
-        </div>
-      </div>
-
-      {/* HOW WE PROVE IT — 3 Pillars */}
-      <section class="section story-pillars" id="section-pillars" aria-label="이음치과의 증명 방식">
-        <div class="container-wide">
-          <div class="pillars-header">
-            <span class="section-label">01 — HOW WE PROVE IT</span>
-            <h2 class="pillars-title">우리가 신뢰를<br/><em>증명</em>하는 방법</h2>
-            <p class="pillars-subtitle">이음치과는 말이 아닌 행동으로, 약속이 아닌 결과로 증명합니다.<br/>세 가지 원칙이 모든 진료의 출발점입니다.</p>
-          </div>
-          <div class="pillars-grid">
-            <div class="pillar-card" data-reveal>
-              <div class="pillar-num">01</div>
-              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
-              <h3>보여드립니다</h3>
-              <p class="pillar-lead">말로만 설명하지 않습니다.</p>
-              <p class="pillar-desc"><strong>CBCT</strong>로 뼈와 신경을 3D로 꺼내 보이고, <strong>구강스캐너</strong>로 내 입 속을 그대로 스캔해 모니터에 띄웁니다. 여기에 <strong>큐레이펜 C</strong>로 엑스레이에도 안 잡히는 <em>초기 충치·미세 균열·플라그</em>까지 형광으로 비춰드립니다. 환자분이 눈으로 확인하고 납득하실 때 비로소 치료를 시작합니다. "뭔지도 모르고 치료받았다"는 경험, 이음에서는 없습니다.</p>
-              <ul class="pillar-details">
-                <li>CBCT 3D 영상으로 뼈·신경 상태 설명</li>
-                <li>구강스캐너로 치아 상태 실시간 공유</li>
-                <li>큐레이펜 C로 초기 충치·균열 시각화</li>
-                <li>치료 계획을 환자와 함께 수립</li>
-              </ul>
-            </div>
-            <div class="pillar-card" data-reveal>
-              <div class="pillar-num">02</div>
-              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
-              <h3>살립니다</h3>
-              <p class="pillar-lead">임플란트보다 좋은 건 내 치아입니다.</p>
-              <p class="pillar-desc">발치는 정말 방법이 없을 때의 마지막 선택이어야 합니다. 이음치과는 근관치료, 레진, 보철 등 가능한 모든 보존 치료를 먼저 검토하고, 자연치아를 최대한 살리는 방향으로 계획을 세웁니다. 당장은 느리더라도, 10년 후에도 후회 없는 치료를 약속합니다.</p>
-              <ul class="pillar-details">
-                <li>보존 치료 우선 — 발치는 최후 수단</li>
-                <li>장기적 예후를 고려한 치료 설계</li>
-                <li>과잉 진료 제로 원칙</li>
-              </ul>
-            </div>
-            <div class="pillar-card" data-reveal>
-              <div class="pillar-num">03</div>
-              <div class="pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
-              <h3>편안하게</h3>
-              <p class="pillar-lead">두려움은 우리가 먼저 느낍니다.</p>
-              <p class="pillar-desc">치과가 무서운 건 당연합니다. 그래서 이음치과는 모든 진료에 무통 마취를 기본으로 적용하고, 치료 중 통증이 느껴지면 즉시 멈춥니다. 진료실 입장부터 퇴원까지 — 불안하지 않도록 매 순간 세심하게 배려합니다.</p>
-              <ul class="pillar-details">
-                <li>무통 마취 기본 적용</li>
-                <li>치료 중 통증 시 즉시 중단</li>
-                <li>진료 전, 오늘 진행할 순서를 먼저 설명 — 갑자기 놀랄 일 없이</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* MARQUEE 2 */}
-      <div class="marquee-band dark" aria-hidden="true">
-        <div class="marquee-track reverse">
-          <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
-          <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
-          <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
-          <span>IMPLANT — AESTHETICS — TMJ — 임플란트 — 심미보철 — 턱관절 — DIGITAL DENTISTRY — </span>
-        </div>
-      </div>
-
-      {/* SERVICES — Horizontal Scroll */}
-      <section class="section services-horizontal" id="section-services" aria-label="이음치과 진료 안내">
-        <div class="container-wide">
-          <div class="services-header">
-            <span class="section-label">02 — SERVICES</span>
-            <h2 class="services-title">진료 안내</h2>
-            <p class="services-subtitle">충분한 설명과 확실한 결과. 이음치과가 자신 있는 진료 영역입니다.<br/>카드를 드래그하여 살펴보세요.</p>
-          </div>
-        </div>
-        <div class="horizontal-wrap">
-          <div class="horizontal-track" id="horizontalTrack">
-            <div class="h-card h-card-intro"><div class="h-card-inner"><p class="h-intro-text">충분한 설명,<br/>확실한 결과로<br/><em>최선의 선택</em>을<br/>함께합니다.</p><p class="h-intro-sub">각 진료마다 디지털 장비 기반의<br/>정밀 진단을 기본으로 합니다.</p></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">01</span><h3 class="h-card-title">임플란트</h3><span class="h-card-badge">SIGNATURE</span><p class="h-card-desc">CBCT 3D 영상으로 뼈의 양·밀도·신경 위치를 정밀 분석하고, 원내 3D 프린터로 환자 맞춤 수술 가이드를 직접 제작합니다. 절개를 최소화하여 통증과 회복 기간을 단축합니다.</p><div class="h-card-features"><span><a href="/dictionary/digital-guide" class="term-link">원내 가이드</a> 제작</span><span><a href="/dictionary/cbct" class="term-link">CBCT</a> 정밀 진단</span><span><a href="/dictionary/digital-impression" class="term-link">디지털 인상</a></span><span>최고 수준 기공소</span></div><p class="h-card-patient-note">환자분 후기: "절개 없이 한 임플란트, 당일에 밥을 먹었어요."</p><div class="h-card-arrow">→</div><a href="/dictionary?service=implant" class="h-card-dict-link">임플란트 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">02</span><h3 class="h-card-title">심미보철</h3><span class="h-card-badge">RECOMMENDED</span><p class="h-card-desc">구강스캐너로 정밀 스캔 후, 자연치아와 구별이 불가능한 보철물(씌우는 치아)을 맞춤 제작합니다. 라미네이트, 올세라믹 등 환자분의 얼굴형과 미소 라인에 맞는 최적의 솔루션을 제안합니다.</p><div class="h-card-features"><span><a href="/dictionary/laminate" class="term-link">라미네이트</a></span><span><a href="/dictionary/all-ceramic" class="term-link">올세라믹</a></span><span>정밀 색조 매칭</span><span>미소 라인 분석</span></div><p class="h-card-patient-note">자연치아 같은 투명도와 색감 — 주변에서 보철인 줄 몰라요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=aesthetic" class="h-card-dict-link">심미보철 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">03</span><h3 class="h-card-title">심미 레진</h3><p class="h-card-desc">치아 색상에 완벽히 맞춘 고급 레진으로 치아 삭제를 최소화하면서 당일에 치료를 마칩니다. 앞니 틈, 깨진 치아, 변색 부위 등을 자연스럽게 복원합니다.</p><div class="h-card-features"><span>자연 색상 매칭</span><span>최소 침습</span><span>당일 완료</span><span>앞니 심미 복원</span></div><p class="h-card-patient-note">가성비 최고 — 자연스러우면서 당일에 끝나는 치료.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=resin" class="h-card-dict-link">레진 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">04</span><h3 class="h-card-title">일반진료</h3><p class="h-card-desc">충치, 신경치료, 사랑니, 잇몸치료, 스케일링 — 기본 진료에 가장 충실합니다. 아쿠아케어로 수복 전 치면을 정밀 관리하고, 고배율 확대경 아래 세심한 치료로 통증과 불안을 줄입니다.</p><div class="h-card-features"><span>충치 · 신경치료</span><span>사랑니 발치</span><span>잇몸 · 스케일링</span><span>무통 마취</span></div><p class="h-card-patient-note">기본을 잘하는 치과가 진짜 좋은 치과라는 걸 느꼈어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=general" class="h-card-dict-link">일반진료 관련 용어 보기 →</a></div></div>
-            <div class="h-card"><div class="h-card-inner"><span class="h-card-num">05</span><h3 class="h-card-title">턱관절</h3><p class="h-card-desc">턱 소리, 통증, 입 벌림 제한을 CBCT와 교합(윗니 아랫니 맞물림) 분석으로 정밀 진단합니다. 물리치료와 맞춤 스플린트, 체계적 프로토콜로 근본 원인부터 해결합니다.</p><div class="h-card-features"><span>물리치료</span><span>교합 분석</span><span>맞춤 스플린트</span><span>체계적 프로토콜</span></div><p class="h-card-patient-note">턱 통증으로 잠을 못 잤는데, 치료 후 확실히 달라졌어요.</p><div class="h-card-arrow">→</div><a href="/dictionary?service=tmj" class="h-card-dict-link">턱관절 관련 용어 보기 →</a></div></div>
-          </div>
-        </div>
-      </section>
-
-      {/* DIRECTOR */}
-      <section class="section director-full" id="section-director" aria-label="대표원장 최효영 소개">
-        <div class="container-wide">
-          <div class="director-layout">
-            <div class="director-visual">
-              <div class="director-frame" data-hover>
-                <img src="/static/img/photo_5.webp" alt="이음치과의원 대표원장 최효영" class="director-photo" width="900" height="1260" loading="lazy" decoding="async" />
-              </div>
-            </div>
-            <div class="director-info">
-              <span class="section-label">03 — DIRECTOR</span>
-              <h2 class="director-name-title" data-reveal>대표원장 <em>최효영</em></h2>
-              <blockquote class="director-quote" data-reveal>"다른 사람들이 치과 이야기를 할 때<br/>정직하게 치료를 잘하는 병원이라며<br/>추천하는 곳을 만들고 싶습니다."</blockquote>
-              <p class="director-philosophy" data-reveal>환자가 아파서 찾아오는 곳이 아니라, 건강할 때도 생각나는 치과. 이음치과가 지향하는 병원의 모습입니다. 모든 환자분을 가족처럼 대하고, 과잉 진료 없이 정직하게 — 그것이 이음의 철학입니다.</p>
-              <div class="credentials-grid">
-                <div class="cred-block" data-reveal><h4>Education</h4><ul><li>강원대학교 치과대학 치의학과 졸업 (2021)</li></ul></div>
-                <div class="cred-block" data-reveal><h4>Experience</h4><ul><li>전 사상연세비앤이치과병원 원장</li><li>전 다대치과의원 원장</li></ul></div>
-                <div class="cred-block" data-reveal><h4>Philosophy</h4><ul><li>과잉 없이, 필요한 만큼만</li><li>보존이 우선, 발치는 마지막</li><li>오늘의 편리보다 10년 뒤의 치아</li></ul></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PUBLISHED WORK — 원장 저서 */}
-      <section class="section director-book" id="section-book" aria-label="대표원장 저서 - 치과가 두렵지 않으면 좋겠습니다">
-        <div class="container-wide">
-          <div class="director-book-header">
-            <span class="section-label">04 — PUBLISHED WORK</span>
-            <h2 class="director-book-heading" data-reveal>
-              원장이 쓴 <em>이야기</em>
-            </h2>
-            <p class="director-book-lede" data-reveal>
-              진료실에서 매일 듣는 말들에서 시작된 책.<br/>
-              환자분들께 꼭 드리고 싶었던 이야기를 담았습니다.
-            </p>
-          </div>
-
-          <div class="director-book-card" data-reveal>
-            <a href="/doctors/choi-hyoyoung#book-heading" class="director-book-link" data-hover aria-label="최효영 원장 저서 상세 보기">
-              <div class="director-book-cover-wrap">
-                <img
-                  src="/static/book-cover.jpg"
-                  alt="최효영 원장 저서 '치과가 두렵지 않으면 좋겠습니다' 표지"
-                  class="director-book-cover-img"
-                  loading="lazy"
-                  width="420"
-                  height="594"
-                />
-              </div>
-              <div class="director-book-text">
-                <p class="director-book-kicker">최효영 원장 저서</p>
-                <h3 class="director-book-bigtitle">치과가<br/>두렵지 않으면<br/>좋겠습니다</h3>
-                <p class="director-book-tagline">설명으로 안심하고,<br/>실력으로 다시 찾는 치과의 기록</p>
-                <blockquote class="director-book-excerpt">
-                  "칫솔 하나 고르는 법부터 임플란트 수술 후 관리까지,
-                  치과에 오시면 한 번쯤 마주치게 되는 주제들을
-                  최대한 쉽고 솔직하게 풀었습니다."
-                </blockquote>
-                <div class="director-book-meta-row">
-                  <div class="director-book-badges-mini">
-                    <span class="book-badge-mini">비매품</span>
-                    <span class="book-badge-mini">원내 소장용</span>
+            <div class="area-links">
+              {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
+                const t = SEO_TREATMENTS_MAP[tSlug]
+                if (!t) return null
+                return (
+                  <div>
+                    <h3><a href={`/treatments/${t.slug}`}>{t.name}</a></h3>
+                    <p class="area-benefit">{t.shortBenefit}</p>
+                    {PRIORITY_REGION_SLUGS.map((rSlug) => {
+                      const r = SEO_REGIONS_MAP[rSlug]
+                      if (!r) return null
+                      return <a href={`/regions/${r.slug}/${t.slug}`}>{r.name} {t.name}</a>
+                    })}
                   </div>
-                  <span class="director-book-more">
-                    책 이야기 더 보기
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-                  </span>
-                </div>
-              </div>
-            </a>
+                )
+              })}
+            </div>
+            {/* 이전 홈 진료 카드에 있던 용어 링크 5개 유지 */}
+            <p class="area-terms">자주 찾는 용어
+              <a href="/dictionary/cbct">CBCT</a>
+              <a href="/dictionary/digital-guide">디지털 가이드</a>
+              <a href="/dictionary/digital-impression">디지털 인상</a>
+              <a href="/dictionary/laminate">라미네이트</a>
+              <a href="/dictionary/all-ceramic">올세라믹</a>
+            </p>
+            <p class="area-more">
+              <a class="rn-btn rn-btn-navy" href="/treatments" data-hover>전체 진료 안내 →</a>
+              <a class="rn-btn rn-btn-line" href="/dictionary" data-hover>치과 용어 백과사전 →</a>
+            </p>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* PROMISE — Our 4 Commitments */}
-      <section class="section promise-section" id="section-promise" aria-label="이음치과의 약속">
-        <div class="promise-bg" aria-hidden="true"><div class="grain"></div></div>
-        <div class="container-wide">
-          <div class="promise-header">
-            <span class="section-label">05 — PROMISE</span>
-            <h2 class="promise-main-title">이음의<br/><em>약속</em></h2>
-            <p class="promise-subtitle">환자분께 드리는 네 가지 약속입니다.<br/>진료실에서 벌어지는 모든 순간에 이 약속을 지킵니다.</p>
-          </div>
-          <div class="promise-grid">
-            <div class="promise-item" data-reveal data-num="01">
-              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
-              <div class="promise-content">
-                <h3>투명한 진단</h3>
-                <p class="promise-quote">"눈으로 확인해야 진짜 믿음입니다."</p>
-                <p class="promise-desc">말로만 설명하지 않습니다. 디지털 장비로 상태를 직접 보여드리고, 납득하실 때 치료를 시작합니다.</p>
-              </div>
-            </div>
-            <div class="promise-item" data-reveal data-num="02">
-              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div>
-              <div class="promise-content">
-                <h3>바른 진료</h3>
-                <p class="promise-quote">"뽑기보다 살리기를 먼저 고민합니다."</p>
-                <p class="promise-desc">임플란트보다 좋은 건 내 치아입니다. 발치는 더 이상 방법이 없을 때 권하는 마지막 선택이어야 합니다.</p>
-              </div>
-            </div>
-            <div class="promise-item" data-reveal data-num="03">
-              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></div>
-              <div class="promise-content">
-                <h3>공감 진료</h3>
-                <p class="promise-quote">"불안함을 덜고 마음까지 편안하게."</p>
-                <p class="promise-desc">치과가 두려운 마음을 잘 압니다. 무통 마취와 세심한 배려로 편안해지도록 돕겠습니다.</p>
-              </div>
-            </div>
-            <div class="promise-item" data-reveal data-num="04">
-              <div class="promise-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
-              <div class="promise-content">
-                <h3>열린 진료</h3>
-                <p class="promise-quote">"당신의 일상이 끊기지 않도록."</p>
-                <p class="promise-desc">아플 때 참지 마세요. 퇴근 후에도, 토요일에도 이음치과의 불은 환자분 곁에 켜져 있습니다.</p>
-              </div>
+        {/* 가시 FAQ — JSON-LD FAQPage 와 1:1 */}
+        <section class="faq" id="section-faq" aria-label="자주 묻는 질문">
+          <div class="wrap faq-grid">
+            <header class="sec-head">
+              <p class="eyebrow">09 — FAQ</p>
+              <h2 class="sec-h"><span class="l">자주 묻는</span><span class="l">질문</span></h2>
+              <p class="sec-p">환자분들이 가장 많이 궁금해하시는 질문을 정리했습니다.</p>
+              <a class="rn-btn rn-btn-navy" href="/faq" data-hover>전체 FAQ 보기 →</a>
+            </header>
+            <div class="faq-list">
+              {HOME_FAQS.map((f, i) => (
+                <details open={i === 0}>
+                  <summary><span>{String(i + 1).padStart(2, '0')}</span>{f.question}</summary>
+                  <p>{f.answer}</p>
+                </details>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
-      {/* EQUIPMENT */}
-      <section class="section equipment-minimal" id="section-equipment" aria-label="디지털 장비 안내">
-        <div class="container-wide">
-          <div class="equip-header">
-            <span class="section-label">06 — EQUIPMENT</span>
-            <h2 class="equip-title">Digital<br/>Dentistry</h2>
-            <p class="equip-subtitle">이음치과는 '최신 장비가 있다'는 것에 만족하지 않습니다.<br/>각 장비가 <em>환자에게 어떤 이점</em>을 주는지가 더 중요합니다.</p>
-          </div>
-          <div class="equip-grid">
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">01</span>
-              <h4>CBCT</h4>
-              <p class="equip-name-en">Cone Beam CT</p>
-              <p class="equip-desc">일반 X-ray로는 보이지 않는 구조를 3차원 입체 영상으로 진단합니다. 뼈의 양과 밀도, 신경 위치까지 정밀하게 파악하여 임플란트 수술의 안전성과 정확도를 높입니다.</p>
-              <span class="equip-benefit">환자 이점: 정확한 진단 → 불필요한 절개 최소화</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">02</span>
-              <h4>구강스캐너</h4>
-              <p class="equip-name-en">Intraoral Scanner</p>
-              <p class="equip-desc">기존의 불쾌한 본뜨기(인상재) 없이 디지털로 구강 내부를 정밀 스캔합니다. 보철물(씌우는 치아) 제작 정확도가 올라가고, 환자분의 구역질과 불편함이 사라집니다.</p>
-              <span class="equip-benefit">환자 이점: 본뜨기 불편 제거 + 보철 정밀도 향상</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">03</span>
-              <h4>3D 프린터</h4>
-              <p class="equip-name-en">3D Surgical Guide</p>
-              <p class="equip-desc">환자 맞춤 임플란트 수술 가이드를 원내에서 직접 출력합니다. 외부 기공소에 의뢰하지 않아 시간이 단축되고, 가이드 수술로 절개를 최소화해 회복이 빨라집니다.</p>
-              <span class="equip-benefit">환자 이점: 맞춤 가이드 → 빠른 회복 + 시간 단축</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">04</span>
-              <h4>플라즈마 소독기</h4>
-              <p class="equip-name-en">Plasma Sterilizer</p>
-              <p class="equip-desc">과산화수소 플라즈마를 이용해 기구를 멸균합니다. 대학병원급 감염관리 시스템으로 교차감염 위험을 원천 차단하며, 열에 약한 기구까지 완벽하게 소독합니다.</p>
-              <span class="equip-benefit">환자 이점: 대학병원급 위생 → 안심 진료</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">05</span>
-              <h4>아쿠아케어</h4>
-              <p class="equip-name-en">Aquacare · Periodontal &amp; Prep Mode</p>
-              <p class="equip-desc">레진이나 보철물(씌우는 치아)은 붙이기 전 준비가 결과를 좌우합니다. 이음치과는 수복 치료 전 아쿠아케어(프렙 모드)로 치아 표면을 미세하게 다듬어, 접착제가 더 단단히 결합할 수 있는 환경을 만듭니다. 치주 모드로 잇몸 라인 관리까지 정밀하게 케어합니다.</p>
-              <span class="equip-benefit">환자 이점: 오래가는 치료를 위한 보이지 않는 한 단계</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">06</span>
-              <h4>니트람</h4>
-              <p class="equip-name-en">NITRAM · Handpiece Oiling &amp; Sterilizer</p>
-              <p class="equip-desc">입 안에 직접 들어오는 드릴은, 표면 소독만으로는 내부까지 멸균하기 어렵습니다. 이음치과는 진료 때마다 핸드피스 전용 멸균기 니트람으로 내부 오일링과 고압증기 멸균을 거칩니다. 눈에 보이지 않는 곳일수록 더 신경 쓴다는 저희의 원칙입니다.</p>
-              <span class="equip-benefit">환자 이점: 드릴 내부까지 무균 → 교차감염 걱정 없이</span>
-            </div>
-            <div class="equip-item" data-reveal>
-              <span class="equip-num">07</span>
-              <h4>큐레이펜 C</h4>
-              <p class="equip-name-en">Qraypen C · QLF Fluorescence</p>
-              <p class="equip-desc">405nm 푸른 가시광선과 특수 필터(QLF 기술)로 치아의 형광 반응을 분석합니다. 건강한 법랑질은 녹색, 초기 충치·미세 균열은 어둡게, 세균 활성 부위는 붉은 형광으로 나타나 엑스레이로도 안 보이는 문제까지 눈으로 확인할 수 있습니다. 식약처 2등급 의료기기.</p>
-              <span class="equip-benefit">환자 이점: 초기 충치·균열 가시화 → 과잉진료 없는 증거 기반 진단</span>
-            </div>
-          </div>
-        </div>
-      </section>
+      {rnFooter()}
 
-      {/* CONTACT */}
-      <section class="section contact-big" id="section-contact" aria-label="연락처 및 오시는 길">
-        <div class="contact-bg" aria-hidden="true"><div class="grain"></div></div>
-        <div class="container-wide">
-          <div class="contact-layout">
-            <div class="contact-left">
-              <span class="section-label light">07 — CONTACT</span>
-              <a href="tel:051-206-5888" class="contact-phone-big" data-hover>
-                <span class="phone-label">Call us</span>
-                <span class="phone-number">051-206-5888</span>
-              </a>
-              <div class="contact-address">
-                <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
-                <p>이음치과의원</p>
-                <div class="contact-actions">
-                  <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="naver-btn" data-hover>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
-                    네이버 예약 →
-                  </a>
-                  <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="kakao-btn" data-hover>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-                    카카오톡 상담 →
-                  </a>
-                  <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" class="map-btn" data-hover>네이버 지도 →</a>
-                </div>
-              </div>
-            </div>
-            <div class="contact-right">
-              <div class="hours-minimal">
-                <div class="hours-row"><span class="hours-day">MON—FRI</span><span class="hours-time">12:00 — 21:00</span><span class="hours-note">break 16-17 / last 20:30</span></div>
-                <div class="hours-row"><span class="hours-day">SAT</span><span class="hours-time">10:00 — 17:00</span><span class="hours-note">break 13-14 / last 16:30</span></div>
-                <div class="hours-row closed"><span class="hours-day">SUN</span><span class="hours-time">CLOSED</span><span class="hours-note">정기휴무</span></div>
-                <div class="hours-extra">공휴일 휴진 · 대체공휴일 진료</div>
-              </div>
-              <div class="transport-minimal">
-                <div class="transport-item"><span class="transport-label">자차</span><p>네비 '이음치과의원' 검색 · 주차 2시간 지원<br/>건물 뒷편 주차장 (하이마트 옆)</p></div>
-                <div class="transport-item"><span class="transport-label">버스</span><p>국민은행명지국제신도시지점 정류장<br/>강서구 8, 8-1, 21, 124 (도보 1분)</p></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 지역×진료 내부링크 허브 — SEO 크롤 경로 확보 (고립 페이지 방지) */}
-      <section class="section region-hub" id="section-region-hub" aria-label="지역별 진료 안내">
-        <div class="container-wide">
-          <span class="section-label">08 — AREA GUIDE</span>
-          <h2 class="region-hub-title">우리 동네 진료 안내</h2>
-          <p class="region-hub-sub">명지국제신도시·강서구·김해 인근 지역별로 임플란트·투명교정·라미네이트·치아교정 안내를 확인하세요. 위치·진료시간·주차·버스는 <a href="/regions/myeongji">명지 치과 안내</a>에 한눈에 정리했습니다.</p>
-
-          {/* 명지 치과 진료별 사진 카드 6개 — ItemList JSON-LD(#myeongji-cards)와 1:1 (2026-10-14) */}
-          <h3 class="region-hub-treatment mj-home-heading" id="myeongji-cards">명지 치과 진료별 안내</h3>
-          {myeongjiCardGrid('home-mj')}
-
-          {PRIORITY_TREATMENT_SLUGS.map((tSlug) => {
-            const t = SEO_TREATMENTS_MAP[tSlug]
-            if (!t) return null
-            return (
-              <div class="region-hub-block">
-                <h3 class="region-hub-treatment">
-                  <a href={`/treatments/${t.slug}`}>{t.name}</a>
-                  <span class="region-hub-benefit">{t.shortBenefit}</span>
-                </h3>
-                <ul class="region-hub-links">
-                  {PRIORITY_REGION_SLUGS.map((rSlug) => {
-                    const r = SEO_REGIONS_MAP[rSlug]
-                    if (!r) return null
-                    return (
-                      <li>
-                        <a href={`/regions/${r.slug}/${t.slug}`}>{r.name} {t.name}</a>
-                      </li>
-                    )
-                  })}
-                </ul>
-              </div>
-            )
-          })}
-
-          <div class="region-hub-more">
-            <a href="/treatments" class="region-hub-morelink">전체 진료 안내 →</a>
-            <a href="/dictionary" class="region-hub-morelink">치과 용어 백과사전 →</a>
-          </div>
-        </div>
-      </section>
-
-      {/* 가시 FAQ 섹션 — JSON-LD FAQPage와 1:1 일치 (AEO: AI 검색·구글 리치결과 양쪽 충족) */}
-      <section class="section home-faq" id="section-faq" aria-label="자주 묻는 질문">
-        <div class="container-wide">
-          <span class="section-label">09 — FAQ</span>
-          <h2 class="home-faq-title">자주 묻는 질문</h2>
-          <p class="home-faq-sub">환자분들이 가장 많이 궁금해하시는 질문을 정리했습니다.</p>
-          <div class="home-faq-list">
-            {HOME_FAQS.map((f, i) => (
-              <details class="home-faq-item" open={i === 0}>
-                <summary class="home-faq-q">
-                  <span class="home-faq-num">{String(i + 1).padStart(2, '0')}</span>
-                  <span class="home-faq-q-text">{f.question}</span>
-                </summary>
-                <p class="home-faq-a">{f.answer}</p>
-              </details>
-            ))}
-          </div>
-          <div class="home-faq-more">
-            <a href="/faq" class="region-hub-morelink">전체 FAQ 보기 →</a>
-          </div>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer class="footer-full" role="contentinfo">
-        <div class="container-wide">
-          <div class="footer-top-grid">
-            <div class="footer-brand-col">
-              <div class="footer-brand-logo">
-                <img src="/static/images/symbol-112.webp" alt="이음치과의원" class="footer-brand-symbol" width="56" height="62" loading="lazy" />
-                <div class="footer-brand-text">
-                  <div class="footer-brand-big">이음치과</div>
-                  <div class="footer-brand-en">IEUM DENTAL CLINIC</div>
-                </div>
-              </div>
-              <p class="footer-tagline">실력으로 신뢰를, 신뢰로 마음까지 잇습니다.</p>
-              <div class="footer-sns">
-                <a href="https://www.instagram.com/ieumdental/" target="_blank" rel="noopener" aria-label="이음치과 인스타그램">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
-                </a>
-                <a href="https://map.naver.com/p/entry/place/2005922467" target="_blank" rel="noopener" aria-label="이음치과 네이버 지도">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                </a>
-                <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" aria-label="이음치과 카카오톡 상담" class="footer-sns-kakao">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-                </a>
-              </div>
-            </div>
-            <div class="footer-nav-col">
-              <h4>진료</h4>
-              <a href="/treatments">진료 안내</a>
-              <a href="/prices">비용 안내</a>
-              <a href="/doctors">의료진 소개</a>
-              <a href="/cases">비포애프터</a>
-              <a href="/faq">자주 묻는 질문</a>
-            </div>
-            <div class="footer-nav-col">
-              <h4>콘텐츠</h4>
-              <a href="/blogs">블로그</a>
-              <a href="/dictionary">치과 백과사전</a>
-              <a href="/notices">공지사항</a>
-            </div>
-            <div class="footer-nav-col">
-              <h4>안내</h4>
-              <a href="/about">병원 소개</a>
-              <a href="/visit">내원 안내</a>
-              <a href="/regions/myeongji">명지 치과</a>
-              <a href="tel:051-206-5888">전화 상담</a>
-              <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener">카카오톡 상담</a>
-            </div>
-          </div>
-          <div class="footer-biz-info">
-            <p>이음치과의원 · 대표원장 최효영</p>
-            <p>사업자등록번호 624-45-01223</p>
-            <p>부산광역시 강서구 명지국제8로 265, 201호 (명지동)</p>
-            <p>TEL 051-206-5888 · hyogunim@gmail.com</p>
-          </div>
-          <div class="footer-bottom-bar">
-            <span>&copy; <span id="footerYear">2025</span> 이음치과의원. All rights reserved.</span>
-            <div class="footer-legal-links">
-              <a href="/about">개인정보처리방침</a>
-              <a href="/about">이용약관</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
-      {/* Floating CTA Group — Kakao · Naver booking · Call */}
-      <div class="floating-cta-group" id="floatingCtaGroup">
-        <a href="http://pf.kakao.com/_diyyn" target="_blank" rel="noopener" class="floating-btn floating-kakao" data-hover aria-label="카카오톡 상담">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.48 3 2 6.58 2 10.9c0 2.78 1.86 5.21 4.65 6.6-.15.56-.96 3.56-.99 3.78 0 0-.02.17.09.24.11.06.24.01.24.01.32-.04 3.7-2.42 4.28-2.83.55.08 1.13.12 1.73.12 5.52 0 10-3.58 10-7.92C22 6.58 17.52 3 12 3z"/></svg>
-          <span class="floating-btn-label">카카오</span>
-        </a>
-        <a href="https://m.place.naver.com/hospital/2005922467/booking" target="_blank" rel="noopener" class="floating-btn floating-naver" data-hover aria-label="네이버 예약">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727z"/></svg>
-          <span class="floating-btn-label">예약</span>
-        </a>
-        <a href="tel:051-206-5888" class="floating-btn floating-call" id="floatingCall" data-hover aria-label="전화 상담">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span class="floating-btn-label">전화</span>
-        </a>
-      </div>
-
-      {/* GSAP — 시네마틱 엔진은 홈 전용 (서브페이지 전송량 -130KB) */}
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" defer></script>
       <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" defer></script>
-      <script src={`/static/app.js?v=${__APP_JS_V__}`} defer></script>
-      <script src={`/static/gsap-init.js?v=${__GSAP_INIT_V__}`} defer></script>
-      <script src={`/static/scroll-perf-patch.js?v=${__SCROLL_PERF_JS_V__}`} defer></script>
-      {/* 스크롤 몰입 보완 층 — 위 GSAP 재사용, Lenis 만 추가 (2026-10-30 미리보기) */}
-      <link rel="stylesheet" href={`/static/immersive.css?v=${__IMMERSIVE_CSS_V__}`} />
-      <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js" defer></script>
-      <script src={`/static/immersive.js?v=${__IMMERSIVE_JS_V__}`} defer></script>
-      <script dangerouslySetInnerHTML={{__html: "document.getElementById('footerYear').textContent = new Date().getFullYear();"}} />
+      <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js" defer></script>
+      <script src={`/static/renew.js?v=${__RENEW_JS_V__}`} defer></script>
+      <script src={`/static/renew-home.js?v=${__RENEW_HOME_JS_V__}`} defer></script>
     </div>
   )
 }

@@ -22,6 +22,7 @@ import treatmentsRoutes from './routes/treatments'
 import pricesRoutes from './routes/prices'
 import doctorsRoutes from './routes/doctors'
 import regionsRoutes from './routes/regions'
+import { subPageLayout } from './pages/layout'
 import { mainPage } from './pages/main'
 import { casesPage, caseDetailPage, caseHeadline, caseSummaryLines, CASE_FILTERS } from './pages/cases'
 import { blogsPage, blogDetailPage } from './pages/blogs'
@@ -277,6 +278,7 @@ app.route('', regionsRoutes)
 // === 메인 페이지 ===
 app.get('/', (c) => {
   return c.render(mainPage(), {
+    bare: true,
     seo: {
       title: '명지 치과 | 이음치과의원 — 부산 명지국제신도시 임플란트·심미보철',
       description: '명지 치과 이음치과의원 — 부산 강서구 명지국제신도시. CBCT·디지털 가이드 임플란트, 라미네이트·올세라믹 심미보철 전문. 충치·신경치료, 잇몸치료, 턱관절 등 일반진료까지 한 곳에서. 월~금 야간 21시, 토요일 진료, 일요일 휴무. ☎ 051-206-5888. 무료주차 2시간.',
@@ -2183,7 +2185,7 @@ app.get('/best', async (c) => {
   const seoDesc = '명지·강서구·부산에서 임플란트, 투명교정, 라미네이트, 치아교정 치과를 고를 때 확인할 기준. 이음치과의원 안내.'
 
   return c.render(
-    <div class="page-best-list">
+    subPageLayout(seoTitle, <div class="page-best-list">
       <section class="rt-hero rt-hero-best">
         <div class="container-wide">
           <nav class="rt-breadcrumb"><a href="/">홈</a> <span class="sep">›</span> <span>치과 선택 가이드</span></nav>
@@ -2212,7 +2214,7 @@ app.get('/best', async (c) => {
           </div>
         </div>
       </section>
-    </div>,
+    </div>),
     {
       seo: {
         title: seoTitle,
