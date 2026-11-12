@@ -61,3 +61,6 @@ Thumbs.db
 # Large media safety net (>50MB binaries should use Git LFS)
 *.dmp
 *.iso
+
+# 심볼릭 링크로 걸린 node_modules 도 무시 (슬래시 없는 형태)
+node_modules
