@@ -519,3 +519,24 @@ html.fx .sub-page .gallery-masonry-item:nth-child(3n+2).rn-rise.rn-in{transform:
 .sub-page .page-near-me{padding-top:0!important;margin-top:0!important}
 .sub-page .near-hero{margin-top:0!important}
 @media (max-width:760px){.sub-page :is(.treat-price-table,.best-table-wrap,.hours-table-wrap,.price-group){overflow-x:auto!important;-webkit-overflow-scrolling:touch}.sub-page :is(.treat-price-table table,.price-table,.best-table){min-width:520px}}
+
+/* ── 실데이터 확인 뒤 손질 (의료진 1인·글 상세) ── */
+.sub-page .doctor-grid-item:only-child{grid-column:1/-1}
+.sub-page .doctor-grid-item:only-child .doctor-grid-link{grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr)!important;min-height:clamp(340px,34vw,520px)}
+.sub-page .doctor-grid-item:only-child .doctor-grid-name{font-size:clamp(44px,6vw,96px)!important}
+.sub-page .doctor-grid-item:only-child .doctor-grid-greeting{font-size:clamp(16px,1.4vw,19px)!important;max-width:620px;-webkit-line-clamp:unset!important;display:block!important;overflow:visible!important}
+@media (max-width:560px){.sub-page .doctor-grid-item:only-child .doctor-grid-link{grid-template-columns:1fr!important}}
+.sub-page .page-hero-mini.compact{padding:clamp(20px,2.4vw,34px) 0!important;margin-top:0!important}
+.sub-page .page-hero-mini.compact::after{display:none!important}
+.sub-page :is(.page-blog-detail,.page-case-detail,.page-notice-detail,[class*="-detail"])>.page-hero-mini{margin-top:0!important}
+.sub-page .notice-detail-section{background:#fff!important;padding:clamp(36px,5vw,80px) 0!important}
+.sub-page .notice-article{background:#fff!important;border:1px solid var(--rn-line)!important;border-radius:28px!important;box-shadow:0 34px 80px -56px rgba(0,48,106,.5)!important;color:#0A1F3D!important;padding:clamp(26px,4vw,60px)!important;max-width:900px;margin-inline:auto}
+.sub-page .notice-article-title{color:var(--rn-navy)!important;-webkit-text-fill-color:var(--rn-navy)!important;font-size:clamp(26px,3.4vw,46px)!important;line-height:1.2!important}
+.sub-page .notice-article-meta,.sub-page .notice-article-meta *{color:var(--rn-sub)!important}
+.sub-page .notice-article-header{border-color:var(--rn-line)!important}
+.sub-page .notice-article-body,.sub-page .notice-article-body :where(p,li,span,div,strong){color:#0A1F3D!important;-webkit-text-fill-color:#0A1F3D!important;font-size:17px;line-height:1.9}
+.sub-page .notice-article a{color:var(--rn-navy)!important}
+.sub-page .notice-article-hero,.sub-page .notice-article-gallery figure{border-radius:20px!important;overflow:hidden}
+.sub-page .blog-article-title,.sub-page .case-article-title{color:var(--rn-navy)!important;font-size:clamp(26px,3.4vw,46px)!important;line-height:1.24!important;text-wrap:balance}
+.sub-page .sub-page-content>div:first-child{padding-top:0!important;margin-top:0!important}
+.sub-page .doctors-grid{max-width:none!important;width:100%!important}
